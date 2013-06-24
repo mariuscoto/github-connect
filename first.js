@@ -46,7 +46,10 @@ app.get('/', function(req, res) {
 });
 
 app.get('/board', function(req, res) {
-  res.render('board');
+  if (everyauth.loggedIn) {
+    res.render('board');
+  }
+    res.render('login');
 });
 
 app.listen(process.env.PORT || 4000);
