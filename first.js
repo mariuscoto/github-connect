@@ -48,8 +48,9 @@ app.get('/', function(req, res) {
 app.get('/board', function(req, res) {
   if (everyauth.loggedIn) {
     res.render('board');
+  } else {
+    return res.redirect('/');
   }
-    res.render('login');
 });
 
 app.listen(process.env.PORT || 4000);
