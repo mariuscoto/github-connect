@@ -36,5 +36,5 @@ app.get('/nologin', function(req, res) {
   res.send('go away');
 });
 
-
-app.listen(4000);
+var port = process.env.PORT || 4000;
+app.listen(port);
