@@ -5,7 +5,7 @@
     "express": "3.2.x",
     "everyauth": "0.4.x",
     "connect": "2.7.x",
-    "jade": "0.31.x",
+    "jade": "0.31.x"
   },
   "engines": {
     "node": "0.10.x",
