@@ -43,11 +43,13 @@ app.configure('production', function(){
 
 app.get('/', function(req, res) {
   res.render('login');
+  res.end();
 });
 
 app.get('/board', function(req, res) {
   if (everyauth.loggedIn) {
     res.render('board');
+    res.end();
   } else {
     return res.redirect('/');
   }
