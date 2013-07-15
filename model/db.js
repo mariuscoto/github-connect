@@ -14,7 +14,8 @@ var Ideas = new Schema({
     title:	    String,
     description:    String,
     plan:	    String,
-    date_post:	    Date
+    date_post:	    Date,
+    comments_num:   {type: Number, default: 0}
 });
 
 var IdeaComments = new Schema({

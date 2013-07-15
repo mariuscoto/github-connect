@@ -113,15 +113,22 @@ exports.ideas_post = function(req, res) {
 };
 
 exports.idea_comments = function(req, res) {
-    new IdeaComments({
-	uid: req.body.who,
-	idea: req.body.where,
-	content: req.body.content,
-	date: Date.now()
-    }).save(function(err, comm, count) {
-	console.log("* New comment added.");
-	res.redirect('/ideas?id=' + req.body.where);
-    });
+    // increment comments number
+    var conditions = { _id: req.body.where };
+    var update = {$inc: {comments_num: 1}};
+    Ideas.update(conditions, update, callback);
+
+    function callback (err, num) {
+        new IdeaComments({
+	    uid: req.body.who,
+	    idea: req.body.where,
+	    content: req.body.content,
+	    date: Date.now()
+	}).save(function(err, comm, count) {
+	    console.log("* New comment added.");
+	    res.redirect('/ideas?id=' + req.body.where);
+	});
+    };
 };
 
 exports.profile = function(req, res) {
