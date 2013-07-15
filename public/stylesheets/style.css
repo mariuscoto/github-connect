@@ -1,6 +1,8 @@
 body {
     margin: 0px;
     padding: 0px;
+    background-image: url("../images/bg-body.png");
+    background-repeat: repeat;
 }
 
 a:link {text-decoration:none;}
