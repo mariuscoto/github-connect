@@ -1,0 +1,79 @@
+extends layout
+
+block content
+  h1= title
+
+  - if (everyauth.loggedIn)
+
+    - if (!idea)
+      h1 Add new idea
+
+      form(method='post', action='/ideas')
+        label Title:
+          input(name='title', value='aaa')
+        label Description:
+          textarea(name='description')
+        label Plan:
+          textarea(name='plan')
+        label Language:
+          textarea(name='lang')
+
+        input(type='submit', value='Save')
+
+  - else
+    h1 You must be logged in to post you ideas.
+
+  - if (ideas)
+    h1 Ideas list
+
+    #idea-table-header
+      ul
+        li
+          a(href='/ideas' + tab + '?sort=most_recent') Most recent
+        li
+          a(href='/ideas' + tab + '?sort=most_viewed') Most visited
+        li
+          a(href='/ideas' + tab + '?sort=most_comm') Most commented
+
+    .left
+      - each idea in ideas
+        .idea
+          .idea-title
+            a(href='/ideas?id=' + idea._id)= idea.title
+          .idea-content
+            p= idea.title + " / " + idea.plan + " / " + idea.description + "/" + idea.date_post
+
+    .right
+      ul
+        li
+          a(href='/ideas') All
+        li
+          a(href='/ideas/favorites') Favorites
+        li
+          a(href='/ideas/user') Mine
+
+
+  - else if (idea)
+    h1= idea.title
+    h1= idea.description
+
+    h1 ############################
+
+    - if (everyauth.loggedIn)
+      form(method='post', action='/idea_comm')
+        input(name='who', value=global.id, hidden)
+        input(name='where', value=idea._id, hidden)
+        label Content:
+          textarea(name='content')
+        input(type='submit', value='Comment')
+    - else
+      h1 Login to post comments.
+
+    h1 ############################
+    - if (comments)
+      - if (comments.length != 0)
+        - each c in comments
+          p= c.uid + "  " + c.content
+
+      - else
+        h1 no comments

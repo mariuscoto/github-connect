@@ -1,0 +1,34 @@
+!!! 5
+html
+  head
+    title= title
+    link(rel='stylesheet', href='/stylesheets/style.css')
+  body
+    #container.container
+      #header
+        #logo
+          a(href="/") Home
+        #nav
+          ul
+            li
+              a(href="/ideas") Ideas
+            li
+              a(href="/profile") Profile
+            li
+              a(href="/contact") Contact
+        #controls
+          - if (!everyauth.loggedIn)          
+            a(href="/login") Login
+          - else
+            a(href="/logout") Logout
+
+      #body
+        block content
+
+      #footer
+        #copyright
+          p 2013 Github-connect
+        #logo-footer
+          p smalllogo goes here
+        #menu-footer
+          p secondary menu here

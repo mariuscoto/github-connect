@@ -1,0 +1,20 @@
+extends layout
+
+block content
+  h1= title
+  - if (!everyauth.loggedIn)
+    h3 No data
+  - else
+    h1 Esti online
+    h3
+      a(href='/logout') Logout
+      h3 GitHub User Data
+      - each r in rep
+        p= r.name
+        p= r.description
+      - each u in users
+        p= u.user_name
+      p= JSON.stringify(everyauth.github.user)
+      p= JSON.stringify(everyauth.github.user.login)
+      p= JSON.stringify(everyauth.github.user.repos_url)
+      p= JSON.stringify(everyauth.github.user.name)

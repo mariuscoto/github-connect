@@ -1,0 +1,127 @@
+body {
+    margin: 0px;
+    padding: 0px;
+}
+
+a:link {text-decoration:none;}
+a:visited {text-decoration:none;}
+a:hover {text-decoration:underline;}
+a:active {text-decoration:underline;}
+
+.container {
+    width: 980px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 0px;
+    padding: 0px;
+}
+
+#header {
+    width: 980px;
+}
+
+#logo {
+    width: 80px;
+    float: left;
+}
+
+#nav {
+    width: 680px;
+    height: 20px;
+    float: left;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 0px;
+    padding: 10px;
+    background-color: red;
+}
+
+#nav ul {
+    margin: 0px;
+    padding: 0px;
+}
+
+#nav li {
+    display: inline;
+    list-style-type: none;
+    padding-right: 20px;
+}
+
+#controls {
+    width: 200px;
+    float: left;
+    text-align: right;
+}
+
+
+#body {
+    clear: both;
+}
+
+#idea-table-header {
+    width: 800px;
+    height: 30px;
+}
+
+#idea-table-header li {
+    display: inline;
+    list-style-type: none;
+    padding-right: 20px;
+}
+
+
+#footer {
+    width: 960px;
+    height: 50px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    padding: 10px;
+    clear: both;
+    background-color: blue;
+}
+
+#copyright {
+    width: 320px;
+    float: left;
+    text-align: left;
+}
+
+#logo-footer {
+    width: 320px;
+    float: left;
+    text-align: center;
+}
+
+#menu-footer {
+    width: 320px;
+    float: left;
+    text-align: right;
+}
+
+.idea {
+    width: 800px;
+    background-color: green;
+}
+.idea-title {
+    height: 30px;
+    margin: 0px;
+    background-color: red;
+}
+.idea-content {
+    height: 60px;
+    margin: 0px;
+    padding: 10px;
+    background-color: blue;
+}
+
+.left {
+    width: 800px;
+    float: left;
+}
+
+.right {
+    width: 80px;
+    float: left;
+}

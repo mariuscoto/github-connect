@@ -1,1 +1,14 @@
-a(href="/auth/github") Login with github
+extends layout
+
+block content
+  h1= title
+  - if (!everyauth.loggedIn)
+    p
+      a(href="/auth/github") Login with github
+    p
+      a(href="http://www.github.com") Create new account
+  - else
+    h1 Esti online
+    h3
+      a(href='/logout') Logout
+      h3 LOG IN
