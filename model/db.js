@@ -6,6 +6,7 @@ var Users = new Schema({
     user_name:	    String,
     user_fullname:  String,
     user_email:	    String,
+    favorites:	    [String],
     user_first:	    Date
 });
 
@@ -29,4 +30,4 @@ mongoose.model( 'Users', Users );
 mongoose.model( 'Ideas', Ideas );
 mongoose.model( 'IdeaComments', IdeaComments );
  
-mongoose.connect( 'mongodb://localhost/express-u' );
+mongoose.connect( 'mongodb://localhost/expresaa' );

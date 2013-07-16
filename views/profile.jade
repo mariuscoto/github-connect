@@ -1,12 +1,15 @@
 extends layout
 
 block content
-  h1= title
-  - if (!everyauth.loggedIn)
-    a(href="/auth/github") Login with github
-  - else
-    h1 Esti online
-    h3
+  #menu
+
+  #content
+    h1= title
+    - if (!everyauth.loggedIn)
+      a(href="/auth/github") Login with github
+
+    - else
+      h1 Esti online
       a(href='/logout') Logout
       h3= user.user_id
       h3= user.user_name

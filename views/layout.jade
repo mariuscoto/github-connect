@@ -11,19 +11,22 @@ html
         #nav
           ul
             li
+              a(href="/projects") Projects
+            li
               a(href="/ideas") Ideas
-            li
-              a(href="/profile") Profile
-            li
-              a(href="/contact") Contact
         #controls
           - if (!everyauth.loggedIn)          
             a(href="/login") Login
           - else
+            a(href="/profile")= global.username
             a(href="/logout") Logout
+
+      .spacer
 
       #body
         block content
+
+      .spacer
 
       #footer
         #copyright
@@ -31,4 +34,8 @@ html
         #logo-footer
           p smalllogo goes here
         #menu-footer
-          p secondary menu here
+          ul
+            li 
+              a(href="/about") About
+            li 
+              a(href="/contact") Contact

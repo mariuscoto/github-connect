@@ -11,9 +11,10 @@ var app = module.exports = express();
 
 var usersById = {};
 var nextUserId = 0;
-var repos, id;
+var repos, id, user;
 global.repos = [];
 global.id = 0;
+global.username = "";
 
 function addUser (source, sourceUser) {
     var user;
@@ -48,8 +49,9 @@ everyauth.github
 	// Print github login response.
 	//console.log(usersByGhId[ghUser.id]);
 
-	// Set global ID
+	// Set global vars
 	global.id = usersByGhId[ghUser.id].github.id;
+	global.username = usersByGhId[ghUser.id].github.login;
 
 	// Check if user already in db
 	// else request info and add him.
@@ -150,9 +152,11 @@ app.get('/', routes.index);
 app.get('/login', routes.login);
 app.get('/profile', ensureAuth, routes.profile);
 app.get('/ideas', routes.ideas);
+app.get('/ideas/favorites', ensureAuth, routes.ideas_favorite);
+app.get('/ideas/fav', ensureAuth, routes.idea_fav);
 app.get('/ideas/user', ensureAuth, routes.ideas_user);
 app.post('/ideas', routes.ideas_post);
-app.post('/idea_comm', routes.idea_comments);
+app.post('/idea_commented', routes.idea_comments);
 
 app.use(function(req, res) {
     res.status(404).end('error');

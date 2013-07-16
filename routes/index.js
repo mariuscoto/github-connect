@@ -37,6 +37,18 @@ exports.ideas = function(req, res) {
 		});
 	    });
 
+    } else if (req.query.sort == "most_commented") {
+        Ideas
+	    .find()
+	    .sort('-comments_num')
+	    .exec(function(err, ideas) {
+		res.render('ideas', {
+		    title: "Ideas",
+		    tab: "",
+		    ideas: ideas
+		});
+	    });
+
     } else if (req.query.id != null) {
 	Ideas
 	    .findOne({ '_id': req.query.id })
@@ -82,6 +94,19 @@ exports.ideas_user = function(req, res) {
 		    ideas: ideas
 		});
 	    });
+
+    } else if (req.query.sort == "most_commented") {
+        Ideas
+	    .find({ 'uid': global.id })
+	    .sort('-comments_num')
+	    .exec(function(err, ideas) {
+		res.render('ideas', {
+		    title: "Ideas",
+		    tab: "/user",
+		    ideas: ideas
+		});
+	    });
+
     } else {
 	Ideas
 	    .find({ 'uid': global.id })
@@ -97,6 +122,60 @@ exports.ideas_user = function(req, res) {
 		}
 	    });
     }
+};
+
+exports.ideas_favorite = function(req, res) {
+    Users.findOne ({ 'user_id': global.id }, function (err, user) {
+	if (err) return handleError(err);
+
+    if (req.query.sort == "most_recent") {
+	Ideas
+	    .find({ _id: { $in: user.favorites }})
+	    .sort('-date_post')
+	    .exec(function(err, ideas) {
+		if (ideas == null) {
+		    res.redirect('/ideas');
+		} else {
+		    res.render('ideas', {
+			title: "fav ideas",
+			tab: "/favorites",
+			ideas: ideas
+		    });
+		}
+	    });
+
+    } else if (req.query.sort == "most_commented") {
+	Ideas
+	    .find({ _id: { $in: user.favorites }})
+	    .sort('-comments_num')
+	    .exec(function(err, ideas) {
+		if (ideas == null) {
+		    res.redirect('/ideas');
+		} else {
+		    res.render('ideas', {
+			title: "fav ideas",
+			tab: "/favorites",
+			ideas: ideas
+		    });
+		}
+	    });
+
+    } else {
+	Ideas
+	    .find({ _id: { $in: user.favorites }})
+	    .exec(function(err, ideas) {
+		if (ideas == null) {
+		    res.redirect('/ideas');
+		} else {
+		    res.render('ideas', {
+			title: "fav ideas",
+			tab: "/favorites",
+			ideas: ideas
+		    });
+		}
+	    });
+    }
+    });
 };
 
 exports.ideas_post = function(req, res) {
@@ -131,9 +210,24 @@ exports.idea_comments = function(req, res) {
     };
 };
 
+exports.idea_fav = function(req, res) {
+    console.log(req.query.id);
+
+    var conditions = {user_id: global.id};
+    var update = {$push: {favorites: req.query.id}};
+    Users.update(conditions, update, callback);
+
+    function callback (err, num) {
+	console.log(num);
+	console.log(err);
+	res.redirect('/ideas?id=' + req.query.id);
+    }
+};
+
 exports.profile = function(req, res) {
     Users.findOne ({ 'user_id': global.id }, function (err, user) {
 	if (err) return handleError(err);
+	console.log(user);
 	res.render('profile', {
 	    title: "User profile",
 	    user: user

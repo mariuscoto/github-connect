@@ -1,8 +1,8 @@
 body {
     margin: 0px;
     padding: 0px;
-    background-image: url("../images/bg-body.png");
-    background-repeat: repeat;
+    background-image: url('/images/bg-body.png');
+    background-repeat: repeat-x;
 }
 
 a:link {text-decoration:none;}
@@ -35,7 +35,6 @@ a:active {text-decoration:underline;}
     margin-right: auto;
     margin-top: 0px;
     padding: 10px;
-    background-color: red;
 }
 
 #nav ul {
@@ -58,6 +57,32 @@ a:active {text-decoration:underline;}
 
 #body {
     clear: both;
+    background-color: green;
+}
+
+#menu {
+    width: 980px;
+    background-color: blue;
+}
+
+#idea-new {
+    width: 900px;
+    height: 200px;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: red;
+}
+
+#idea-desc {
+    width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#content {
+    width: 900px;
+    padding: 40px;
+    background-color: yellow;
 }
 
 #idea-table-header {
@@ -71,35 +96,55 @@ a:active {text-decoration:underline;}
     padding-right: 20px;
 }
 
+.idea-title-text {
+    width: 760px;
+    height: 30px;
+    float: left;
+}
+
+.idea-title-fav {
+    width: 40px;
+    height: 30px;
+    float: left;
+}
 
 #footer {
     width: 960px;
-    height: 50px;
+    height: 100px;
     margin-left: auto;
     margin-right: auto;
     margin-top: 0px;
     margin-bottom: 0px;
     padding: 10px;
     clear: both;
-    background-color: blue;
+    border-top:2px solid #e7e7e7;
 }
 
 #copyright {
-    width: 320px;
+    width: 440px;
+    height: 100px;
     float: left;
     text-align: left;
 }
 
 #logo-footer {
-    width: 320px;
+    width: 80px;
+    height: 100px;
     float: left;
     text-align: center;
 }
 
 #menu-footer {
-    width: 320px;
+    width: 440px;
+    height: 100px;
     float: left;
     text-align: right;
+}
+
+#menu-footer li {
+    display: inline;
+    list-style-type: none;
+    padding-right: 10px;
 }
 
 .idea {
@@ -107,15 +152,23 @@ a:active {text-decoration:underline;}
     background-color: green;
 }
 .idea-title {
+    width: 800px;
     height: 30px;
     margin: 0px;
     background-color: red;
 }
 .idea-content {
+    width: 780px;
     height: 60px;
     margin: 0px;
     padding: 10px;
     background-color: blue;
+}
+
+.comment {
+    width: 800px;
+    height: 50px;
+    background-color: red;
 }
 
 .left {
@@ -123,7 +176,35 @@ a:active {text-decoration:underline;}
     float: left;
 }
 
+.left-half {
+    width: 300px;
+    float: left;
+}
+
 .right {
     width: 80px;
     float: left;
+}
+
+.right-half {
+    width: 300px;
+    float: left;
+}
+
+.spacer {
+    height: 20px;
+    clear: both;
+}
+
+.announcement {
+    width: 900px;
+    height: 40px;
+    padding: 40px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.card {
+    width: 980px;
+    height: 300px;
 }

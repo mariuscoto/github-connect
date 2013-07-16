@@ -1,80 +1,92 @@
 extends layout
 
 block content
-  h1= title
+  - if(!everyauth.loggedIn)
+    .announcement
+      p You need to log in to comment or post your own ideas.
 
-  - if (everyauth.loggedIn)
-
+  #menu
     - if (!idea)
-      h1 Add new idea
+      - if (everyauth.loggedIn)
+        #idea-new
+          h1 Add new idea
 
-      form(method='post', action='/ideas')
-        label Title:
-          input(name='title', value='aaa')
-        label Description:
-          textarea(name='description')
-        label Plan:
-          textarea(name='plan')
-        label Language:
-          textarea(name='lang')
+          form(method='post', action='/ideas')
+            .left-half
+              label Title:
+                input(name='title', value='aaa')
+              label Description:
+                textarea(name='description')
 
-        input(type='submit', value='Save')
+            .right-half
+              label Plan:
+                textarea(name='plan')
+              label Language:
+                textarea(name='lang')
 
-  - else
-    h1 You must be logged in to post you ideas.
+              input(type='submit', value='Save')
 
-  - if (ideas)
-    h1 Ideas list
-
-    #idea-table-header
-      ul
-        li
-          a(href='/ideas' + tab + '?sort=most_recent') Most recent
-        li
-          a(href='/ideas' + tab + '?sort=most_viewed') Most visited
-        li
-          a(href='/ideas' + tab + '?sort=most_comm') Most commented
-
-    .left
-      - each idea in ideas
-        .idea
-          .idea-title
-            a(href='/ideas?id=' + idea._id)= idea.title
-          .idea-content
-            p= idea.title + " / " + idea.plan + " / " + idea.description + "/" + idea.date_post
-
-    .right
-      ul
-        li
-          a(href='/ideas') All
-        li
-          a(href='/ideas/favorites') Favorites
-        li
-          a(href='/ideas/user') Mine
-
-
-  - else if (idea)
-    h1= idea.title
-    h1= idea.description
-    h1= idea.comments_num
-
-    h1 ############################
-
-    - if (everyauth.loggedIn)
-      form(method='post', action='/idea_comm')
-        input(name='who', value=global.id, hidden)
-        input(name='where', value=idea._id, hidden)
-        label Content:
-          textarea(name='content')
-        input(type='submit', value='Comment')
     - else
-      h1 Login to post comments.
+      #idea-desc
+        h1= idea.title
+        h1= idea.description
+        h1= idea.comments_num
+        a(href="/ideas/fav?id=" + idea._id) Fav
+        a(href="/teams?id=" + idea._id) Join team
+    
+  #content 
+    - if (ideas)
+      h1 Ideas list
+      #idea-table-header
+        ul
+          li
+            a(href='/ideas' + tab + '?sort=most_recent') Most recent
+          li
+            a(href='/ideas' + tab + '?sort=most_viewed') Most visited
+          li
+            a(href='/ideas' + tab + '?sort=most_commented') Most commented
 
-    h1 ############################
-    - if (comments)
-      - if (comments.length != 0)
-        - each c in comments
-          p= c.uid + "  " + c.content
+      .left
+        - each idea in ideas
+          .idea
+            .idea-title
+              .idea-title-text
+                a(href='/ideas?id=' + idea._id)= idea.title
+              .idea-title-fac
+                a(href='/fav') fav
+            .idea-content
+              p= idea.title + " / " + idea.plan + " / " + idea.description + "/" + idea.date_post
 
-      - else
-        h1 no comments
+      .right
+        ul
+          li
+            a(href='/ideas') All
+          li
+            a(href='/ideas/favorites') Favorites
+          li
+            a(href='/ideas/user') Mine
+
+
+    - else if (idea)
+
+      .left
+        - if (comments)
+          - if (comments.length != 0)
+            - each c in comments
+              .comment
+                p= c.uid + "  " + c.content
+
+            .comment
+              - if (everyauth.loggedIn)
+                form(method='post', action='/idea_comm')
+                  input(name='who', value=global.id, hidden)
+                  input(name='where', value=idea._id, hidden)
+                  textarea(name='content')
+                  input(type='submit', value='Comment')
+              - else
+                h1 Login to post comments.
+    
+          - else
+            h1 no comments
+
+      .right
