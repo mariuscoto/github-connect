@@ -151,12 +151,17 @@ var routes = require('./routes');
 app.get('/', routes.index);
 app.get('/login', routes.login);
 app.get('/profile', ensureAuth, routes.profile);
+
 app.get('/ideas', routes.ideas);
-app.get('/ideas/favorites', ensureAuth, routes.ideas_favorite);
-app.get('/ideas/fav', ensureAuth, routes.idea_fav);
+app.get('/ideas/favorites', ensureAuth, routes.ideas_favorites);
 app.get('/ideas/user', ensureAuth, routes.ideas_user);
-app.post('/ideas', routes.ideas_post);
-app.post('/idea_commented', routes.idea_comments);
+
+app.get('/idea/fav', ensureAuth, routes.idea_add_fav);
+
+app.get('/idea', routes.idea);
+app.get('/idea/team', routes.idea_team);
+app.get('/idea/plan', routes.idea_plan);
+
 
 app.use(function(req, res) {
     res.status(404).end('error');

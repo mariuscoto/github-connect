@@ -23,7 +23,6 @@ a:active {text-decoration:underline;}
 }
 
 #logo {
-    width: 80px;
     float: left;
 }
 
@@ -48,16 +47,64 @@ a:active {text-decoration:underline;}
     padding-right: 20px;
 }
 
+#nav a:link {
+    font-size: 15px;
+    font-weight: bold;
+    color: rgb(51, 51, 51);
+    font-family: Helvetica,arial,freesans;
+    text-decoration: none;
+}
+
+#nav a:active {
+    font-size: 15px;
+    font-weight: bold;
+    color: rgb(51, 51, 51);
+    font-family: Helvetica,arial,freesans;
+    text-decoration: none;
+}
+
+#nav a:visited {
+    font-size: 15px;
+    font-weight: bold;
+    color: rgb(51, 51, 51);
+    font-family: Helvetica,arial,freesans;
+    text-decoration: none;
+}
+
+#nav a:hover {
+    font-size: 15px;
+    font-weight: bold;
+    color: rgb(65, 131, 196);
+    font-family: Helvetica,arial,freesans;
+    text-decoration: none;
+}
+
 #controls {
     width: 200px;
+    padding-top: 10px;
     float: left;
     text-align: right;
+}
+
+#controls a{
+    font-size: 15px;
+    font-weight: bold;
+    color: rgb(51, 51, 51);
+    font-family: Helvetica,arial,freesans;
+    text-decoration: none;
+}
+
+#controls a:hover{
+    font-size: 15px;
+    font-weight: bold;
+    color: rgb(65, 131, 196);
+    font-family: Helvetica,arial,freesans;
+    text-decoration: none;
 }
 
 
 #body {
     clear: both;
-    background-color: green;
 }
 
 #menu {
@@ -82,12 +129,12 @@ a:active {text-decoration:underline;}
 #content {
     width: 900px;
     padding: 40px;
-    background-color: yellow;
 }
 
 #idea-table-header {
-    width: 800px;
+    width: 760px;
     height: 30px;
+    background-color: #E6F1F6;
 }
 
 #idea-table-header li {
@@ -97,7 +144,7 @@ a:active {text-decoration:underline;}
 }
 
 .idea-title-text {
-    width: 760px;
+    width: 720px;
     height: 30px;
     float: left;
 }
@@ -148,17 +195,17 @@ a:active {text-decoration:underline;}
 }
 
 .idea {
-    width: 800px;
+    width: 760px;
     background-color: green;
 }
 .idea-title {
-    width: 800px;
+    width: 760px;
     height: 30px;
     margin: 0px;
     background-color: red;
 }
 .idea-content {
-    width: 780px;
+    width: 740px;
     height: 60px;
     margin: 0px;
     padding: 10px;
@@ -166,13 +213,13 @@ a:active {text-decoration:underline;}
 }
 
 .comment {
-    width: 800px;
+    width: 760px;
     height: 50px;
     background-color: red;
 }
 
 .left {
-    width: 800px;
+    width: 760px;
     float: left;
 }
 
@@ -182,7 +229,7 @@ a:active {text-decoration:underline;}
 }
 
 .right {
-    width: 80px;
+    width: 140px;
     float: left;
 }
 
@@ -207,4 +254,48 @@ a:active {text-decoration:underline;}
 .card {
     width: 980px;
     height: 300px;
+}
+
+.submenu {
+    margin-left: 20px;
+}
+
+.submenu a {
+    font-size: 15px;
+    color: rgb(51, 51, 51);
+    font-family: Helvetica,arial,freesans;
+    text-decoration: none;
+}
+
+.submenu a:hover {
+    font-size: 15px;
+    color: rgb(65, 131, 196);
+    font-family: Helvetica,arial,freesans;
+    text-decoration: none;
+}
+
+.submenu-item {
+    width: 100px;
+    height: 25px;
+    padding-left: 20px;
+    padding-top: 15px;
+    border-left: thin solid #000000;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.submenu-item-selected {
+    width: 100px;
+    height: 25px;
+    padding-left: 20px;
+    padding-top: 15px;
+    border-right: 2px solid red;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.submenu-item:hover {
+    width: 100px;
+    height: 25px;
+    padding-left: 20px;
+    padding-top: 15px;
+    box-shadow: 2px 0px 0px rgb(204, 204, 204) inset;
 }

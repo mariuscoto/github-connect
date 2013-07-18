@@ -49,27 +49,6 @@ exports.ideas = function(req, res) {
 		});
 	    });
 
-    } else if (req.query.id != null) {
-	Ideas
-	    .findOne({ '_id': req.query.id })
-	    .exec(function(err, idea) {
-		if (idea == null) {
-		    res.redirect('/ideas');
-		} else {
-
-		    IdeaComments
-			.find({ 'idea': req.query.id })
-			.exec(function(err, comments) {
-			    res.render('ideas', {
-				title: idea.title,
-				idea: idea,
-				tab: "",
-				comments: comments
-			    });
-			});
-		}
-	    });
-
     } else {
 
 	Ideas.find (function (err, ideas, count) {
@@ -124,7 +103,7 @@ exports.ideas_user = function(req, res) {
     }
 };
 
-exports.ideas_favorite = function(req, res) {
+exports.ideas_favorites = function(req, res) {
     Users.findOne ({ 'user_id': global.id }, function (err, user) {
 	if (err) return handleError(err);
 
@@ -210,7 +189,7 @@ exports.idea_comments = function(req, res) {
     };
 };
 
-exports.idea_fav = function(req, res) {
+exports.idea_add_fav = function(req, res) {
     console.log(req.query.id);
 
     var conditions = {user_id: global.id};
@@ -221,6 +200,85 @@ exports.idea_fav = function(req, res) {
 	console.log(num);
 	console.log(err);
 	res.redirect('/ideas?id=' + req.query.id);
+    }
+};
+
+exports.idea = function(req, res) {
+    if (req.query.id != null) {
+	Ideas
+	    .findOne({ '_id': req.query.id })
+	    .exec(function(err, idea) {
+		if (idea == null) {
+		    res.redirect('/ideas');
+		} else {
+
+		    IdeaComments
+			.find({ 'idea': req.query.id })
+			.exec(function(err, comments) {
+			    res.render('ideas', {
+				title: idea.title,
+				idea: idea,
+				tab: "",
+				comments: comments
+			    });
+			});
+		}
+	    });
+
+    } else {
+	res.redirect('/ideas');
+    }
+};
+
+exports.idea_team = function(req, res) {
+    if (req.query.id != null) {
+	Ideas
+	    .findOne({ '_id': req.query.id })
+	    .exec(function(err, idea) {
+		if (idea == null) {
+		    res.redirect('/ideas');
+		} else {
+
+		    IdeaComments
+			.find({ 'idea': req.query.id })
+			.exec(function(err, comments) {
+			    res.render('ideas', {
+				title: idea.title,
+				idea: idea,
+				tab: "/team",
+			    });
+			});
+		}
+	    });
+
+    } else {
+	res.redirect('/ideas');
+    }
+};
+
+exports.idea_plan = function(req, res) {
+    if (req.query.id != null) {
+	Ideas
+	    .findOne({ '_id': req.query.id })
+	    .exec(function(err, idea) {
+		if (idea == null) {
+		    res.redirect('/ideas');
+		} else {
+
+		    IdeaComments
+			.find({ 'idea': req.query.id })
+			.exec(function(err, comments) {
+			    res.render('ideas', {
+				title: idea.title,
+				idea: idea,
+				tab: "/plan",
+			    });
+			});
+		}
+	    });
+
+    } else {
+	res.redirect('/ideas');
     }
 };
 
