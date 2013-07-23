@@ -5,6 +5,7 @@ var Ideas = mongoose.model('Ideas');
 var IdeaComments = mongoose.model('IdeaComments');
 var app = express();
 
+
 exports.index = function(req, res) {
     Users.find (function (err, users, count) {
 	res.render('index', { 
@@ -280,15 +281,4 @@ exports.idea_plan = function(req, res) {
     } else {
 	res.redirect('/ideas');
     }
-};
-
-exports.profile = function(req, res) {
-    Users.findOne ({ 'user_id': global.id }, function (err, user) {
-	if (err) return handleError(err);
-	console.log(user);
-	res.render('profile', {
-	    title: "User profile",
-	    user: user
-	});
-    });
 };

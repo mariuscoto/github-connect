@@ -86,7 +86,7 @@ a:active {text-decoration:underline;}
     text-align: right;
 }
 
-#controls a{
+#controls a {
     font-size: 15px;
     font-weight: bold;
     color: rgb(51, 51, 51);
@@ -94,7 +94,7 @@ a:active {text-decoration:underline;}
     text-decoration: none;
 }
 
-#controls a:hover{
+#controls a:hover {
     font-size: 15px;
     font-weight: bold;
     color: rgb(65, 131, 196);
@@ -109,15 +109,36 @@ a:active {text-decoration:underline;}
 
 #menu {
     width: 980px;
-    background-color: blue;
 }
 
 #idea-new {
-    width: 900px;
-    height: 200px;
-    margin-left: auto;
-    margin-right: auto;
-    background-color: red;
+    width: 920px;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    padding-left: 30px;
+    padding-right: 30px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 7px 5px rgba(0, 0, 0, 0.1);
+}
+
+.left-mini {
+    width: 425px;
+    padding: 10px;
+    margin-right: 28px;
+    float: left;
+}
+
+.right-mini {
+    width: 425px;
+    padding: 10px;
+    float: left;
+    border-left: 2px dashed rgba(0, 0, 0, 0.1);
+}
+
+.center-mini {
+    width: 820px;
+    padding: 10px;
+    clear: both;
 }
 
 #idea-desc {
@@ -131,10 +152,21 @@ a:active {text-decoration:underline;}
     padding: 40px;
 }
 
+.ideas-bubble {
+    background-color: rgb(248, 248, 248);
+    border-color: rgb(216, 216, 216);
+    border-width: medium 1px 1px;
+    border-style: none solid solid;
+    border-radius: 0px 0px 3px 3px;
+}
+
 #idea-table-header {
-    width: 760px;
+    width: 758px;
     height: 30px;
     background-color: #E6F1F6;
+    border-color: rgb(216, 216, 216);
+    border-width: medium 1px 1px;
+    border-style: none solid solid;
 }
 
 #idea-table-header li {
@@ -144,15 +176,30 @@ a:active {text-decoration:underline;}
 }
 
 .idea-title-text {
-    width: 720px;
-    height: 30px;
+    width: 730px;
+    height: 20px;
     float: left;
 }
 
 .idea-title-fav {
-    width: 40px;
-    height: 30px;
+    width: 20px;
+    height: 20px;
     float: left;
+    background-repeat: no-repeat;
+    background-image: url('/images/fav.png');
+}
+.idea-title-fav-selected {
+    width: 20px;
+    height: 20px;
+    float: left;
+}
+.idea-title-fav:hover {
+    width: 20px;
+    height: 20px;
+    float: left;
+    background-repeat: no-repeat;
+    background-color: red;
+    background-image: url('/images/fav.png');
 }
 
 #footer {
@@ -196,20 +243,43 @@ a:active {text-decoration:underline;}
 
 .idea {
     width: 760px;
-    background-color: green;
+    border-color: rgb(216, 216, 216);
+    border-top-width: 3px;
+    border-top-style: double;
 }
 .idea-title {
-    width: 760px;
-    height: 30px;
+    width: 750px;
+    height: 25px;
     margin: 0px;
-    background-color: red;
+    padding-top: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
+    border-color: rgb(216, 216, 216);
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+}
+.idea-title a:link {
+    font-size: 15px;
+    font-weight: bold;
+    color: rgb(51, 51, 51);
+    font-family: Helvetica,arial,freesans;
+    text-decoration: none;
+}
+.idea-title a:hover {
+    font-size: 15px;
+    font-weight: bold;
+    color: rgb(65, 131, 196);
+    font-family: Helvetica,arial,freesans;
+    text-decoration: none;
 }
 .idea-content {
     width: 740px;
     height: 60px;
     margin: 0px;
     padding: 10px;
-    background-color: blue;
+    color: rgb(51, 51, 51);
+    font-size: 12px;
+    font-family: Helvetica,arial,freesans;
 }
 
 .comment {
@@ -244,16 +314,42 @@ a:active {text-decoration:underline;}
 }
 
 .announcement {
-    width: 900px;
-    height: 40px;
-    padding: 40px;
+    width: 980px;
+    height: 95px;
+    padding-top: 5px;
+    background-color: rgb(30, 104, 35);
+    border-radius: 10px;
+}
+
+.announcement-inner {
+    width: 964px;
+    height: 65px;
+    padding-top: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    color: #FFFFFF;
+    font-size: 15px;
     text-align: center;
+    font-family: Helvetica,arial,freesans;
+    text-decoration: none;
     vertical-align: middle;
+    border: 2px dashed #fff;
+    border-radius: 10px;
 }
 
 .card {
-    width: 980px;
-    height: 300px;
+    width: 920px;
+    height: 190px;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    padding-left: 30px;
+    padding-right: 30px;
+    color: #000000;
+    font-size: 15px;
+    text-align: center;
+    font-family: Helvetica,arial,freesans;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 7px 5px rgba(0, 0, 0, 0.1);
 }
 
 .submenu {

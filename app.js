@@ -150,7 +150,9 @@ var routes = require('./routes');
 
 app.get('/', routes.index);
 app.get('/login', routes.login);
-app.get('/profile', ensureAuth, routes.profile);
+
+var user = require('./routes/user');
+app.get('/profile', ensureAuth, user.profile);
 
 app.get('/ideas', routes.ideas);
 app.get('/ideas/favorites', ensureAuth, routes.ideas_favorites);

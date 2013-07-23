@@ -3,28 +3,42 @@ extends layout
 block content
   - if(!everyauth.loggedIn)
     .announcement
-      p You need to log in to comment or post your own ideas.
+      .announcement-inner
+        p You need to 
+          a(href='/login') login
+          |  to comment or post your own ideas.
 
   #menu
     - if (!idea)
       - if (everyauth.loggedIn)
         #idea-new
-          h1 Add new idea
+          .left-mini
+            h1 Add new idea
 
-          form(method='post', action='/ideas')
-            .left-half
-              label Title:
-                input(name='title', value='aaa')
-              label Description:
-                textarea(name='description')
+            form(method='post', action='/ideas')
+              label Title
+                br
+                input(name='title', size="40")
+              label Project Size
+                br
+                input(name='title', size="40")
+              label Preffered language
+                br
+                input(name='title', size="40")
 
-            .right-half
-              label Plan:
-                textarea(name='plan')
-              label Language:
-                textarea(name='lang')
+          .right-mini
+            label Plan
+              br
+              textarea(name='plan')
+            label Language
+              br
+              textarea(name='lang')
 
-              input(type='submit', value='Save')
+          .center-mini
+            label Description
+              br
+              textarea.span11(name='description', rows="4")
+            input.btn.btn-success(type='submit', value='Save')
 
     - else
       #idea-desc
@@ -47,15 +61,16 @@ block content
             a(href='/ideas' + tab + '?sort=most_commented') Most commented
 
       .left
-        - each idea in ideas
-          .idea
-            .idea-title
-              .idea-title-text
-                a(href='/idea?id=' + idea._id)= idea.title
-              .idea-title-fac
-                a(href='/idea/fav?id=' + idea._id) fav
-            .idea-content
-              p= idea.title + " / " + idea.plan + " / " + idea.description + "/" + idea.date_post
+        .ideas-bubble
+          - each idea in ideas
+            .idea
+              .idea-title
+                .idea-title-text
+                  a(href='/idea?id=' + idea._id)= idea.title
+                a(href='/idea/fav?id=' + idea._id)
+                  .idea-title-fav
+              .idea-content
+                p= idea.title + " / " + idea.plan + " / " + idea.description + "/" + idea.date_post
 
       .right
         .submenu
@@ -123,8 +138,9 @@ block content
             .submenu-item-selected Plan
           - else
             .submenu-item Plan
-        a(href='/idea/settings?id=' + idea._id)
-          - if (tab == "/settings")
-            .submenu-item-selected Settings
-          - else
-            .submenu-item Settings
+        - if (everyauth.loggedIn)
+          a(href='/idea/settings?id=' + idea._id)
+            - if (tab == "/settings")
+              .submenu-item-selected Settings
+            - else
+              .submenu-item Settings
