@@ -30,5 +30,5 @@ mongoose.model( 'Users', Users );
 mongoose.model( 'Ideas', Ideas );
 mongoose.model( 'IdeaComments', IdeaComments );
  
-mongoose.connect('mongodb://marius.coto@gmail.com:16000027@dharma.mongohq.com:10006/app17218548' );
+mongoose.connect('mongodb://marius.coto@gmail.com:16000027@dharma.mongohq.com:10006/app17218548/github' );
 //mongoose.connect( 'mongodb://localhost/expresaa' );
