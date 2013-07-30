@@ -6,7 +6,7 @@
     "everyauth": "0.4.x",
     "connect": "2.7.x",
     "jade": "0.31.x",
-    "mongoose": "3.2.x"
+    "mongoose": "3.2.0"
   },
   "engines": {
     "node": "0.8.x",
