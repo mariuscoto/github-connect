@@ -11,40 +11,40 @@ block content
   #menu
     - if (!idea)
       - if (everyauth.loggedIn)
-        #idea-new
-          .left-mini
-            h1 Add new idea
+        form(method='post', action='/ideas')
+          #idea-new
+            .left-mini
+              h1 Add new idea
 
-            form(method='post', action='/ideas')
-              label Title
-                br
-                input.span5(name='title', type='text')
-              label Project Size
-                br
-                select.selectpicker.span5(name='size', type='text')
-                  option Small
-                  option Medium
-                  option Large
-              label Preffered language
-                br
-                select.selectpicker.span5(name='size', type='text')
-                  option C/C++
-                  option Java
-                  option Ruby
+                label Title
+                  br
+                  input.span5(name='title', type='text')
+                label Project Size
+                  br
+                  select.selectpicker.span5(name='size', type='text')
+                    option Small
+                    option Medium
+                    option Large
+                label Preffered language
+                  br
+                  select.selectpicker.span5(name='size', type='text')
+                    option C/C++
+                    option Java
+                    option Ruby
 
-          .right-mini
-            label ETA
-              br
-              input.datepicker(name='eta', type='text')
-            label Plan
-              br
-              textarea(name='plan')
+            .right-mini
+              label ETA
+                br
+                input.datepicker(name='eta', type='text')
+              label Plan
+                br
+                textarea(name='plan')
 
-          .center-mini
-            label Description
-              br
-              textarea.span11(name='description', rows="4")
-            input.btn.btn-success(type='submit', value='Save')
+            .center-mini
+              label Description
+                br
+                textarea.span11(name='description', rows="4")
+              input.btn.btn-success(type='submit', value='Save')
 
     - else
       #idea-desc

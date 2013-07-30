@@ -164,6 +164,8 @@ app.get('/idea', routes.idea);
 app.get('/idea/team', routes.idea_team);
 app.get('/idea/plan', routes.idea_plan);
 
+app.post('/ideas', routes.ideas_post);
+app.post('/idea_commented', routes.idea_comments);
 
 app.use(function(req, res) {
     res.status(404).end('error');
