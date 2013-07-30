@@ -129,8 +129,9 @@ a:active {text-decoration:underline;}
 }
 
 .right-mini {
-    width: 425px;
+    width: 385px;
     padding: 10px;
+    padding-left: 40px;
     float: left;
     border-left: 2px dashed rgba(0, 0, 0, 0.1);
 }

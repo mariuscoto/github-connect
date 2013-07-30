@@ -18,21 +18,27 @@ block content
             form(method='post', action='/ideas')
               label Title
                 br
-                input(name='title', size="40")
+                input.span5(name='title', type='text')
               label Project Size
                 br
-                input(name='title', size="40")
+                select.selectpicker.span5(name='size', type='text')
+                  option Small
+                  option Medium
+                  option Large
               label Preffered language
                 br
-                input(name='title', size="40")
+                select.selectpicker.span5(name='size', type='text')
+                  option C/C++
+                  option Java
+                  option Ruby
 
           .right-mini
+            label ETA
+              br
+              input.datepicker(name='eta', type='text')
             label Plan
               br
               textarea(name='plan')
-            label Language
-              br
-              textarea(name='lang')
 
           .center-mini
             label Description
