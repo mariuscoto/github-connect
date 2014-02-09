@@ -16,6 +16,7 @@ var Ideas = new Schema({
     description:    String,
     plan:	    String,
     date_post:	    Date,
+    team:	    [Users],
     comments_num:   {type: Number, default: 0}
 });
 
@@ -30,5 +31,6 @@ mongoose.model( 'Users', Users );
 mongoose.model( 'Ideas', Ideas );
 mongoose.model( 'IdeaComments', IdeaComments );
  
-mongoose.connect('mongodb://marius:marius@dharma.mongohq.com:10006/app17218548' );
+mongoose.connect('mongodb://marius:marius@troup.mongohq.com:10059/github-connect' );
+//mongoose.connect('mongodb://marius:marius@dharma.mongohq.com:10006/app17218548' );
 //mongoose.connect( 'mongodb://localhost/expresaa' );

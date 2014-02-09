@@ -52,13 +52,25 @@ exports.ideas = function(req, res) {
 
     } else {
 
-	Ideas.find (function (err, ideas, count) {
-	res.render('ideas', {
-	    title: "Ideas",
-	    tab: "",
-	    ideas: ideas
+	Users.findOne ({ 'user_id': global.id }, function (err, user) {
+	    if (err) return handleError(err);
+
+	    Ideas.find (function (err, ideas, count) {
+	    for (var i=0; i<ideas.length; i++) {
+		if (user != null && user.favorites.indexOf(ideas[i]._id) > -1)
+		    ideas[i].fav = "yes";
+		ideas[i].date_post_short = (ideas[i].date_post.toString()).substring(0, 15);
+		if (ideas[i].description.length > 350)
+		    ideas[i].description = (ideas[i].description).substring(0, 350) + "[...]";
+	    }
+	    res.render('ideas', {
+		title: "Ideas",
+		tab: "",
+		ideas: ideas
+	    });
+	    });
 	});
-    });
+
     }
 };
 
@@ -171,7 +183,7 @@ exports.ideas_post = function(req, res) {
     });
 };
 
-exports.idea_comments = function(req, res) {
+exports.idea_comment = function(req, res) {
     // increment comments number
     var conditions = { _id: req.body.where };
     var update = {$inc: {comments_num: 1}};
@@ -179,29 +191,50 @@ exports.idea_comments = function(req, res) {
 
     function callback (err, num) {
         new IdeaComments({
-	    uid: req.body.who,
-	    idea: req.body.where,
+	    uid: global.id,
+	    idea: req.query.id,
 	    content: req.body.content,
 	    date: Date.now()
 	}).save(function(err, comm, count) {
 	    console.log("* New comment added.");
-	    res.redirect('/ideas?id=' + req.body.where);
+	    res.redirect('/ideas?id=' + req.query.id);
 	});
     };
 };
 
 exports.idea_add_fav = function(req, res) {
-    console.log(req.query.id);
-
     var conditions = {user_id: global.id};
     var update = {$push: {favorites: req.query.id}};
     Users.update(conditions, update, callback);
 
     function callback (err, num) {
-	console.log(num);
-	console.log(err);
-	res.redirect('/ideas?id=' + req.query.id);
+	res.redirect('/idea?id=' + req.query.id);
     }
+};
+
+exports.idea_remove_fav = function(req, res) {
+    var conditions = {user_id: global.id};
+    var update = {$pop: {favorites: req.query.id}};
+    Users.update(conditions, update, callback);
+
+    function callback (err, num) {
+	res.redirect('/idea?id=' + req.query.id);
+    }
+};
+
+exports.join_team = function(req, res) {
+
+    Users.findOne ({ 'user_id': global.id }, function (err, user) {
+	if (err) return handleError(err);
+
+        var conditions = {_id: req.query.id};
+	var update = {$push: {team: user}};
+	Ideas.update(conditions, update, callback);
+
+	function callback (err, num) {
+	    res.redirect('/idea?id=' + req.query.id);
+	}
+    });
 };
 
 exports.idea = function(req, res) {
@@ -212,7 +245,6 @@ exports.idea = function(req, res) {
 		if (idea == null) {
 		    res.redirect('/ideas');
 		} else {
-
 		    IdeaComments
 			.find({ 'idea': req.query.id })
 			.exec(function(err, comments) {
@@ -239,7 +271,6 @@ exports.idea_team = function(req, res) {
 		if (idea == null) {
 		    res.redirect('/ideas');
 		} else {
-
 		    IdeaComments
 			.find({ 'idea': req.query.id })
 			.exec(function(err, comments) {

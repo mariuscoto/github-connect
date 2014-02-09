@@ -52,7 +52,11 @@ block content
         h1= idea.description
         h1= idea.comments_num
         a(href="/idea/fav?id=" + idea._id) Fav
-        a(href="/teams?id=" + idea._id) Join team
+
+        - if (idea.uid == global.id)
+          a(href="/edit?id=" + idea._id) Edit
+        - else
+          a(href="/teams?id=" + idea._id) Join team
     
   #content 
     - if (ideas)
@@ -73,10 +77,20 @@ block content
               .idea-title
                 .idea-title-text
                   a(href='/idea?id=' + idea._id)= idea.title
-                a(href='/idea/fav?id=' + idea._id)
-                  .idea-title-fav
+
+                - if (idea.fav != "yes")
+                  a(href='/idea/fav?id=' + idea._id)
+                    .idea-title-fav
+                - else
+                  a(href='/idea/unfav?id=' + idea._id)
+                    .idea-title-fav-selected
+
               .idea-content
-                p= idea.title + " / " + idea.plan + " / " + idea.description + "/" + idea.date_post
+                p= idea.description
+              .idea-footer by 
+                a(href='/profile?id=' + idea.uid)= idea.uid 
+                | , 
+                = idea.date_post_short
 
       .right
         .submenu
@@ -101,7 +115,11 @@ block content
 
       - if (tab == "/team")
         .left
-          p teams here
+          - if (idea.team && idea.team.length != 0)
+            - each t in idea.team
+              p= t.user_name
+          - else
+            p no team yet
 
       - else if (tab == "/plan")
         .left
@@ -109,24 +127,19 @@ block content
 
       - else
         .left
-          - if (comments)
-            - if (comments.length != 0)
-              - each c in comments
-                .comment
-                  p= c.uid + "  " + c.content
-
+          - if (comments && comments.length != 0)
+            - each c in comments
               .comment
-                - if (everyauth.loggedIn)
-                  form(method='post', action='/idea_comm')
-                    input(name='who', value=global.id, hidden)
-                    input(name='where', value=idea._id, hidden)
-                    textarea(name='content')
-                    input(type='submit', value='Comment')
-                - else
-                  h1 Login to post comments.
-    
-            - else
-              h1 no comments
+                p= c.uid + "  " + c.content
+
+          - else
+            h1 no comments
+
+          - if (everyauth.loggedIn)
+            .coment
+              form(method='post', action='/idea_comment?id=' + idea._id)
+                textarea(name='content')
+                input(type='submit', value='Comment')
 
       .right
         a(href='/idea?id=' + idea._id)
