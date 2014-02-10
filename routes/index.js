@@ -1,10 +1,11 @@
+var CHAR_LIMIT = 380;
+
 var express = require('express');
 var mongoose = require('mongoose');
 var Users = mongoose.model('Users');
 var Ideas = mongoose.model('Ideas');
 var IdeaComments = mongoose.model('IdeaComments');
 var app = express();
-
 
 exports.index = function(req, res) {
     Users.find (function (err, users, count) {
@@ -26,52 +27,37 @@ exports.login = function(req, res) {
 };
 
 exports.ideas = function(req, res) {
+    var sort_type = null;
     if (req.query.sort == "most_recent") {
-        Ideas
-	    .find()
-	    .sort('-date_post')
-	    .exec(function(err, ideas) {
-		res.render('ideas', {
-		    title: "Ideas",
-		    tab: "",
-		    ideas: ideas
-		});
-	    });
-
+        sort_type = '-date_post';
     } else if (req.query.sort == "most_commented") {
-        Ideas
-	    .find()
-	    .sort('-comments_num')
-	    .exec(function(err, ideas) {
-		res.render('ideas', {
-		    title: "Ideas",
-		    tab: "",
-		    ideas: ideas
-		});
-	    });
-
-    } else {
+        sort_type = '-date_post';
+    }
 
 	Users.findOne ({ 'user_id': global.id }, function (err, user) {
 	    if (err) return handleError(err);
 
-	    Ideas.find (function (err, ideas, count) {
-	    for (var i=0; i<ideas.length; i++) {
-		if (user != null && user.favorites.indexOf(ideas[i]._id) > -1)
-		    ideas[i].fav = "yes";
-		ideas[i].date_post_short = (ideas[i].date_post.toString()).substring(0, 15);
-		if (ideas[i].description.length > 350)
-		    ideas[i].description = (ideas[i].description).substring(0, 350) + "[...]";
-	    }
-	    res.render('ideas', {
-		title: "Ideas",
-		tab: "",
-		ideas: ideas
-	    });
+	    Ideas.find()
+        .sort(sort_type)
+        .exec(function(err, ideas) {
+            for (var i=0; i<ideas.length; i++) {
+                // mark favorites
+                if (user != null && user.favorites.indexOf(ideas[i]._id) > -1)
+                    ideas[i].fav = "yes";
+                // format date
+                ideas[i].date_post_short = (ideas[i].date_post.toString()).substring(0, 15);
+                // shorten description
+                if (ideas[i].description.length > CHAR_LIMIT)
+                    ideas[i].description = (ideas[i].description).substring(0, CHAR_LIMIT) + " [...]";
+            }
+            res.render('ideas', {
+                title: "Ideas",
+                sort: req.query.sort,
+                tab: "",
+                ideas: ideas
+            });
 	    });
 	});
-
-    }
 };
 
 exports.ideas_user = function(req, res) {
@@ -82,6 +68,7 @@ exports.ideas_user = function(req, res) {
 	    .exec(function(err, ideas) {
 		res.render('ideas', {
 		    title: "Ideas",
+            sort: "most_recent",
 		    tab: "/user",
 		    ideas: ideas
 		});
@@ -94,6 +81,7 @@ exports.ideas_user = function(req, res) {
 	    .exec(function(err, ideas) {
 		res.render('ideas', {
 		    title: "Ideas",
+            sort: "most_commented",
 		    tab: "/user",
 		    ideas: ideas
 		});
@@ -108,6 +96,7 @@ exports.ideas_user = function(req, res) {
 		} else {
 		    res.render('ideas', {
 			title: "user ideas",
+            sort: "most visited",
 			tab: "/user",
 			ideas: ideas
 		    });
@@ -172,14 +161,16 @@ exports.ideas_favorites = function(req, res) {
 
 exports.ideas_post = function(req, res) {
     new Ideas({
-	uid : global.id,
-	title : req.body.title,
-	description : req.body.description,
-	plan: req.body.plan,
-	date_post: Date.now()
-    }).save( function( err, todo, count ) {
-	console.log("* New idea added.");
-	res.redirect('/ideas');
+        uid : global.id,
+        user_name : global.username,
+        title : req.body.title,
+        description : req.body.description,
+        lang : req.body.lang,
+        plan: req.body.plan,
+        date_post: Date.now()
+        }).save( function( err, todo, count ) {
+        console.log("* New idea added.");
+        res.redirect('/ideas');
     });
 };
 

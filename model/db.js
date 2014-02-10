@@ -11,20 +11,22 @@ var Users = new Schema({
 });
 
 var Ideas = new Schema({
-    uid:	    Number,
-    title:	    String,
+    uid:            Number,
+    user_name:      String,
+    title:          String,
     description:    String,
-    plan:	    String,
-    date_post:	    Date,
-    team:	    [Users],
+    lang:           String,
+    plan:           String,
+    date_post:      Date,
+    team:           [Users],
     comments_num:   {type: Number, default: 0}
 });
 
 var IdeaComments = new Schema({
-    uid:	Number,
-    idea:	String,
+    uid:        Number,
+    idea:       String,
     content:	String,
-    date:	Date
+    date:       Date
 });
  
 mongoose.model( 'Users', Users );

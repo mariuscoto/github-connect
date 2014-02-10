@@ -27,7 +27,7 @@ block content
                     option Large
                 label Preffered language
                   br
-                  select.selectpicker.span5(name='size', type='text')
+                  select.selectpicker.span5(name='lang', type='text')
                     option C/C++
                     option Java
                     option Ruby
@@ -36,22 +36,26 @@ block content
               label ETA
                 br
                 input.datepicker(name='eta', type='text')
-              label Plan
-                br
-                textarea(name='plan')
-
-            .center-mini
               label Description
                 br
-                textarea.span11(name='description', rows="4")
+                textarea(name='description')
+
+            .center-mini
+              label Plan
+                br
+                textarea.span11(name='plan', rows="4")
               input.btn.btn-success(type='submit', value='Save')
 
     - else
       #idea-desc
         h1= idea.title
-        h1= idea.description
-        h1= idea.comments_num
+        h5= idea.description
+        h5= idea.lang
+        h5= idea.comments_num
+        h5= idea.date_post
+        
         a(href="/idea/fav?id=" + idea._id) Fav
+        br
 
         - if (idea.uid == global.id)
           a(href="/edit?id=" + idea._id) Edit
@@ -64,11 +68,20 @@ block content
       #idea-table-header
         ul
           li
-            a(href='/ideas' + tab + '?sort=most_recent') Most recent
+            - if (sort == "most_recent")
+              | Most recent
+            - else
+              a(href='/ideas' + tab + '?sort=most_recent') Most recent
           li
-            a(href='/ideas' + tab + '?sort=most_viewed') Most visited
+            - if (sort == "most_viewed")
+              | Most visited
+            - else
+              a(href='/ideas' + tab + '?sort=most_viewed') Most visited
           li
-            a(href='/ideas' + tab + '?sort=most_commented') Most commented
+            - if (sort == "most_commented")
+              | Most commented
+            - else
+              a(href='/ideas' + tab + '?sort=most_commented') Most commented
 
       .left
         .ideas-bubble
@@ -88,7 +101,7 @@ block content
               .idea-content
                 p= idea.description
               .idea-footer by 
-                a(href='/profile?id=' + idea.uid)= idea.uid 
+                a(href='/profile?id=' + idea.uid)= idea.user_name 
                 | , 
                 = idea.date_post_short
 
@@ -123,7 +136,10 @@ block content
 
       - else if (tab == "/plan")
         .left
-          p plan here
+          - if (idea.plan.length != 0)
+            p= idea.plan
+          - else
+            p Nothing planned at this moment.
 
       - else
         .left
@@ -131,7 +147,6 @@ block content
             - each c in comments
               .comment
                 p= c.uid + "  " + c.content
-
           - else
             h1 no comments
 
