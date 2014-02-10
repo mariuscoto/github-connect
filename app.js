@@ -19,12 +19,12 @@ global.username = "";
 function addUser (source, sourceUser) {
     var user;
     if (arguments.length === 1) { // password-based
-	user = sourceUser = source;
-	user.id = ++nextUserId;
-	return usersById[nextUserId] = user;
+        user = sourceUser = source;
+        user.id = ++nextUserId;
+        return usersById[nextUserId] = user;
     } else { // non-password-based
-	user = usersById[++nextUserId] = {id: nextUserId};
-	user[source] = sourceUser;
+        user = usersById[++nextUserId] = {id: nextUserId};
+        user[source] = sourceUser;
     }
     return user;
 }
@@ -56,24 +56,26 @@ everyauth.github
 	// Check if user already in db
 	// else request info and add him.
 	var Users = mongoose.model('Users');
+        
 	Users.findOne({ 'user_id': usersByGhId[ghUser.id].github.id },
 'user_name', function (err, user) {
 	    if (err) return handleError(err);
 	    if (user != null) {
-		console.log("* User " + user.user_name + " logged in.");
+            console.log("* User " + user.user_name + " logged in.");
 	    } else {
-		console.log("User not in db.");
-		console.log(usersByGhId[ghUser.id].github.login);
+            console.log("User not in db.");
+            console.log(usersByGhId[ghUser.id].github.login);
 
-		new Users ({
-		    user_id: usersByGhId[ghUser.id].github.id,
-		    user_name: usersByGhId[ghUser.id].github.login,
-		    user_fullname: usersByGhId[ghUser.id].github.name,
-		    user_email: usersByGhId[ghUser.id].github.email,
-		    user_first: Date.now()
-		}).save (function (err, user, count) {
-		    console.log("New user added.");
-		});
+            // Import data from github
+            new Users ({
+                user_id: usersByGhId[ghUser.id].github.id,
+                user_name: usersByGhId[ghUser.id].github.login,
+                user_fullname: usersByGhId[ghUser.id].github.name,
+                user_email: usersByGhId[ghUser.id].github.email,
+                user_first: Date.now()
+            }).save (function (err, user, count) {
+                console.log("New user added.");
+            });
 	    }
 	})
 
@@ -174,11 +176,13 @@ app.use(function(req, res) {
     res.status(404).end('error');
 });
 
+// Make sure user is authenticated middleware
 function ensureAuth(req, res, next) {
     if (req.user) {
-	return next();
+	   return next();
     }
     res.redirect('/login')
 }
 
+// Launch server
 app.listen(process.env.PORT || 4000);

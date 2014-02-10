@@ -6,5 +6,5 @@ setup: package.json
 	sudo npm install
 
 run:
-	node app.js
 	echo "Server running at localhost:4000"
+	node app.js
