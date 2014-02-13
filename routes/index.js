@@ -31,7 +31,8 @@ exports.profile = function(req, res) {
     if (req.query.id) uid = req.query.id;
     else uid = global.uid;
     
-    if (global.id == 0) res.redirect('/login');
+    // restrict /profile unless logged in or other user
+    if (global.id == 0 && !req.query.id) res.redirect('/login');
     else {
         Users.findOne ({ 'user_id': uid }, function (err, user) {
             if (err) return handleError(err);
