@@ -10,7 +10,7 @@ html
     script(type="text/javascript", src='/javascripts/bootstrap-datepicker.js')
 
   body
-    #container.container
+    #container
       #header
         #logo
           a(href="/")
@@ -25,7 +25,8 @@ html
           - if (!everyauth.loggedIn)          
             a(href="/login") Login
           - else
-            a(href="/profile")= global.username
+            | 0 cups 
+            a(href="/profile")= global.username + " "
             a(href="/logout") Logout
 
       .spacer
