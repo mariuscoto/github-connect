@@ -29,7 +29,7 @@ exports.login = function(req, res) {
 exports.profile = function(req, res) {
     var uid;
     if (req.query.id) uid = req.query.id;
-    else uid = global.uid;
+    else uid = global.id;
     
     // restrict /profile unless logged in or other user
     if (global.id == 0 && !req.query.id) res.redirect('/login');
