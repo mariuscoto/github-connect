@@ -412,3 +412,36 @@ a:active {text-decoration:underline;}
     padding-top: 15px;
     box-shadow: 2px 0px 0px rgb(204, 204, 204) inset;
 }
+
+.profile-left {
+    width: 220px;
+    float: left;
+}
+
+.profile-avatar {
+    width: 220px;
+    height: 220px;
+}
+
+.profile-name {
+    padding: 5px;
+    border-bottom: 2px solid #EEE;
+}
+
+.profile-info {
+    padding: 5px;
+}
+
+.profile-numbers {
+    padding: 5px;
+    border-top: 2px solid #EEE;
+}
+
+.profile-right {
+    width: 660px;
+    padding: 10px;
+    float: left;
+}
+
+.profile-ideas {
+}

@@ -72,7 +72,10 @@ everyauth.github
                 user_name: usersByGhId[ghUser.id].github.login,
                 user_fullname: usersByGhId[ghUser.id].github.name,
                 user_email: usersByGhId[ghUser.id].github.email,
-                user_first: Date.now()
+                avatar_url: usersByGhId[ghUser.id].github.avatar_url,
+                location: usersByGhId[ghUser.id].github.location,
+                join_github: usersByGhId[ghUser.id].github.created_at,
+                join_us: Date.now()
             }).save (function (err, user, count) {
                 console.log("New user added.");
             });
@@ -118,8 +121,8 @@ everyauth.github
       return usersByGhId[ghUser.id];
     }
   })
-
-  .redirectPath('/login');
+  // redirect after login
+  .redirectPath('/profile');
 
 app.configure(function() {
     app.set('views', __dirname + '/views');
@@ -154,7 +157,7 @@ app.get('/', routes.index);
 app.get('/login', routes.login);
 
 var user = require('./routes/user');
-app.get('/profile', ensureAuth, user.profile);
+app.get('/profile', routes.profile);
 
 app.get('/ideas', routes.ideas);
 app.get('/ideas/favorites', ensureAuth, routes.ideas_favorites);

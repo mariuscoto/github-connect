@@ -4,14 +4,27 @@ block content
   #menu
 
   #content
-    h1= title
-    - if (!everyauth.loggedIn)
-      a(href="/auth/github") Login with github
-
-    - else
-      h1 Esti online
-      a(href='/logout') Logout
-      h3= user.user_id
-      h3= user.user_name
-      h3= user.user_fullname
-      h3= user.user_email
+    .profile-left
+      .profile-avatar
+        img(src=user.avatar_url + "&s=440")
+      .profile-name
+        b= user.user_fullname
+        br
+        = user.user_name
+      .profile-info
+        = user.location
+      .profile-info
+        = user.user_email
+      .profile-info
+        = user.join_us
+      .profile-numbers
+        
+      - if (everyauth.loggedIn)
+        a(href='/logout') Logout
+        
+    .profile-right
+      .profile-ideas
+        h2= "His ideas"
+        - each idea in ideas
+          p
+            a(href='/idea?id=' + idea._id)= idea.title

@@ -19,11 +19,36 @@ exports.index = function(req, res) {
 
 exports.login = function(req, res) {
     
-    app.locals.rep = global.repos;
+    //app.locals.rep = global.repos;
 
     res.render('login', { 
         title: "Log in",
     });
+};
+
+exports.profile = function(req, res) {
+    var uid;
+    if (req.query.id) uid = req.query.id;
+    else uid = global.uid;
+    
+    if (global.id == 0) res.redirect('/login');
+    else {
+        Users.findOne ({ 'user_id': uid }, function (err, user) {
+            if (err) return handleError(err);
+
+            //fetch ideas
+            Ideas
+            .find({ 'uid': uid })
+            .sort('-date_post')
+            .exec(function(err, ideas) {
+                res.render('profile', {
+                    title: "User info",
+                    user: user,
+                    ideas: ideas
+                });
+            });
+        });
+    }
 };
 
 exports.ideas = function(req, res) {
@@ -175,6 +200,7 @@ exports.ideas_post = function(req, res) {
 };
 
 exports.idea_comment = function(req, res) {
+    console.log(req.query.id);
     // increment comments number
     var conditions = { _id: req.query.id };
     var update = {$inc: {comments_num: 1}};

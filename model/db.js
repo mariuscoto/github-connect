@@ -6,8 +6,11 @@ var Users = new Schema({
     user_name:	    String,
     user_fullname:  String,
     user_email:	    String,
+    avatar_url:     String,
+    location:       String,
     favorites:	    [String],
-    user_first:	    Date
+    join_github:    String,
+    join_us:	    Date
 });
 
 var Ideas = new Schema({
