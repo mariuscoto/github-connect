@@ -132,7 +132,7 @@ block content
             - each t in idea.team
               p= t.user_name
           - else
-            p no team yet
+            p Not ready yet.
 
       - else if (tab == "/plan")
         .left
@@ -146,14 +146,17 @@ block content
           - if (comments && comments.length != 0)
             - each c in comments
               .comment
-                p= c.uid + "  " + c.content
+                p
+                  b= c.user_name + ": "
+                  = c.content
           - else
             h1 no comments
 
           - if (everyauth.loggedIn)
-            .coment
+            .comment
               form(method='post', action='/idea_comment?id=' + idea._id)
-                textarea(name='content')
+                //textarea(name='content')
+                input.span5(name='content', type='text')
                 input(type='submit', value='Comment')
 
       .right
@@ -168,13 +171,13 @@ block content
           - else
             .submenu-item Team
         a(href='/idea/plan?id=' + idea._id)
-          - if (tab == "/comments")
+          - if (tab == "/plan")
             .submenu-item-selected Plan
           - else
             .submenu-item Plan
-        - if (everyauth.loggedIn)
-          a(href='/idea/settings?id=' + idea._id)
-            - if (tab == "/settings")
-              .submenu-item-selected Settings
-            - else
-              .submenu-item Settings
+        //- if (everyauth.loggedIn)
+          //a(href='/idea/settings?id=' + idea._id)
+            //- if (tab == "/settings")
+              //.submenu-item-selected Settings
+            //- else
+              //.submenu-item Settings

@@ -24,6 +24,7 @@ var Ideas = new Schema({
 
 var IdeaComments = new Schema({
     uid:        Number,
+    user_name:  String,
     idea:       String,
     content:	String,
     date:       Date

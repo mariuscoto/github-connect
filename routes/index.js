@@ -176,19 +176,20 @@ exports.ideas_post = function(req, res) {
 
 exports.idea_comment = function(req, res) {
     // increment comments number
-    var conditions = { _id: req.body.where };
+    var conditions = { _id: req.query.id };
     var update = {$inc: {comments_num: 1}};
     Ideas.update(conditions, update, callback);
 
     function callback (err, num) {
         new IdeaComments({
 	    uid: global.id,
+        user_name: global.username,
 	    idea: req.query.id,
 	    content: req.body.content,
 	    date: Date.now()
 	}).save(function(err, comm, count) {
-	    console.log("* New comment added.");
-	    res.redirect('/ideas?id=' + req.query.id);
+	    console.log("* "+global.username+" commented on "+req.query.id);
+	    res.redirect('/idea?id=' + req.query.id);
 	});
     };
 };

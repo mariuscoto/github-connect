@@ -300,7 +300,8 @@ a:active {text-decoration:underline;}
     width: 500px;
     padding: 10px;
     margin-right: 240px;
-    background-color: red;
+    vertical-align: middle;
+    background-color: #E6F1F6;
 }
 
 .left {
