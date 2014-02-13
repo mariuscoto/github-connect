@@ -1,7 +1,8 @@
 github-connect
 ==============
 
-This is a node.js and mongodb app.
+This is a node.js and mongodb app. Hosted on Heroku at
+github-connect.herokuapp.com.
 
 === Setup ===
 

@@ -8,3 +8,7 @@ setup: package.json
 run:
 	echo "Server running at localhost:4000"
 	node app.js
+
+push-heroku: Procfile package.json
+	git push heroku master
+	heroku open
