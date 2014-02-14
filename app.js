@@ -13,8 +13,6 @@ var usersById = {};
 var nextUserId = 0;
 var repos, id, user;
 global.repos = [];
-global.id = 0;
-global.username = "";
 
 function addUser (source, sourceUser) {
     var user;
@@ -48,10 +46,6 @@ everyauth.github
 
 	// Print github login response.
 	//console.log(usersByGhId[ghUser.id]);
-
-	// Set global vars
-	global.id = usersByGhId[ghUser.id].github.id;
-	global.username = usersByGhId[ghUser.id].github.login;
 
 	// Check if user already in db
 	// else request info and add him.
@@ -169,8 +163,8 @@ app.get('/idea/unfav', ensureAuth, routes.idea_remove_fav);
 app.get('/teams', ensureAuth, routes.join_team);
 
 app.get('/idea', routes.idea);
-app.get('/idea/team', routes.idea_team);
-app.get('/idea/plan', routes.idea_plan);
+app.get('/idea/team', routes.idea);
+app.get('/idea/plan', routes.idea);
 
 app.post('/ideas', routes.ideas_post);
 app.post('/idea_comment', routes.idea_comment);
@@ -181,9 +175,7 @@ app.use(function(req, res) {
 
 // Make sure user is authenticated middleware
 function ensureAuth(req, res, next) {
-    if (req.user) {
-	   return next();
-    }
+    if (req.user) return next();
     res.redirect('/login')
 }
 
