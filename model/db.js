@@ -10,7 +10,9 @@ var Users = new Schema({
     location:       String,
     favorites:	    [String],
     join_github:    String,
-    join_us:	    Date
+    join_us:	    Date,
+    repos:          [Repo],
+    points_repos:   Number
 });
 
 var Ideas = new Schema({
@@ -32,10 +34,20 @@ var IdeaComments = new Schema({
     content:	String,
     date:       Date
 });
+
+var Repo = new Schema({
+    name:           String,
+    description:    String,
+    html_url:       String,
+    fork:           Boolean,
+    forks:          Number,
+    points:         Number
+});
  
 mongoose.model( 'Users', Users );
 mongoose.model( 'Ideas', Ideas );
 mongoose.model( 'IdeaComments', IdeaComments );
+mongoose.model( 'Repo', Repo );
  
 mongoose.connect('mongodb://marius:marius@troup.mongohq.com:10059/github-connect' );
 //mongoose.connect('mongodb://marius:marius@dharma.mongohq.com:10006/app17218548' );

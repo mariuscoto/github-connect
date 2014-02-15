@@ -25,7 +25,8 @@ html
           - if (!everyauth.loggedIn)          
             a(href="/login") Login
           - else
-            | 0 cups 
+            = user.points_repos
+            | cups 
             a(href="/profile")= login + " "
             a(href="/logout") Logout
 

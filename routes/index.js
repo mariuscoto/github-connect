@@ -31,7 +31,7 @@ exports.profile = function(req, res) {
         uid = req.user.github.id;
         login = req.user.github.login;
     }
-    if (req.query.id) uid = req.query.id;
+    if (req.query.id) uid = req.query.id;   
     
     // restrict /profile unless logged in or other user
     if (!req.user && !req.query.id) res.redirect('/login');

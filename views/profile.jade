@@ -24,7 +24,19 @@ block content
         
     .profile-right
       .profile-ideas
-        h2= "His ideas"
+        .profile-header Ideas
         - each idea in ideas
-          p
+          .profile-idea
             a(href='/idea?id=' + idea._id)= idea.title
+      .spacer
+      .profile-repos
+        .profile-header All repositories
+        - each repo in user.repos
+          .profile-repo
+            .profile-repo-name
+              a(href=repo.html_url)= repo.name
+            .profile-repo-points
+              | +
+              = repo.points
+            .profile-repo-desc
+              = repo.description

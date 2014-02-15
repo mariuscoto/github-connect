@@ -6,6 +6,9 @@ var express = require('express')
   , everyauth = require('everyauth')
   , mongoose = require('mongoose');
 
+// db references
+var Repo = mongoose.model('Repo');
+
 config = require('./lib/config')
 var app = module.exports = express();
 
@@ -58,7 +61,7 @@ everyauth.github
             console.log("* User " + user.user_name + " logged in.");
 	    } else {
             console.log("User not in db.");
-            console.log(usersByGhId[ghUser.id].github.login);
+            //console.log(usersByGhId[ghUser.id].github.login);
 
             // Import data from github
             new Users ({
@@ -76,14 +79,13 @@ everyauth.github
 	    }
 	})
 
-
+        //console.log(usersByGhId[ghUser.id].github.login);
+    
 		var options = {
 		    host: "api.github.com",
 		    path: "/users/"+ usersByGhId[ghUser.id].github.login +"/repos",
 		    method: "GET",
-		    headers: {
-			"User-Agent": "github-connect" 
-		    }
+		    headers: { "User-Agent": "github-connect" }
 		};
 
       var request= https.request(options, function(response){
@@ -93,19 +95,48 @@ everyauth.github
         });
 
         response.on("end", function(){
-          var json=JSON.parse(body);
+            var json=JSON.parse(body);
 
-          //console.log(json);  
+            //console.log(json);  
 
-          global.repos = [];
-          for (var k in json)
-            if ({}.hasOwnProperty.call(json, k)) {
-              global.repos.push({
-                name: json[k].name,
-                description: json[k].description
-              });
+            // prepaire repos
+            var repos = [];
+            var total = 0;
+            for (var k in json)
+                if ({}.hasOwnProperty.call(json, k)) {
+                    
+                    // TOTAL
+                    var points = 0;
+                    if (json[k].fork == false) {
+                        points = 20 + 20 * json[k].forks
+                        total += points;
+                    }
+                    
+                    repos.push(new Repo({
+                        name: json[k].name,
+                        description: json[k].description,
+                        html_url: json[k].html_url,
+                        fork: json[k].fork,
+                        forks: json[k].forks,
+                        points: points
+                    }));
+                }
+            
+            // update repos
+            var conditions = {user_id: usersByGhId[ghUser.id].github.id};
+            var update = {$pushAll: {repos: repos}};
+            Users.update(conditions, update, callback);
+            function callback (err, num) {
+                console.log("* Updated repos for " + usersByGhId[ghUser.id].github.id);
             }
-
+            
+            // update points
+            var conditions = {user_id: usersByGhId[ghUser.id].github.id};
+            var update = {$set: {points_repos: total}};
+            Users.update(conditions, update, callback);
+            function callback (err, num) {
+                console.log("* Updated points for " + usersByGhId[ghUser.id].github.id);
+            }
         });
       });
       request.end();
