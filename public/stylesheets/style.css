@@ -20,6 +20,7 @@ a:active {text-decoration:underline;}
 
 #header {
     width: 980px;
+    height: 40px;
 }
 
 #logo {
@@ -106,6 +107,9 @@ a:active {text-decoration:underline;}
 
 #body {
     clear: both;
+    padding-top: 40px;
+    background-image: url('/images/bg-main.png');
+    background-repeat: no-repeat;
 }
 
 #menu {
@@ -579,7 +583,7 @@ a:active {text-decoration:underline;}
 }
 
 .stats-field {
-    width: 320px;
+    width: 326px;
     float: left;
     font-size: 14px;
     color: #999;
