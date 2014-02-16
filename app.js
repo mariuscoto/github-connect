@@ -185,6 +185,8 @@ app.get('/contact', routes.contact);
 
 app.get('/profile', routes.profile);
 
+app.get('/projects', routes.projects);
+
 app.get('/ideas', routes.ideas);
 app.get('/ideas/favorites', ensureAuth, routes.ideas_favorites);
 app.get('/ideas/user', ensureAuth, routes.ideas_user);

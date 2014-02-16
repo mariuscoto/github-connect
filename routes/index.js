@@ -298,3 +298,9 @@ exports.contact = function(req, res) {
         title: "Get in touch with us"
     });
 };
+
+exports.projects = function(req, res) {
+    res.render('projects', { 
+        title: "Projects page"
+    });
+};
