@@ -11,7 +11,7 @@ exports.index = function(req, res) {
     Users.find (function (err, users, count) {
         Ideas.find (function (err, ideas, count) {
             res.render('index', { 
-                title: "Welcome",
+                title: "Welcome to Github-connect",
                 users: users.length,
                 ideas: ideas.length,
                 projects: 0
@@ -290,5 +290,11 @@ exports.idea = function(req, res) {
                 });
             });
         }
+    });
+};
+
+exports.contact = function(req, res) {
+    res.render('contact', { 
+        title: "Get in touch with us"
     });
 };

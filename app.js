@@ -125,7 +125,7 @@ everyauth.github
             // update repos
             var conditions = {user_id: usersByGhId[ghUser.id].github.id};
             var update = {$pushAll: {repos: repos}};
-            Users.update(conditions, update, callback);
+            Users.update(conditions, update, {upsert:true}, callback);
             function callback (err, num) {
                 console.log("* Updated repos for " + usersByGhId[ghUser.id].github.id);
             }
@@ -181,7 +181,8 @@ var routes = require('./routes');
 app.get('/', routes.index);
 app.get('/login', routes.login);
 
-var user = require('./routes/user');
+app.get('/contact', routes.contact);
+
 app.get('/profile', routes.profile);
 
 app.get('/ideas', routes.ideas);
@@ -199,6 +200,8 @@ app.get('/idea/plan', routes.idea);
 
 app.post('/ideas', routes.ideas_post);
 app.post('/idea_comment', routes.idea_comment);
+
+
 
 app.use(function(req, res) {
     res.status(404).end('error');
