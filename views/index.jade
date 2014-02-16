@@ -1,25 +1,45 @@
 extends layout
 
 block content
-  .card
-    p (have an idea ? get some team-mates and get started) Pitch your ideea against our community of developers and get great new features ideas and help to get you going.
-  .card
-    p have a project with some issues ? call for help !
+  .card-blank
+    .blank-title Github-connect
+    .blank-text
+      | Is the app that quantifies your contributions to the open-source world, helps you engage with other projects and bake new project ideas.
+      
+  .card.css3-shadow
+    .card-left
+      | Pitch your ideea against our community of developers and get great new feature ideas and help to get you going. Build a team and start developing together.
+    .card-right.card-ideas
+      | Get started right now !
+      br
+      br
+      br
+      a.btn(href="/ideas") Ideas page
+      
+  .card-blank
+    .blank-text
+      | Visit us on facebook to stay connected to the latest ideas posted on the site, get in contact with us, or offer feedback.
+      
+  .card.css3-shadow
+    .card-left
+      | Got stuck with your project ? Post some detailed issues, or features you would like to see and try to attract as many people as possible to contribute to your project.
+    .card-right.card-projects
+      | Get to work.
+      br
+      br
+      br
+      a.btn(href="#", "disabled") Live projects
 
-  h1= title
-  - if (!everyauth.loggedIn)
-    h3 No data
-  - else
-    h1 Esti online
-    h3
-      a(href='/logout') Logout
-      h3 GitHub User Data
-      - each r in rep
-        p= r.name
-        p= r.description
-      - each u in users
-        p= u.user_name
-      p= JSON.stringify(everyauth.github.user)
-      p= JSON.stringify(everyauth.github.user.login)
-      p= JSON.stringify(everyauth.github.user.repos_url)
-      p= JSON.stringify(everyauth.github.user.name)
+  .stats
+    .stats-field
+      .stats-field-number
+        = ideas
+      | ideas baked
+    .stats-field
+      .stats-field-number
+        = users
+      | registered users
+    .stats-field
+      .stats-field-number
+        = projects
+      | projects

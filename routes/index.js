@@ -9,9 +9,13 @@ var app = express();
 
 exports.index = function(req, res) {
     Users.find (function (err, users, count) {
-        res.render('index', { 
-            title: "Welcome",
-            users: users,
+        Ideas.find (function (err, ideas, count) {
+            res.render('index', { 
+                title: "Welcome",
+                users: users.length,
+                ideas: ideas.length,
+                projects: 0
+            });
         });
     });
 };
