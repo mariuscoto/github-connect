@@ -18,160 +18,153 @@ var repos, id, user;
 global.repos = [];
 
 function addUser (source, sourceUser) {
-    var user;
-    if (arguments.length === 1) { // password-based
-        user = sourceUser = source;
-        user.id = ++nextUserId;
-        return usersById[nextUserId] = user;
-    } else { // non-password-based
-        user = usersById[++nextUserId] = {id: nextUserId};
-        user[source] = sourceUser;
-    }
-    return user;
+	var user;
+	if (arguments.length === 1) { // password-based
+		user = sourceUser = source;
+		user.id = ++nextUserId;
+		return usersById[nextUserId] = user;
+	} else { // non-password-based
+		user = usersById[++nextUserId] = {id: nextUserId};
+		user[source] = sourceUser;
+	}
+	return user;
 }
 
 // Everyauth
 var usersByGhId = {};
 
-everyauth.everymodule
-    .findUserById( function (id, callback) {
+everyauth
+.everymodule
+.findUserById( function (id, callback) {
 	callback(null, usersById[id]);
-    });
+});
 
-everyauth.github
-    .appId(config.gh_clientId)
-    .appSecret(config.gh_secret)
-    .findOrCreateUser( function (sess, accessToken, accessTokenExtra, ghUser) {
+everyauth
+.github
+.appId(config.gh_clientId)
+.appSecret(config.gh_secret)
+.findOrCreateUser( function (sess, accessToken, accessTokenExtra, ghUser) {
 
-    if (typeof usersByGhId[ghUser.id] === 'undefined') {
+	sess.oauth = accessToken;
+	if (typeof usersByGhId[ghUser.id] === 'undefined') {
 
-	usersByGhId[ghUser.id] = addUser('github', ghUser);
+		usersByGhId[ghUser.id] = addUser('github', ghUser);
 
-	// Print github login response.
-	//console.log(usersByGhId[ghUser.id]);
-
-	// Check if user already in db
-	// else request info and add him.
-	var Users = mongoose.model('Users');
+		// Check if user already in db
+		// else request info and add him.
+		var Users = mongoose.model('Users');
         
-	Users.findOne({ 'user_id': usersByGhId[ghUser.id].github.id },
-'user_name', function (err, user) {
-	    if (err) return handleError(err);
+		Users
+		.findOne({ 'user_id': usersByGhId[ghUser.id].github.id }, 'user_name', function (err, user) {
+			if (err) return handleError(err);
 	    if (user != null) {
-            console.log("* User " + user.user_name + " logged in.");
+      	console.log("* User " + user.user_name + " logged in.");
 	    } else {
-            console.log("User not in db.");
-            //console.log(usersByGhId[ghUser.id].github.login);
 
-            // Import data from github
-            new Users ({
-                user_id: usersByGhId[ghUser.id].github.id,
-                user_name: usersByGhId[ghUser.id].github.login,
-                user_fullname: usersByGhId[ghUser.id].github.name,
-                user_email: usersByGhId[ghUser.id].github.email,
-                avatar_url: usersByGhId[ghUser.id].github.avatar_url,
-                location: usersByGhId[ghUser.id].github.location,
-                join_github: usersByGhId[ghUser.id].github.created_at,
-                join_us: Date.now()
-            }).save (function (err, user, count) {
-                console.log("New user added.");
-            });
+				// Import data from github
+				new Users ({
+					user_id: usersByGhId[ghUser.id].github.id,
+					user_name: usersByGhId[ghUser.id].github.login,
+					user_fullname: usersByGhId[ghUser.id].github.name,
+					user_email: usersByGhId[ghUser.id].github.email,
+					avatar_url: usersByGhId[ghUser.id].github.avatar_url,
+					location: usersByGhId[ghUser.id].github.location,
+					join_github: usersByGhId[ghUser.id].github.created_at,
+					join_us: Date.now()
+				}).save (function (err, user, count) {
+					console.log("* User " + user.user_name + " added.");
+				});
 	    }
-	})
-
-        //console.log(usersByGhId[ghUser.id].github.login);
+		})
     
 		var options = {
-		    host: "api.github.com",
-		    path: "/users/"+ usersByGhId[ghUser.id].github.login +"/repos",
-		    method: "GET",
-		    headers: { "User-Agent": "github-connect" }
+			host: "api.github.com",
+			path: "/users/"+ usersByGhId[ghUser.id].github.login +"/repos",
+			method: "GET",
+			headers: { "User-Agent": "github-connect" }
 		};
 
-      var request= https.request(options, function(response){
-        var body='';
-        response.on("data", function(chunk){
-          body+=chunk.toString("utf8");
-        });
+		var request = https.request(options, function(response){
+    	var body='';
+    	response.on("data", function(chunk){ body+=chunk.toString("utf8");});
 
-        response.on("end", function(){
-            var json=JSON.parse(body);
+			response.on("end", function(){
+				var json = JSON.parse(body);
+				//console.log(json);  
 
-            //console.log(json);  
+				// prepaire repos
+				var repos = [];
+				var total = 0;
+				for (var k in json) {
+					if ({}.hasOwnProperty.call(json, k)) {
 
-            // prepaire repos
-            var repos = [];
-            var total = 0;
-            for (var k in json)
-                if ({}.hasOwnProperty.call(json, k)) {
-                    
-                    // TOTAL
-                    var points = 0;
-                    if (json[k].fork == false) {
-                        points = 20 + 20 * json[k].forks
-                        total += points;
-                    }
-                    
-                    repos.push(new Repo({
-                        name: json[k].name,
-                        description: json[k].description,
-                        html_url: json[k].html_url,
-                        fork: json[k].fork,
-                        forks: json[k].forks,
-                        points: points
-                    }));
-                }
-            
-            // update repos
-            var conditions = {user_id: usersByGhId[ghUser.id].github.id};
-            var update = {$pushAll: {repos: repos}};
-            Users.update(conditions, update, {upsert:true}, callback);
-            function callback (err, num) {
-                console.log("* Updated repos for " + usersByGhId[ghUser.id].github.id);
-            }
-            
-            // update points
-            var conditions = {user_id: usersByGhId[ghUser.id].github.id};
-            var update = {$set: {points_repos: total}};
-            Users.update(conditions, update, callback);
-            function callback (err, num) {
-                console.log("* Updated points for " + usersByGhId[ghUser.id].github.id);
-            }
-        });
-      });
-      request.end();
-      return usersByGhId[ghUser.id];
+						// TOTAL POINTS
+						var points = 0;
+						if (json[k].fork == false) {
+							points = 20 + 20 * json[k].forks
+							total += points;
+						}
 
-    } else {
-      return usersByGhId[ghUser.id];
-    }
-  })
-  // redirect after login
-  .redirectPath('/profile');
+						repos.push(new Repo({
+							name: json[k].name,
+							description: json[k].description,
+							html_url: json[k].html_url,
+							fork: json[k].fork,
+							forks: json[k].forks,
+							points: points
+						}));
+					}
+				}
+
+				// update repos
+				var conditions = {user_id: usersByGhId[ghUser.id].github.id};
+				var update = {$pushAll: {repos: repos}};
+				Users.update(conditions, update, {upsert:true}, callback);
+				function callback (err, num) {
+					console.log("* Updated repos for " + usersByGhId[ghUser.id].github.id);
+				}
+
+				// update points
+				var conditions = {user_id: usersByGhId[ghUser.id].github.id};
+				var update = {$set: {points_repos: total}};
+				Users.update(conditions, update, callback);
+				function callback (err, num) {
+					console.log("* Updated points for " + usersByGhId[ghUser.id].github.id);
+				}
+			});
+		});
+		
+		request.end();
+		return usersByGhId[ghUser.id];
+
+	} else {
+		return usersByGhId[ghUser.id];
+	}
+})
+.redirectPath('/profile');
 
 app.configure(function() {
-    app.set('views', __dirname + '/views');
-    app.set('view engine', 'jade');
-    app.use(express.favicon("public/images/github-icon.ico")); 
-    app.use(express.bodyParser());
+	app.set('views', __dirname + '/views');
+	app.set('view engine', 'jade');
+	app.use(express.favicon("public/images/github-icon.ico")); 
+	app.use(express.bodyParser());
 
-    app.use(express.cookieParser());
-    app.use(express.session({secret: config.redis_secret}));
-    app.use(everyauth.middleware());
+	app.use(express.cookieParser());
+	app.use(express.session({secret: config.redis_secret}));
+	app.use(everyauth.middleware());
 
-    app.use(express.methodOverride());
-    app.use(app.router);
-    app.use(express.static(__dirname + '/public'));
+	app.use(express.methodOverride());
+	app.use(app.router);
+	app.use(express.static(__dirname + '/public'));
 });
 
 
 app.configure('development', function(){
-    app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+	app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
-
  
 app.configure('production', function(){
-    app.use(express.errorHandler());
+	app.use(express.errorHandler());
 });
 
 
@@ -206,13 +199,13 @@ app.post('/idea_comment', routes.idea_comment);
 
 
 app.use(function(req, res) {
-    res.status(404).end('error');
+	res.status(404).end('error');
 });
 
 // Make sure user is authenticated middleware
 function ensureAuth(req, res, next) {
-    if (req.user) return next();
-    res.redirect('/login')
+	if (req.user) return next();
+	res.redirect('/login')
 }
 
 // Launch server

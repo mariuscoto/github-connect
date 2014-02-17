@@ -35,8 +35,9 @@ block content
           .profile-repo
             .profile-repo-name
               a(href=repo.html_url)= repo.name
-            .profile-repo-points
-              | +
-              = repo.points
+            - if (repo.points != 0)
+              .profile-repo-points
+                | +
+                = repo.points
             .profile-repo-desc
               = repo.description

@@ -100,7 +100,10 @@ block content
 
               .idea-content
                 p= idea.description
-              .idea-footer by 
+              .idea-footer
+                .idea-footer-left
+                  = idea.comments_num
+                .idea-footer-right by 
                 a(href='/profile?id=' + idea.uid)= idea.user_name 
                 | , 
                 = idea.date_post_short

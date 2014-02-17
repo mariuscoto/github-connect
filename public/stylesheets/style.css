@@ -217,6 +217,15 @@ a:active {text-decoration:underline;}
     color: rgb(51, 51, 51);
     font-size: 12px;
     font-family: Helvetica,arial,freesans;
+}
+
+.idea-footer-left {
+    float: left;
+}
+
+.idea-footer-right {
+    width: 570px;
+    float:left;
     text-align: right;
 }
 
