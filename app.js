@@ -116,20 +116,12 @@ everyauth
 					}
 				}
 
-				// update repos
+				// update repos and score
 				var conditions = {user_id: usersByGhId[ghUser.id].github.id};
-				var update = {$pushAll: {repos: repos}};
+				var update = {$set: {repos: repos, points_repos: total}};
 				Users.update(conditions, update, {upsert:true}, callback);
 				function callback (err, num) {
 					console.log("* Updated repos for " + usersByGhId[ghUser.id].github.id);
-				}
-
-				// update points
-				var conditions = {user_id: usersByGhId[ghUser.id].github.id};
-				var update = {$set: {points_repos: total}};
-				Users.update(conditions, update, callback);
-				function callback (err, num) {
-					console.log("* Updated points for " + usersByGhId[ghUser.id].github.id);
 				}
 			});
 		});
