@@ -28,9 +28,10 @@ html
           - else
             - if (user)
               = user.points_repos
-              | cups 
+              |  cups for 
               a(href="/profile")= user.user_name + " "
-            a(href="/logout") Logout
+            a(href="/logout")
+              img(id='logout', src='images/logout.png', width="18", height="18")
 
       #body
         block content
