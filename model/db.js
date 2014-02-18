@@ -13,7 +13,7 @@ var Users = new Schema({
 	join_us:	    	Date,
 	repos:          [Repo],
 	points_repos:   Number,
-	tentacles:			Number
+	tentacles:			{type: Number, default: 0}
 });
 
 var Ideas = new Schema({

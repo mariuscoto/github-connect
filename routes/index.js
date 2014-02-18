@@ -317,3 +317,20 @@ exports.projects = function(req, res) {
 			title: "Projects page"
 		});
 };
+
+exports.faq = function(req, res) {
+	if (req.user)
+		Users.findOne ({ 'user_id': req.user.github.id }, function (err, user) {
+			if (err) return handleError(err);
+			
+			res.render('faq', { 
+				title: "F.A.Q.",
+				user: user
+			});
+		});
+									 
+	else
+		res.render('faq', { 
+			title: "F.A.Q"
+		});
+};
