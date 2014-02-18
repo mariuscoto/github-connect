@@ -2,7 +2,7 @@ var mongoose = require( 'mongoose' );
 var Schema   = mongoose.Schema;
  
 var Users = new Schema({
-	user_id:	    String,
+	user_id:	    	String,
 	user_name:	    String,
 	user_fullname:  String,
 	user_email:	    String,
@@ -10,9 +10,10 @@ var Users = new Schema({
 	location:       String,
 	favorites:	    [String],
 	join_github:    String,
-	join_us:	    Date,
+	join_us:	    	Date,
 	repos:          [Repo],
-	points_repos:   Number
+	points_repos:   Number,
+	tentacles:			Number
 });
 
 var Ideas = new Schema({
@@ -41,10 +42,11 @@ var Repo = new Schema({
 	html_url:       String,
 	fork:           Boolean,
 	forks_count:    Number,
-	points:         Number,
+	points:         {type: Number, default: 0},
 	size:						Number,
 	watchers_count:	Number,
-	owner:					String
+	owner:					String,
+	closed_pulls:		Number
 });
  
 mongoose.model( 'Users', Users );
