@@ -31,7 +31,7 @@ var IdeaComments = new Schema({
 	uid:        Number,
 	user_name:  String,
 	idea:       String,
-	content:	String,
+	content:		String,
 	date:       Date
 });
 
@@ -40,8 +40,11 @@ var Repo = new Schema({
 	description:    String,
 	html_url:       String,
 	fork:           Boolean,
-	forks:          Number,
-	points:         Number
+	forks_count:    Number,
+	points:         Number,
+	size:						Number,
+	watchers_count:	Number,
+	owner:					String
 });
  
 mongoose.model( 'Users', Users );
