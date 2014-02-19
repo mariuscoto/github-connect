@@ -275,6 +275,7 @@ app.get('/', routes.index);
 app.get('/login', routes.login);
 
 app.get('/contact', routes.contact);
+app.get('/faq', routes.faq);
 
 app.get('/profile', routes.profile);
 
