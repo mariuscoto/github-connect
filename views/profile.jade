@@ -24,6 +24,8 @@ block content
         
       - if (everyauth.loggedIn)
         - if (user.user_name == cuser.user_name)
+          a(href='#', onclick='shareOnFacebook()') Share score
+          br
           a(href='/edit-profile') Edit profile
           br
           a(href='/logout') Logout

@@ -11,6 +11,9 @@ html
     script(type="text/javascript", src='/javascripts/bootstrap-datepicker.js')
 
   body
+  
+    
+  
     #container
       #header
         #logo
@@ -51,3 +54,8 @@ html
               a(href="/faq") FAQ
             li 
               a(href="/contact") Contact
+
+  - if (everyauth.loggedIn)
+    script var userid = "#{user.user_id}"; var cups = "#{user.points_repos}";
+
+  include facebook.html
