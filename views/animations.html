@@ -1,8 +1,22 @@
 <script>
-$('#idea-new').one('click', function () {
-  $(this).animate({height: '500px'}, 400);
-  $('.left-mini').show();
-  $('.right-mini').show();
-  $('.center-mini').show();
+var hidden = true
+document.getElementById('add-btn').value='+';
+$('#add-btn').click(function () {
+	if(hidden) {
+	  $('#idea-new').animate({height: '500px'}, 250);
+	  $('.left-mini').show();
+	  $('.right-mini').show();
+	  $('.center-mini').show();
+	  document.getElementById('add-btn').value='-';
+	  hidden = false;
+	}
+	else {
+		$('.left-mini').hide();
+	  $('.right-mini').hide();
+	  $('.center-mini').hide();
+	  $('#idea-new').animate({height: '200px'}, 250);
+	  document.getElementById('add-btn').value='+';
+	  hidden = true;
+	}
 });
 </script>

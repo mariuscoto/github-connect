@@ -15,10 +15,8 @@ block content
           #idea-new
             #left-mini-title
               h1 Add a new idea
-              br
-              label Title
-                br
-                input.span5(name='title', type='text')
+              input.btn.btn-success(type='button', id='add-btn', value='+')
+              
                 
             .right-mini
               label ETA
@@ -26,9 +24,12 @@ block content
                 input.span5.datepicker(name='eta', type='text')
               label Description
                 br
-                textarea.span5(name='description', rows="4")
+                textarea.span5(name='description', id='no_resize_textarea', rows="4")
                 
             .left-mini
+              label Title
+                br
+                input.span5(name='title', type='text')
               label Project Size
                 br
                 select.selectpicker.span5(name='size', type='text')
@@ -45,7 +46,7 @@ block content
             .center-mini
               label Plan
                 br
-                textarea.span11(name='plan', rows="4")
+              textarea.span11(name='plan', id='no_resize_textarea', rows="4")
               input.btn.btn-success(type='submit', value='Save')
 
 

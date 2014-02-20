@@ -131,6 +131,8 @@ a:active {text-decoration:underline;}
     font-weight: bold;
 }
 
+
+
 #left-mini-title {
     width: 425px;
     padding: 10px;
@@ -147,7 +149,7 @@ a:active {text-decoration:underline;}
     width: 400px;
     padding: 10px;
     padding-left: 40px;
-    margin-top: 80px;
+    margin-top: 100px;
     display: none;
     float: right;
     border-left: 2px dashed rgba(0, 0, 0, 0.1);
@@ -158,6 +160,11 @@ a:active {text-decoration:underline;}
     padding: 10px;
     clear: both;
     display: none;
+}
+
+#no_resize_textarea {
+    resize: vertical;
+    max-height: 100px;
 }
 
 #idea-desc {
