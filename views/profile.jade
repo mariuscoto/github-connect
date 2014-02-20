@@ -6,21 +6,27 @@ block content
   #content
     .profile-left
       .profile-avatar
-        img(src=user.avatar_url + "&s=440")
+        img(src=cuser.avatar_url + "&s=440")
       .profile-name
-        b= user.user_fullname
+        b= cuser.user_fullname
         br
-        = user.user_name
-      .profile-info
-        = user.location
-      .profile-info
-        = user.user_email
-      .profile-info
-        = user.join_us
+        a(href='http://www.github.com/' + cuser.user_name)= cuser.user_name
+      - if (cuser.location) 
+        .profile-info.profile-info-location
+          = cuser.location
+      - if (cuser.user_email)
+        .profile-info.profile-info-email
+          = cuser.user_email
+      - if (cuser.join_us)
+        .profile-info.profile-info-date Joined on 
+          = (cuser.join_us).toString().substring(4, 16)
       .profile-numbers
         
       - if (everyauth.loggedIn)
-        a(href='/logout') Logout
+        - if (user.user_name == cuser.user_name)
+          a(href='/edit-profile') Edit profile
+          br
+          a(href='/logout') Logout
         
     .profile-right
       .profile-ideas
@@ -30,9 +36,13 @@ block content
             a(href='/idea?id=' + idea._id)= idea.title
       .spacer
       .profile-repos
-        .profile-header All repositories
-        - each repo in user.repos
+        .profile-header All public repositories
+        - each repo in cuser.repos
           .profile-repo
+            - if (repo.fork)
+              .profile-repo-icon-forked
+            - else
+              .profile-repo-icon
             .profile-repo-name
               a(href=repo.html_url)= repo.name
             - if (repo.points != 0)

@@ -102,11 +102,13 @@ block content
                 p= idea.description
               .idea-footer
                 .idea-footer-left
-                  = idea.comments_num
-                .idea-footer-right by 
-                a(href='/profile?id=' + idea.uid)= idea.user_name 
-                | , 
-                = idea.date_post_short
+                  .idea-footer-comments
+                    = idea.comments_num
+                .idea-footer-right
+                  | by 
+                  a(href='/profile?id=' + idea.uid)= idea.user_name 
+                  | , 
+                  = idea.date_post_short
 
       .right
         .submenu
