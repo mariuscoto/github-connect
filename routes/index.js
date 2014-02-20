@@ -43,27 +43,33 @@ exports.login = function(req, res) {
 
 exports.profile = function(req, res) {
   //console.log(req.session.oauth);
-  var uid;
-  if (req.user) uid = req.user.github.id;
-  if (req.query.id) uid = req.query.id;   
+  var cuid, uid;
+  if (req.user) {
+		cuid = req.user.github.id;
+		uid = cuid;
+	}	
+  if (req.query.id) cuid = req.query.id;   
   
   // restrict /profile unless logged in or other user
   if (!req.user && !req.query.id) res.redirect('/login');
   else {
-    Users.findOne ({ 'user_id': uid }, function (err, user) {
-      if (!user) res.redirect('/login');
-      else {
-        //fetch ideas
-        Ideas
-        .find({ 'uid': uid })
-        .sort('-date_post')
-        .exec(function(err, ideas) {
-          res.render('profile', {
-            title: "User info",
-            user: user,
-            ideas: ideas
-          });
-        });
+    Users.findOne ({ 'user_id': cuid }, function (err, cuser) {
+      if (!cuser) res.redirect('/login');
+      
+      else {      
+				Users.findOne ({ 'user_id': uid }, function (err, user) {
+					Ideas
+					.find({ 'uid': cuid })
+					.sort('-date_post')
+					.exec(function(err, ideas) {
+						res.render('profile', {
+							title: "User info",
+							cuser: cuser,
+							ideas: ideas,
+							user: user
+						});
+					});
+				});
       }
     });
   }
@@ -247,7 +253,6 @@ exports.idea = function(req, res) {
   var tab;  
   if (req.route.path == "/idea/team") tab = "/team";
   else if (req.route.path == "/idea/plan") tab = "/plan";
-  else res.redirect('/ideas')
 
 	Ideas
 	.findOne({ '_id': req.query.id })
