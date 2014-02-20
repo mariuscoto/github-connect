@@ -13,38 +13,41 @@ block content
       - if (everyauth.loggedIn)
         form(method='post', action='/ideas')
           #idea-new
-            .left-mini
-              h1 Add new idea
-
-                label Title
-                  br
-                  input.span5(name='title', type='text')
-                label Project Size
-                  br
-                  select.selectpicker.span5(name='size', type='text')
-                    option Small
-                    option Medium
-                    option Large
-                label Preffered language
-                  br
-                  select.selectpicker.span5(name='lang', type='text')
-                    option C/C++
-                    option Java
-                    option Ruby
-
+            #left-mini-title
+              h1 Add a new idea
+              br
+              label Title
+                br
+                input.span5(name='title', type='text')
+                
             .right-mini
               label ETA
                 br
-                input.datepicker(name='eta', type='text')
+                input.span5.datepicker(name='eta', type='text')
               label Description
                 br
-                textarea(name='description')
+                textarea.span5(name='description', rows="4")
+                
+            .left-mini
+              label Project Size
+                br
+                select.selectpicker.span5(name='size', type='text')
+                  option Small
+                  option Medium
+                  option Large
+              label Preffered language
+                br
+                select.selectpicker.span5(name='lang', type='text')
+                  option C/C++
+                  option Java
+                  option Ruby
 
             .center-mini
               label Plan
                 br
                 textarea.span11(name='plan', rows="4")
               input.btn.btn-success(type='submit', value='Save')
+
 
     - else
       #idea-desc
@@ -186,3 +189,4 @@ block content
               //.submenu-item-selected Settings
             //- else
               //.submenu-item Settings
+    .spacer
