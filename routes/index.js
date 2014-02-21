@@ -1,4 +1,4 @@
-var CHAR_LIMIT = 380;
+var CHAR_LIMIT = 330;
 
 var express = require('express');
 var mongoose = require('mongoose');
@@ -125,7 +125,7 @@ exports.ideas_user = function(req, res) {
     if (err) return handleError(err);
 		
 		Ideas
-		.find({ 'uid': uid })
+		.find({ 'uid': user.user_id })
 		.sort(sort_type)
 		.exec(function(err, ideas) {
 			res.render('ideas', {
@@ -260,31 +260,37 @@ exports.idea = function(req, res) {
 		if (!idea) {
 			res.redirect('/ideas');
 		} else {
+      
+      Users.findOne ({ 'user_name': idea.user_name}, function (err, cuser) {
+        if (err) return handleError(err);
+        
+        IdeaComments
+        .find({ 'idea': req.query.id })
+        .exec(function(err, comments) {
+          if (req.user)
+            Users.findOne ({ 'user_id': req.user.github.id }, function (err, user) {
+              if (err) return handleError(err);
 
-			IdeaComments
-			.find({ 'idea': req.query.id })
-			.exec(function(err, comments) {
-				if (req.user)
-					Users.findOne ({ 'user_id': req.user.github.id }, function (err, user) {
-						if (err) return handleError(err);
-						
-						res.render('ideas', {
-							title: idea.title,
-							user: user,
-							idea: idea,
-							tab: tab,
-							comments: comments
-						});
-					});
-					
-				else
-					res.render('ideas', {
-						title: idea.title,
-						idea: idea,
-						tab: tab,
-						comments: comments
-					});
-			});
+              res.render('ideas', {
+                title: idea.title,
+                cuser: cuser,
+                user: user,
+                idea: idea,
+                tab: tab,
+                comments: comments
+              });
+            });
+
+          else
+            res.render('ideas', {
+              title: idea.title,
+              idea: idea,
+              cuser: cuser,
+              tab: tab,
+              comments: comments
+            });
+        });
+      });
 		}
 	});
 };

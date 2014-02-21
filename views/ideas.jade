@@ -7,6 +7,7 @@ block content
         p You need to 
           a(href='/login') login
           |  to comment or post your own ideas.
+    .spacer
 
   #menu
     - if (!idea)
@@ -52,19 +53,43 @@ block content
 
     - else
       #idea-desc
-        h1= idea.title
+        #idea-desc-top
+          .ideas-desc-top-square
+            =idea.comments_num
+            h5 comments
+          .ideas-desc-top-square
+            =idea.team.length
+            h5 members
+          #idea-desc-top-title= idea.title
+          | Posted on #{idea.date_post}
+
+          
+        .spacer
         h5= idea.description
         h5= idea.lang
-        h5= idea.comments_num
-        h5= idea.date_post
         
-        a(href="/idea/fav?id=" + idea._id) Fav
-        br
+        .spacer
+        #idea-desc-buttom  
+          #idea-desc-buttom-right
+            img(src=cuser.avatar_url, width="50px", height="50px")
+            a(href="/profile?id=" + cuser.user_id)= cuser.user_name
+            br
+            | last seen
+            
+          a(href="/idea/fav?id=" + idea._id)
+            input.btn.btn-success(type='submit', value='Fav').idea-desc-buttom-btn
 
-        - if (idea.uid == global.id)
-          a(href="/edit?id=" + idea._id) Edit
-        - else
-          a(href="/teams?id=" + idea._id) Join team
+          - if (user && idea.uid == user.user_id)
+            a(href="/edit?id=" + idea._id)
+              input.btn.btn-success(type='submit', value='Edit').idea-desc-buttom-btn
+
+          - else
+            a(href="/teams?id=" + idea._id)
+              input.btn.btn-success(type='submit', value='Join Team').idea-desc-buttom-btn
+
+          
+        .spacer
+      .spacer
     
   #content 
     - if (ideas)
@@ -159,7 +184,7 @@ block content
                   b= c.user_name + ": "
                   = c.content
           - else
-            h1 no comments
+            h1 Be the first one to comment.
 
           - if (everyauth.loggedIn)
             .comment
@@ -170,7 +195,7 @@ block content
 
       .right
         a(href='/idea?id=' + idea._id)
-          - if (tab == "")
+          - if (!tab)
             .submenu-item-selected Comments
           - else
             .submenu-item Comments

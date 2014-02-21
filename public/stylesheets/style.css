@@ -168,9 +168,62 @@ a:active {text-decoration:underline;}
 }
 
 #idea-desc {
-    width: 900px;
-    margin-left: auto;
-    margin-right: auto;
+    width: 880px;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    padding-left: 50px;
+    padding-right: 50px;
+    border-top: 0px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+#idea-desc-top {
+    height: 70px;
+    color: rgb(216, 216, 216);
+}
+
+#idea-desc-top-title {
+    font-size: 50px;
+    font-weight: bold;
+    padding-top: 20px;
+    margin-bottom: 10px;
+    color: black;
+}
+
+.ideas-desc-top-square {
+    width: 60px;
+    height: 50px;
+    float: right;
+    margin-left: 5px;
+    padding: 5px;
+    padding-top: 15px;
+    color: black;
+    font-size: 40px;
+    font-weight: bold;
+    text-align: center;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.ideas-desc-top-square h5{
+    font-size: 12px;
+    font-weight: normal;
+}
+
+.idea-desc-buttom-btn {
+    margin-top: 22px;
+    margin-right: 5px;
+}
+
+#idea-desc-buttom-right {
+    width: 200px;
+    height: 50px;
+    float: right;
+    text-align: right;
+}
+
+#idea-desc-buttom-right img{
+    float: right;
+    padding-left: 5px;
 }
 
 #content {
