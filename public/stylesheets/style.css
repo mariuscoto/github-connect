@@ -402,8 +402,14 @@ a:active {text-decoration:underline;}
     width: 500px;
     padding: 10px;
     margin-right: 240px;
+    margin-bottom: 2px;
     vertical-align: middle;
     background-color: #E6F1F6;
+}
+
+.comment-bottom {
+    font-size: 14px;
+    color: rgb(216, 216, 216);
 }
 
 .left {

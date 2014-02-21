@@ -180,9 +180,12 @@ block content
           - if (comments && comments.length != 0)
             - each c in comments
               .comment
-                p
-                  b= c.user_name + ": "
-                  = c.content
+                a(href='/profile?id=' + c.uid)= c.user_name + ": "
+                = c.content
+                .comment-bottom
+                  a(href='/upvote?id=' + c._id) + 
+                  a(href='/flag?id=' + c._id) Flag 
+                  | Posted on 12313.321312.31231
           - else
             h1 Be the first one to comment.
 
