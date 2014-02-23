@@ -412,6 +412,29 @@ a:active {text-decoration:underline;}
     color: rgb(216, 216, 216);
 }
 
+.upvotes {
+  float: left;
+  color: black;
+  margin-right: 5px;
+}
+
+.upvote {
+  float: left;
+  margin-right: 5px;
+}
+
+.upvote:hover {
+  float: left;
+  margin-right: 5px;
+  background-color: green;
+}
+
+.upvoted {
+  background-color: red;
+  float: left;
+  margin-right: 5px;
+}
+
 .left {
     width: 760px;
     float: left;

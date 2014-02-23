@@ -267,9 +267,15 @@ exports.idea = function(req, res) {
         IdeaComments
         .find({ 'idea': req.query.id })
         .exec(function(err, comments) {
+
           if (req.user)
             Users.findOne ({ 'user_id': req.user.github.id }, function (err, user) {
               if (err) return handleError(err);
+              if (user)
+                // check for already voted comments
+                for (i in comments)
+                  if (comments[i].upvotes.indexOf(user.user_id) > -1)
+                    comments[i].upvote = true;
 
               res.render('ideas', {
                 title: idea.title,
@@ -344,4 +350,18 @@ exports.faq = function(req, res) {
 		res.render('faq', { 
 			title: "F.A.Q"
 		});
+};
+
+exports.upvote = function(req, res) {
+  if (!req.user) res.json({success: false});
+  else {
+    // increment upvotes number
+    var conditions = {_id: req.query.id};
+    var update = {$addToSet: {upvotes: req.user.github.id}};
+    IdeaComments.update(conditions, update, callback);
+    function callback (err, num) {
+      console.log("* " + req.user.github.login + " upvoted on " + req.query.id);
+      res.json({success: true});
+    };
+  }
 };

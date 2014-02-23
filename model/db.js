@@ -33,7 +33,8 @@ var IdeaComments = new Schema({
 	user_name:  String,
 	idea:       String,
 	content:		String,
-	date:       Date
+	date:       Date,
+  upvotes:    [Number]
 });
 
 var Repo = new Schema({

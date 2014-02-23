@@ -20,3 +20,20 @@ $('#add-btn').click(function () {
 	}
 });
 </script>
+
+<script>
+$('.upvote').click(function () {
+  // click just once
+  if (this.className == "upvote") {
+    var id = this.id;
+    $.ajax({
+     url: 'upvote?id=' + this.id,
+     type: "POST",
+     success: function(response) {
+       if (response.success)
+         document.getElementById(id).setAttribute("class", "upvoted");
+     }
+    });
+  }
+});
+</script>
