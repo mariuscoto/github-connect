@@ -315,10 +315,12 @@ app.post('/ideas', routes.ideas_post);
 app.post('/idea_comment', ensureAuth, routes.idea_comment);
 
 
-
 app.use(function(req, res) {
-	res.status(404).end('error');
+  res.render('404', { 
+    title: "404: File not found"
+  });
 });
+
 
 // Make sure user is authenticated middleware
 function ensureAuth(req, res, next) {
