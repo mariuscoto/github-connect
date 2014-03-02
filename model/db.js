@@ -1,4 +1,3 @@
-var config = require('../lib/config')
 var mongoose = require( 'mongoose' );
 var Schema   = mongoose.Schema;
  
