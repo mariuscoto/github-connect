@@ -5,6 +5,7 @@ var mongoose = require('mongoose');
 var Users = mongoose.model('Users');
 var Ideas = mongoose.model('Ideas');
 var IdeaComments = mongoose.model('IdeaComments');
+var markdown = require( "markdown" ).markdown;
 var app = express();
 
 exports.index = function(req, res) {
@@ -277,12 +278,15 @@ exports.idea = function(req, res) {
   if (req.route.path == "/idea-team") tab = "/team";
   else if (req.route.path == "/idea-plan") tab = "/plan";
 
-	Ideas
+  Ideas
 	.findOne({ '_id': req.query.id })
 	.exec(function(err, idea) {
 		if (!idea) {
 			res.redirect('/ideas');
 		} else {
+      
+      // Markdown idea plan
+      idea.plan = markdown.toHTML(idea.plan);
       
       Users.findOne({ 'user_name': idea.user_name}, function (err, cuser) {
         if (err) return handleError(err);
