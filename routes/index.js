@@ -282,6 +282,9 @@ exports.idea = function(req, res) {
       
       Users.findOne({ 'user_name': idea.user_name}, function (err, cuser) {
         if (err) return handleError(err);
+        
+        // prettify date
+        cuser.last_seen_short = (cuser.last_seen.toString()).substring(0, 15);
 
         Users.find({ 'user_id': idea.team }, function(err, project_team) {
           if (err) return handleError(err);

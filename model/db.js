@@ -11,6 +11,7 @@ var Users = new Schema({
 	favorites:	    [String],
 	join_github:    String,
 	join_us:	    	Date,
+  last_seen:      Date,
 	repos:          [Repo],
 	points_repos:   Number,
 	tentacles:			{type: Number, default: 0}

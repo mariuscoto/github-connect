@@ -154,7 +154,12 @@ everyauth
 		.findOne({ 'user_id': usersByGhId[ghUser.id].github.id }, 'user_name', function (err, user) {
 			if (err) return handleError(err);
 	    if (user != null) {
-      	console.log("* User " + user.user_name + " logged in.");
+        // update last_seen
+				var conditions = {user_id: usersByGhId[ghUser.id].github.id};
+				var update = {$set: {last_seen: Date.now()}};
+				Users.update(conditions, update, function (err, num) {
+					console.log("* User " + user.user_name + " logged in.");
+				});
 	    } else {
 
 				// Import data from github
@@ -166,7 +171,8 @@ everyauth
 					avatar_url: usersByGhId[ghUser.id].github.avatar_url,
 					location: usersByGhId[ghUser.id].github.location,
 					join_github: usersByGhId[ghUser.id].github.created_at,
-					join_us: Date.now()
+					join_us: Date.now(),
+          last_seen: Date.now()
 				}).save (function (err, user, count) {
 					console.log("* User " + user.user_name + " added.");
 				});

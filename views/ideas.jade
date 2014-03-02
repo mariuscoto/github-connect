@@ -75,7 +75,7 @@ block content
             img(src=cuser.avatar_url, width="50px", height="50px")
             a(href="/profile?id=" + cuser.user_id)= cuser.user_name
             br
-            | last seen
+            | last seen on #{cuser.last_seen_short}
             
           a(href="/idea/fav?id=" + idea._id)
             input.btn.btn-success(type='submit', value='Fav').idea-desc-buttom-btn
@@ -181,6 +181,7 @@ block content
                   img(src=u.avatar_url)
                 a(href='/profile?id=' + u.uid)= u.user_name
                 p= u.points_repos
+                p Last seen on #{u.last_seen}
           - else
             p Not ready yet.
 
