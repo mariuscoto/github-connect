@@ -1,6 +1,6 @@
 var express = require('express');
 var app = module.exports = express();
-var global.config = [];
+global.config = [];
 
 app.configure('development', function(){
 	app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
