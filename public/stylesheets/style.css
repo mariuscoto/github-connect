@@ -238,6 +238,11 @@ a:hover {
     padding-right: 20px;
 }
 
+#idea-table-header a:link,
+#idea-table-header a:visited {
+    color: rgb(65, 131, 196);
+}
+
 .idea-title-text {
     width: 725px;
     height: 20px;

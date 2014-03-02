@@ -96,7 +96,7 @@ exports.ideas = function(req, res) {
 			for (var i=0; i<ideas.length; i++) {
 				// mark favorites
 				if (user != null && user.favorites.indexOf(ideas[i]._id) > -1)
-					ideas[i].fav = "yes";
+					ideas[i].fav = true;
 				// format date
 				ideas[i].date_post_short = (ideas[i].date_post.toString()).substring(0, 15);
 				// shorten description
@@ -129,6 +129,16 @@ exports.ideas_user = function(req, res) {
 		.find({ 'uid': user.user_id })
 		.sort(sort_type)
 		.exec(function(err, ideas) {
+      for (var i=0; i<ideas.length; i++) {
+				// mark favorites
+				if (user != null && user.favorites.indexOf(ideas[i]._id) > -1)
+					ideas[i].fav = true;
+				// format date
+				ideas[i].date_post_short = (ideas[i].date_post.toString()).substring(0, 15);
+				// shorten description
+				if (ideas[i].description.length > CHAR_LIMIT)
+					ideas[i].description = (ideas[i].description).substring(0, CHAR_LIMIT) + " [...]";
+			}
 			res.render('ideas', {
 				title: "Ideas",
 				user: user,
@@ -155,12 +165,24 @@ exports.ideas_favorites = function(req, res) {
     .find({ _id: { $in: user.favorites }})
     .sort(sort_type)
     .exec(function(err, ideas) {
+      for (var i=0; i<ideas.length; i++) {
+				// mark favorites
+				if (user != null && user.favorites.indexOf(ideas[i]._id) > -1)
+					ideas[i].fav = true;
+				// format date
+				ideas[i].date_post_short = (ideas[i].date_post.toString()).substring(0, 15);
+				// shorten description
+				if (ideas[i].description.length > CHAR_LIMIT)
+					ideas[i].description = (ideas[i].description).substring(0, CHAR_LIMIT) + " [...]";
+			}
+      
       if (ideas == null) {
         res.redirect('/ideas');
       } else {
         res.render('ideas', {
           title: "fav ideas",
           user: user,
+          sort: req.query.sort,
           tab: "/favorites",
           ideas: ideas
         });
@@ -216,7 +238,7 @@ exports.idea_add_fav = function(req, res) {
   Users.update(conditions, update, callback);
 
   function callback (err, num) {
-		res.redirect('/idea?id=' + req.query.id);
+		res.json({success: true});
   }
 };
 
@@ -228,7 +250,7 @@ exports.idea_remove_fav = function(req, res) {
   Users.update(conditions, update, callback);
 
   function callback (err, num) {
-		res.redirect('/idea?id=' + req.query.id);
+		res.json({success: true});
   }
 };
 

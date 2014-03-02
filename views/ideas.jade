@@ -100,51 +100,56 @@ block content
     
   #content 
     - if (ideas)
-      h1 Ideas list
-      #idea-table-header
-        ul
-          li
-            - if (sort == "most_recent")
-              | Most recent
-            - else
-              a(href='/ideas' + tab + '?sort=most_recent') Most recent
-          li
-            - if (sort == "most_viewed")
-              | Most visited
-            - else
-              a(href='/ideas' + tab + '?sort=most_viewed') Most visited
-          li
-            - if (sort == "most_commented")
-              | Most commented
-            - else
-              a(href='/ideas' + tab + '?sort=most_commented') Most commented
+      - if (ideas.length != 0)
+        h1 Ideas list
+        #idea-table-header
+          ul
+            li
+              - if (sort == "most_recent")
+                | Most recent
+              - else
+                a(href='/ideas' + tab + '?sort=most_recent') Most recent
+            li
+              - if (sort == "most_viewed")
+                | Most visited
+              - else
+                a(href='/ideas' + tab + '?sort=most_viewed') Most visited
+            li
+              - if (sort == "most_commented")
+                | Most commented
+              - else
+                a(href='/ideas' + tab + '?sort=most_commented') Most commented
 
       .left
-        .ideas-bubble
-          - each idea in ideas
-            .idea
-              .idea-title
-                .idea-title-text
-                  a(href='/idea?id=' + idea._id)= idea.title
+        - if (ideas.length != 0)
+          .ideas-bubble
+            - each idea in ideas
+              .idea
+                .idea-title
+                  .idea-title-text
+                    a(href='/idea?id=' + idea._id)= idea.title
 
-                - if (idea.fav != "yes")
-                  a(href='/idea/fav?id=' + idea._id)
-                    .idea-title-fav
-                - else
-                  a(href='/idea/unfav?id=' + idea._id)
-                    .idea-title-fav-selected
+                  - if (!idea.fav)
+                    .idea-title-fav(id='#{idea._id}')
+                  - else
+                    .idea-title-fav-selected(id='#{idea._id}')
 
-              .idea-content
-                p= idea.description
-              .idea-footer
-                .idea-footer-left
-                  .idea-footer-comments
-                    = idea.comments_num
-                .idea-footer-right
-                  | by 
-                  a(href='/profile?id=' + idea.uid)= idea.user_name 
-                  | , 
-                  = idea.date_post_short
+                .idea-content
+                  p= idea.description
+                .idea-footer
+                  .idea-footer-left
+                    .idea-footer-comments
+                      = idea.comments_num
+                  .idea-footer-right
+                    | by 
+                    a(href='/profile?id=' + idea.uid)= idea.user_name 
+                    | , 
+                    = idea.date_post_short
+        - else
+          - if (tab == "/favorites")
+            h3 No have no favorite ideas.
+          - if (tab == "/user")
+            h3 No have not added any ideas.
 
       .right
         .submenu
@@ -153,12 +158,12 @@ block content
               .submenu-item All
             - else
               .submenu-item-selected All
-          a(href='/ideas/favorites')
+          a(href='/ideas-favorites')
             - if (tab == "/favorites")
               .submenu-item-selected Favorites
             - else
               .submenu-item Favorites
-          a(href='/ideas/user')
+          a(href='/ideas-user')
             - if (tab == "/user")
               .submenu-item-selected Mine
             - else

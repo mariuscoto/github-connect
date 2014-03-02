@@ -282,11 +282,11 @@ app.get('/profile', routes.profile);
 app.get('/projects', routes.projects);
 
 app.get('/ideas', routes.ideas);
-app.get('/ideas/favorites', ensureAuth, routes.ideas_favorites);
-app.get('/ideas/user', ensureAuth, routes.ideas_user);
+app.get('/ideas-favorites', ensureAuth, routes.ideas_favorites);
+app.get('/ideas-user', ensureAuth, routes.ideas_user);
 
-app.get('/idea/fav', ensureAuth, routes.idea_add_fav);
-app.get('/idea/unfav', ensureAuth, routes.idea_remove_fav);
+app.post('/idea/fav', ensureAuth, routes.idea_add_fav);
+app.post('/idea/unfav', ensureAuth, routes.idea_remove_fav);
 
 app.get('/join-team', ensureAuth, routes.join_team);
 

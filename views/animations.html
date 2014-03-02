@@ -56,3 +56,35 @@ $('.flag').click(function () {
   }
 });
 </script>
+
+<script>
+$('.idea-title-fav').click(function () {
+  // click just once
+  if (this.className == "idea-title-fav") {
+    var id = this.id;
+    $.ajax({
+     url: 'idea/fav?id=' + this.id,
+     type: "POST",
+     success: function(response) {
+       if (response.success)
+         document.getElementById(id).setAttribute("class", "idea-title-fav-selected");
+     }
+    });
+  }
+});
+  
+$('.idea-title-fav-selected').click(function () {
+  // click just once
+  if (this.className == "idea-title-fav-selected") {
+    var id = this.id;
+    $.ajax({
+     url: 'idea/unfav?id=' + this.id,
+     type: "POST",
+     success: function(response) {
+       if (response.success)
+         document.getElementById(id).setAttribute("class", "idea-title-fav");
+     }
+    });
+  }
+});
+</script>
