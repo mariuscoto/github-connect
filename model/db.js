@@ -24,7 +24,7 @@ var Ideas = new Schema({
 	lang:           String,
 	plan:           String,
 	date_post:      Date,
-	team:           [Users],
+	team:           [Number],
 	comments_num:   {type: Number, default: 0}
 });
 
@@ -34,7 +34,8 @@ var IdeaComments = new Schema({
 	idea:       String,
 	content:		String,
 	date:       Date,
-  upvotes:    [Number]
+  upvotes:    [Number],
+  flags:      [Number]
 });
 
 var Repo = new Schema({

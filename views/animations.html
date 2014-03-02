@@ -30,8 +30,27 @@ $('.upvote').click(function () {
      url: 'upvote?id=' + this.id,
      type: "POST",
      success: function(response) {
-       if (response.success)
+       if (response.success) {
          document.getElementById(id).setAttribute("class", "upvoted");
+         document.getElementById(id + '#').innerHTML = parseInt(document.getElementById(id + '#').innerHTML) + 1;
+       }
+     }
+    });
+  }
+});
+</script>
+
+<script>
+$('.flag').click(function () {
+  // click just once
+  if (this.className == "flag") {
+    var fid = this.id;
+    $.ajax({
+     url: 'flag?id=' + this.id.substring(0, this.id.length-1),
+     type: "POST",
+     success: function(response) {
+       if (response.success)
+         document.getElementById(fid).setAttribute("class", "flagged");
      }
     });
   }

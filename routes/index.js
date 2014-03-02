@@ -38,6 +38,7 @@ exports.login = function(req, res) {
 
   res.render('login', { 
     title: "Log in",
+    tab: req.query.rf
   });
 };
 
@@ -233,26 +234,22 @@ exports.idea_remove_fav = function(req, res) {
 
 exports.join_team = function(req, res) {
 	if (!req.user) res.redirect('/login');
-  
-  Users.findOne ({ 'user_id': req.user.github.id }, function (err, user) {
-    if (err) return handleError(err);
 
-    var conditions = {_id: req.query.id};
-    var update = {$push: {team: user}};
-    Ideas.update(conditions, update, callback);
+  var conditions = {_id: req.query.id};
+  var update = {$addToSet: {team: req.user.github.id}};
+  Ideas.update(conditions, update, callback);
 
-    function callback (err, num) {
-      res.redirect('/idea?id=' + req.query.id);
-    }
-  });
+  function callback (err, num) {
+    res.redirect('/idea?id=' + req.query.id);
+  }
 };
 
 exports.idea = function(req, res) {
   if (!req.query.id) res.redirect('/ideas');
   
-  var tab;  
-  if (req.route.path == "/idea/team") tab = "/team";
-  else if (req.route.path == "/idea/plan") tab = "/plan";
+  var tab, team;  
+  if (req.route.path == "/idea-team") tab = "/team";
+  else if (req.route.path == "/idea-plan") tab = "/plan";
 
 	Ideas
 	.findOne({ '_id': req.query.id })
@@ -261,40 +258,56 @@ exports.idea = function(req, res) {
 			res.redirect('/ideas');
 		} else {
       
-      Users.findOne ({ 'user_name': idea.user_name}, function (err, cuser) {
+      Users.findOne({ 'user_name': idea.user_name}, function (err, cuser) {
         if (err) return handleError(err);
+
+        Users.find({ 'user_id': idea.team }, function(err, project_team) {
+          if (err) return handleError(err);
         
-        IdeaComments
-        .find({ 'idea': req.query.id })
-        .exec(function(err, comments) {
+          IdeaComments
+          .find({ 'idea': req.query.id })
+          .exec(function(err, comments) {
 
-          if (req.user)
-            Users.findOne ({ 'user_id': req.user.github.id }, function (err, user) {
-              if (err) return handleError(err);
-              if (user)
-                // check for already voted comments
-                for (i in comments)
-                  if (comments[i].upvotes.indexOf(user.user_id) > -1)
-                    comments[i].upvote = true;
+            if (req.user)
+              Users.findOne ({ 'user_id': req.user.github.id }, function (err, user) {
+                if (err) return handleError(err);
+                
+                // see if user joined team
+                if (user && idea.team.indexOf(user.user_id) > -1)
+                  user.joined = true;
+                
+                if (user) {
+                  for (i in comments) {
+                    // check for already voted comments
+                    if (comments[i].upvotes.indexOf(user.user_id) > -1)
+                      comments[i].upvote = true;                
+                    // check for flagged comments
+                    if (comments[i].flags.indexOf(user.user_id) > -1)
+                      comments[i].flag = true;
+                  }
+                }
 
+                res.render('ideas', {
+                  title: idea.title,
+                  cuser: cuser,
+                  user: user,
+                  team: project_team,
+                  idea: idea,
+                  tab: tab,
+                  comments: comments
+                });
+              });
+
+            else
               res.render('ideas', {
                 title: idea.title,
-                cuser: cuser,
-                user: user,
                 idea: idea,
+                cuser: cuser,
+                team: project_team,
                 tab: tab,
                 comments: comments
               });
-            });
-
-          else
-            res.render('ideas', {
-              title: idea.title,
-              idea: idea,
-              cuser: cuser,
-              tab: tab,
-              comments: comments
-            });
+          });
         });
       });
 		}
@@ -361,6 +374,20 @@ exports.upvote = function(req, res) {
     IdeaComments.update(conditions, update, callback);
     function callback (err, num) {
       console.log("* " + req.user.github.login + " upvoted on " + req.query.id);
+      res.json({success: true});
+    };
+  }
+};
+
+exports.flag = function(req, res) {
+  if (!req.user) res.json({success: false});
+  else {
+    // increment flags number
+    var conditions = {_id: req.query.id};
+    var update = {$addToSet: {flags: req.user.github.id}};
+    IdeaComments.update(conditions, update, callback);
+    function callback (err, num) {
+      console.log("* " + req.user.github.login + " flagged " + req.query.id);
       res.json({success: true});
     };
   }

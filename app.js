@@ -288,15 +288,16 @@ app.get('/ideas/user', ensureAuth, routes.ideas_user);
 app.get('/idea/fav', ensureAuth, routes.idea_add_fav);
 app.get('/idea/unfav', ensureAuth, routes.idea_remove_fav);
 
-app.get('/teams', ensureAuth, routes.join_team);
+app.get('/join-team', ensureAuth, routes.join_team);
 
 app.get('/idea', routes.idea);
-app.get('/idea/team', routes.idea);
-app.get('/idea/plan', routes.idea);
-app.post('/upvote', routes.upvote);
+app.get('/idea-team', routes.idea);
+app.get('/idea-plan', routes.idea);
+app.post('/upvote', ensureAuth, routes.upvote);
+app.post('/flag', ensureAuth, routes.flag);
 
 app.post('/ideas', routes.ideas_post);
-app.post('/idea_comment', routes.idea_comment);
+app.post('/idea_comment', ensureAuth, routes.idea_comment);
 
 
 

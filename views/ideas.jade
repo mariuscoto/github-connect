@@ -8,6 +8,7 @@ block content
           a(href='/login') login
           |  to comment or post your own ideas.
     .spacer
+    .spacer
 
   #menu
     - if (!idea)
@@ -84,8 +85,14 @@ block content
               input.btn.btn-success(type='submit', value='Edit').idea-desc-buttom-btn
 
           - else
-            a(href="/teams?id=" + idea._id)
-              input.btn.btn-success(type='submit', value='Join Team').idea-desc-buttom-btn
+            - if (user && !user.joined)
+              a(href="/join-team?id=" + idea._id)
+                input.btn.btn-success(type='submit', value='Join Team').idea-desc-buttom-btn
+            - if (!user)
+              a(href="/login?rf=join_team")
+                input.btn.btn-success(type='submit', value='Join Team').idea-desc-buttom-btn
+            - if (user && user.joined)
+              input.btn.btn-success(type='submit', value='Joined', disabled).idea-desc-buttom-btn
 
           
         .spacer
@@ -162,9 +169,13 @@ block content
 
       - if (tab == "/team")
         .left
-          - if (idea.team && idea.team.length != 0)
-            - each t in idea.team
-              p= t.user_name
+          - if (team && team.length != 0)
+            - each u in team
+              .team-member
+                .team-member-avatar
+                  img(src=u.avatar_url)
+                a(href='/profile?id=' + u.uid)= u.user_name
+                p= u.points_repos
           - else
             p Not ready yet.
 
@@ -183,13 +194,16 @@ block content
                 a(href='/profile?id=' + c.uid)= c.user_name + ": "
                 = c.content
                 .comment-bottom
-                  .upvotes= c.upvotes.length
+                  .upvotes(id="#{c._id}#")= c.upvotes.length
                   - if (c.upvote)
                     .upvoted(id="#{c._id}") + 
                   - else
                     .upvote(id="#{c._id}") + 
-                  a(href='/flag?id=' + c._id) Flag 
-                  | Posted on 12313.321312.31231
+                  - if (c.flag)
+                    .flagged(id="#{c._id}f") Flag 
+                  - else
+                    .flag(id="#{c._id}f") Flag 
+                  | Posted on #{c.date}
           - else
             h1 Be the first one to comment.
 
@@ -206,12 +220,12 @@ block content
             .submenu-item-selected Comments
           - else
             .submenu-item Comments
-        a(href='/idea/team?id=' + idea._id)
+        a(href='/idea-team?id=' + idea._id)
           - if (tab == "/team")
             .submenu-item-selected Team
           - else
             .submenu-item Team
-        a(href='/idea/plan?id=' + idea._id)
+        a(href='/idea-plan?id=' + idea._id)
           - if (tab == "/plan")
             .submenu-item-selected Plan
           - else

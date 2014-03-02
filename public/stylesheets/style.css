@@ -5,10 +5,13 @@ body {
     background-repeat: repeat-x;
 }
 
-a:link {text-decoration:none;}
-a:visited {text-decoration:none;}
-a:hover {text-decoration:underline;}
-a:active {text-decoration:underline;}
+a:link, a:visited, a:active {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
 
 #container {
     width: 980px;
@@ -49,36 +52,17 @@ a:active {text-decoration:underline;}
     padding-right: 20px;
 }
 
-#nav a:link {
+#nav a:link, a:active, a:visited {
     font-size: 15px;
     font-weight: bold;
     color: rgb(51, 51, 51);
     font-family: Helvetica,arial,freesans;
     text-decoration: none;
-}
-
-#nav a:active {
-    font-size: 15px;
-    font-weight: bold;
-    color: rgb(51, 51, 51);
-    font-family: Helvetica,arial,freesans;
-    text-decoration: none;
-}
-
-#nav a:visited {
-    font-size: 15px;
-    font-weight: bold;
-    color: rgb(51, 51, 51);
-    font-family: Helvetica,arial,freesans;
-    text-decoration: none;
+    outline: none;
 }
 
 #nav a:hover {
-    font-size: 15px;
-    font-weight: bold;
     color: rgb(65, 131, 196);
-    font-family: Helvetica,arial,freesans;
-    text-decoration: none;
 }
 
 #controls {
@@ -103,7 +87,6 @@ a:active {text-decoration:underline;}
     font-family: Helvetica,arial,freesans;
     text-decoration: none;
 }
-
 
 #body {
     clear: both;
@@ -317,6 +300,11 @@ a:active {text-decoration:underline;}
     text-align: right;
 }
 
+.idea-footer-right a:link,
+.idea-footer-right a:visited {
+    color: rgb(65, 131, 196);
+}
+
 #footer {
     width: 960px;
     height: 100px;
@@ -356,6 +344,11 @@ a:active {text-decoration:underline;}
     padding-right: 10px;
 }
 
+#menu-footer a:link,
+#menu-footer a:visited {
+  color: rgb(65, 131, 196);
+}
+
 .idea {
     width: 760px;
     margin: 0px;
@@ -374,20 +367,21 @@ a:active {text-decoration:underline;}
     border-bottom-width: 1px;
     border-bottom-style: solid;
 }
-.idea-title a:link {
-    font-size: 15px;
-    font-weight: bold;
-    color: rgb(51, 51, 51);
-    font-family: Helvetica,arial,freesans;
-    text-decoration: none;
-}
-.idea-title a:hover {
+
+.idea-title a:link, 
+.idea-title a:visited {
     font-size: 15px;
     font-weight: bold;
     color: rgb(65, 131, 196);
     font-family: Helvetica,arial,freesans;
     text-decoration: none;
 }
+
+.idea-title a:hover {
+    color: rgb(65, 131, 196);
+    text-decoration: underline;
+}
+
 .idea-content {
     width: 740px;
     height: 60px;
@@ -435,6 +429,38 @@ a:active {text-decoration:underline;}
   margin-right: 5px;
 }
 
+.flag {
+  float: left;
+  margin-right: 5px;
+}
+
+.flag:hover {
+  float: left;
+  margin-right: 5px;
+  background-color: green;
+}
+
+.flagged {
+  background-color: red;
+  float: left;
+  margin-right: 5px;
+}
+
+.team-member {
+  width: 500px;
+  height: 80px;
+  padding: 5px;
+  margin-right: 240px;
+  margin-bottom: 2px;
+  vertical-align: middle;
+  background-color: #E6F1F6;
+}
+
+.team-member-avatar {
+  padding-right: 5px;
+  float: left;
+}
+
 .left {
     width: 760px;
     float: left;
@@ -464,24 +490,24 @@ a:active {text-decoration:underline;}
     width: 980px;
     height: 95px;
     padding-top: 5px;
-    background-color: rgb(30, 104, 35);
+    background-color: rgba(58, 172, 58, 0.8);
     border-radius: 10px;
+    vertical-align: middle;
 }
 
 .announcement-inner {
     width: 964px;
-    height: 65px;
-    padding-top: 20px;
+    height: 50px;
+    padding-top: 35px;
     margin-left: auto;
     margin-right: auto;
     color: #FFFFFF;
-    font-size: 15px;
+    font-size: 16px;
     text-align: center;
     font-family: Helvetica,arial,freesans;
     text-decoration: none;
     vertical-align: middle;
-    border: 2px dashed #fff;
-    border-radius: 10px;
+
 }
 
 .submenu {
@@ -504,28 +530,30 @@ a:active {text-decoration:underline;}
 
 .submenu-item {
     width: 100px;
-    height: 25px;
+    height: 30px;
     padding-left: 20px;
     padding-top: 15px;
     border-left: thin solid #000000;
-    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.05);
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.05);
+    outline: none;
 }
 
 .submenu-item-selected {
     width: 100px;
-    height: 25px;
+    height: 30px;
     padding-left: 20px;
     padding-top: 15px;
     border-right: 2px solid red;
     box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.05);
+    outline: none;
 }
 
 .submenu-item:hover {
     width: 100px;
-    height: 25px;
+    height: 30px;
     padding-left: 20px;
     padding-top: 15px;
-    box-shadow: 2px 0px 0px rgb(204, 204, 204) inset;
+    box-shadow: 3px 0px 0px rgba(0, 0, 0, 0.1) inset;
 }
 
 .profile-left {

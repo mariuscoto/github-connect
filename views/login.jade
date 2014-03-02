@@ -1,6 +1,17 @@
 extends layout
 
 block content
+  - if(!everyauth.loggedIn && tab)
+    .announcement
+      .announcement-inner
+        - if (tab == "join_team")
+          p Please log in to join a team and start developing. You just need a GitHub account.
+        - if (tab == "join_team")
+          p Please log in to join a team and start developing. You just need a GitHub account.
+    .spacer
+    .spacer
+    
+    
   h1= title
   - if (!everyauth.loggedIn)
     .card.css3-shadow
@@ -20,6 +31,14 @@ block content
 
   h3 Why join Github-connect:
   p
-    | * get points for your contributions and compare it against your friends
+    | * get points for your contributions and compare your score against your friends
     br
-    | * bring your project ideas against our community and get help implementing them
+    | * bring your project ideas against our community and see how they grow
+    br
+    | * get inspired by other ideas and implement new features into your apps
+    br
+    | * easily find projects that need your help
+    br
+    | * socialize and code
+    
+  .spacer
