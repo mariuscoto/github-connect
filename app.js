@@ -1,5 +1,6 @@
 var express = require('express');
 var app = module.exports = express();
+var config = [];
 
 app.configure('development', function(){
 	app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
