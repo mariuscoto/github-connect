@@ -194,18 +194,22 @@ exports.ideas_favorites = function(req, res) {
 exports.ideas_post = function(req, res) {
   if (!req.user) res.redirect('/login');
   
-  new Ideas({
-    uid : req.user.github.id,
-    user_name : req.user.github.login,
-    title : req.body.title,
-    description : req.body.description,
-    lang : req.body.lang,
-    plan: req.body.plan,
-    date_post: Date.now()
-    }).save( function( err, todo, count ) {
-      console.log("* " + req.user.github.login + " added idea.");
-      res.redirect('/ideas');
-  });
+  // add idea only if it has a title
+  if (req.body.title)
+    new Ideas({
+      uid : req.user.github.id,
+      user_name : req.user.github.login,
+      title : req.body.title,
+      description : req.body.description,
+      lang : req.body.lang,
+      plan: req.body.plan,
+      date_post: Date.now()
+      }).save( function( err, todo, count ) {
+        console.log("* " + req.user.github.login + " added idea.");
+        res.redirect('/ideas');
+    });
+  else
+    res.redirect('/ideas');
 };
 
 exports.idea_comment = function(req, res) {
