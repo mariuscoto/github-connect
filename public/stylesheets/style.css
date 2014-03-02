@@ -6,6 +6,7 @@ body {
 }
 
 a:link, a:visited, a:active {
+  color: rgb(65, 131, 196);
   text-decoration: none;
 }
 
@@ -52,7 +53,9 @@ a:hover {
     padding-right: 20px;
 }
 
-#nav a:link, a:active, a:visited {
+#nav a:link,
+#nav a:active,
+#nav a:visited {
     font-size: 15px;
     font-weight: bold;
     color: rgb(51, 51, 51);
@@ -113,8 +116,6 @@ a:hover {
 #idea-new label {
     font-weight: bold;
 }
-
-
 
 #left-mini-title {
     width: 425px;
@@ -662,6 +663,10 @@ a:hover {
     width: 400px;
     font-weight: bold;
     float: left;
+}
+
+.profile-repo-name a {
+    color: rgb(65, 131, 196);
 }
 
 .profile-repo-desc {
