@@ -1,3 +1,4 @@
+var config = require('../lib/config')
 var mongoose = require( 'mongoose' );
 var Schema   = mongoose.Schema;
  
@@ -57,5 +58,4 @@ mongoose.model( 'Ideas', Ideas );
 mongoose.model( 'IdeaComments', IdeaComments );
 mongoose.model( 'Repo', Repo );
  
-mongoose.connect('mongodb://marius:marius@troup.mongohq.com:10059/github-connect' );
-//mongoose.connect( 'mongodb://localhost/expresaa' );
+mongoose.connect('mongodb://'+config.db_name+':'+config.db_pass+'@troup.mongohq.com:10059/github-connect' );
