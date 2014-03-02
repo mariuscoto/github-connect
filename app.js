@@ -8,8 +8,6 @@ var express = require('express')
 
 // DB reference
 var Repo = mongoose.model('Repo');
-
-config = require('./lib/config')
 var app = module.exports = express();
 
 var usersById = {};
@@ -22,6 +20,22 @@ var POINTS_REPO = 20;
 var POINTS_FORK = 10;
 var POINTS_WATCH = 1;
 var POINTS_PULL = 30;
+
+
+app.configure('development', function(){
+	app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+  config = require('./lib/config')
+});
+ 
+app.configure('production', function(){
+	app.use(express.errorHandler());
+  config.gh_clientId = process.env.clientId;
+  config.gh_secret = process.env.secret;
+  config.redis_secret = process.env.redis_secret;
+  config.db_name = process.env.db_name;
+  config.db_pass = process.env.db_pass;
+});
+
 
 function addUser (source, sourceUser) {
 	var user;
@@ -262,15 +276,6 @@ app.configure(function() {
 	app.use(express.methodOverride());
 	app.use(app.router);
 	app.use(express.static(__dirname + '/public'));
-});
-
-
-app.configure('development', function(){
-	app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-});
- 
-app.configure('production', function(){
-	app.use(express.errorHandler());
 });
 
 
