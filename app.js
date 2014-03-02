@@ -1,26 +1,5 @@
-var express = require('express')
-  , db = require('./model/db')
-  , fs = require('fs')
-  , http = require('http')
-  , https = require('https')
-  , everyauth = require('everyauth')
-  , mongoose = require('mongoose');
-
-// DB reference
-var Repo = mongoose.model('Repo');
+var express = require('express');
 var app = module.exports = express();
-
-var usersById = {};
-var nextUserId = 0;
-var repos, id, user;
-global.repos = [];
-
-// Points macros
-var POINTS_REPO = 20;
-var POINTS_FORK = 10;
-var POINTS_WATCH = 1;
-var POINTS_PULL = 30;
-
 
 app.configure('development', function(){
 	app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
@@ -35,6 +14,30 @@ app.configure('production', function(){
   config.db_name = process.env.db_name;
   config.db_pass = process.env.db_pass;
 });
+
+var db = require('./model/db')
+  , fs = require('fs')
+  , http = require('http')
+  , https = require('https')
+  , everyauth = require('everyauth')
+  , mongoose = require('mongoose');
+
+// DB reference
+var Repo = mongoose.model('Repo');
+
+var usersById = {};
+var nextUserId = 0;
+var repos, id, user;
+global.repos = [];
+
+// Points macros
+var POINTS_REPO = 20;
+var POINTS_FORK = 10;
+var POINTS_WATCH = 1;
+var POINTS_PULL = 30;
+
+
+
 
 
 function addUser (source, sourceUser) {
