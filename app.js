@@ -1,19 +1,19 @@
 var express = require('express');
 var app = module.exports = express();
-var config = [];
+var global.config = [];
 
 app.configure('development', function(){
 	app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-  config = require('./lib/config')
+  global.config = require('./lib/config')
 });
  
 app.configure('production', function(){
 	app.use(express.errorHandler());
-  config.gh_clientId = process.env.clientId;
-  config.gh_secret = process.env.secret;
-  config.redis_secret = process.env.redis_secret;
-  config.db_name = process.env.db_name;
-  config.db_pass = process.env.db_pass;
+  global.config.gh_clientId = process.env.clientId;
+  global.config.gh_secret = process.env.secret;
+  global.config.redis_secret = process.env.redis_secret;
+  global.config.db_name = process.env.db_name;
+  global.config.db_pass = process.env.db_pass;
 });
 
 var db = require('./model/db')
@@ -155,8 +155,8 @@ everyauth
 
 everyauth
 .github
-.appId(config.gh_clientId)
-.appSecret(config.gh_secret)
+.appId(global.config.gh_clientId)
+.appSecret(global.config.gh_secret)
 .findOrCreateUser( function (sess, accessToken, accessTokenExtra, ghUser) {
 
 	sess.oauth = accessToken;
@@ -274,7 +274,7 @@ app.configure(function() {
 	app.use(express.bodyParser());
 
 	app.use(express.cookieParser());
-	app.use(express.session({secret: config.redis_secret}));
+	app.use(express.session({secret: global.config.redis_secret}));
 	app.use(everyauth.middleware());
 
 	app.use(express.methodOverride());
