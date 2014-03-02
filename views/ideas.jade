@@ -77,8 +77,15 @@ block content
             br
             | last seen on #{cuser.last_seen_short}
             
-          a(href="/idea/fav?id=" + idea._id)
-            input.btn.btn-success(type='submit', value='Fav').idea-desc-buttom-btn
+          - if (!user)
+            a(href="/login?rf=fav")
+              input.btn.btn-success(type='submit', value='Fav').idea-desc-buttom-btn
+          - if (user && !user.faved)
+            a(href="/idea/fav?id=" + idea._id)
+              input.btn.btn-success(type='submit', value='Fav', disabled).idea-desc-buttom-btn
+          - if (user && user.faved)
+            a(href="/idea/unfav?id=" + idea._id)
+              input.btn.btn-success(type='submit', value='UnFav', disabled).idea-desc-buttom-btn
 
           - if (user && idea.uid == user.user_id)
             a(href="/edit?id=" + idea._id)
@@ -202,13 +209,13 @@ block content
                 .comment-bottom
                   .upvotes(id="#{c._id}#")= c.upvotes.length
                   - if (c.upvote)
-                    .upvoted(id="#{c._id}") + 
+                    .upvoted(id="#{c._id}")
                   - else
-                    .upvote(id="#{c._id}") + 
+                    .upvote(id="#{c._id}")
                   - if (c.flag)
-                    .flagged(id="#{c._id}f") Flag 
+                    .flagged(id="#{c._id}f")
                   - else
-                    .flag(id="#{c._id}f") Flag 
+                    .flag(id="#{c._id}f")
                   | Posted on #{c.date}
           - else
             h1 Be the first one to comment.
@@ -217,8 +224,9 @@ block content
             .comment
               form(method='post', action='/idea_comment?id=' + idea._id)
                 //textarea(name='content')
-                input.span5(name='content', type='text')
-                input(type='submit', value='Comment')
+                textarea.span5(name='content', type='text')
+                input.btn.btn-success(type='submit', value='Comment')
+                //input(type='submit', value='Comment')
 
       .right
         a(href='/idea?id=' + idea._id)

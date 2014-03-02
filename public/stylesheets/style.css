@@ -419,37 +419,49 @@ a:hover {
 }
 
 .upvote {
+  width: 20px;
+  height: 20px;
   float: left;
-  margin-right: 5px;
+  background-image: url('/images/upvote.png');
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .upvote:hover {
-  float: left;
-  margin-right: 5px;
-  background-color: green;
+  background-image: url('/images/upvoted.png');
 }
 
 .upvoted {
-  background-color: red;
+  width: 20px;
+  height: 20px;
   float: left;
-  margin-right: 5px;
+  background-image: url('/images/upvoted.png');
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .flag {
+  width: 20px;
+  height: 20px;
   float: left;
   margin-right: 5px;
+  background-image: url('/images/flag.png');
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .flag:hover {
-  float: left;
-  margin-right: 5px;
-  background-color: green;
+  background-image: url('/images/flagged.png');
 }
 
 .flagged {
-  background-color: red;
+  width: 20px;
+  height: 20px;
   float: left;
   margin-right: 5px;
+  background-image: url('/images/flagged.png');
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .team-member {

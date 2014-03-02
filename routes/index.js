@@ -300,6 +300,9 @@ exports.idea = function(req, res) {
                 // see if user joined team
                 if (user && idea.team.indexOf(user.user_id) > -1)
                   user.joined = true;
+                // see if user faved idea
+                if (user && user.favorites.indexOf(idea._id) > -1)
+                  user.faved = true;
                 
                 if (user) {
                   for (i in comments) {
