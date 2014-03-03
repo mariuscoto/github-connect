@@ -95,8 +95,8 @@ block content
               input.btn.btn-success(type='submit', value='UnFav', disabled).idea-desc-buttom-btn
 
           - if (user && idea.uid == user.user_id)
-            a(href="/edit?id=" + idea._id)
-              input.btn.btn-success(type='submit', value='Edit', disabled).idea-desc-buttom-btn
+            a(href="/idea-settings?id=" + idea._id)
+              input.btn.btn-success(type='submit', value='Edit').idea-desc-buttom-btn
 
           - else
             - if (user && !user.joined)
@@ -205,6 +205,30 @@ block content
             p!= idea.plan
           - else
             h1 Nothing planned at this moment.
+            
+      - else if (tab == "/settings")
+        .left
+          h3 Edit your idea
+            br
+            form(method='post', action='/idea-edit?id=' + idea._id)
+              label Preffered language
+                br
+                select.selectpicker.span5(name='lang', type='text')
+                  option C/C++
+                  option C#
+                  option F#
+                  option Java
+                  option Javascript
+                  option Objective-C
+                  option PHP
+                  option Python
+                  option Ruby
+                  option Other
+
+              label Description
+                br
+                textarea.span7(name='description', id='no_resize_textarea', rows="4")= idea.description
+              input.btn.btn-success(id='sub', type='submit', value='Update')
 
       - else
         .left
@@ -251,10 +275,10 @@ block content
             .submenu-item-selected Plan
           - else
             .submenu-item Plan
-        //- if (everyauth.loggedIn)
-          //a(href='/idea/settings?id=' + idea._id)
-            //- if (tab == "/settings")
-              //.submenu-item-selected Settings
-            //- else
-              //.submenu-item Settings
+        - if (user && idea.uid == user.user_id)
+          a(href='/idea-settings?id=' + idea._id)
+            - if (tab == "/settings")
+              .submenu-item-selected Settings
+            - else
+              .submenu-item Settings
     .spacer

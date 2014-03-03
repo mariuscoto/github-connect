@@ -277,6 +277,7 @@ exports.idea = function(req, res) {
   var tab, team;  
   if (req.route.path == "/idea-team") tab = "/team";
   else if (req.route.path == "/idea-plan") tab = "/plan";
+  else if (req.route.path == "/idea-settings") tab = "/settings";
 
   Ideas
 	.findOne({ '_id': req.query.id })
@@ -348,6 +349,26 @@ exports.idea = function(req, res) {
       });
 		}
 	});
+};
+
+exports.idea_edit = function(req, res) {
+  if (!req.user) res.redirect('/ideas');
+
+  Ideas
+	.findOne({ '_id': req.query.id })
+	.exec(function(err, idea) {
+    // allow only edits by owner
+    if (idea.uid != req.user.github.id) res.redirect('/ideas');
+        
+    // apply changes
+    var conditions = {_id: req.query.id};
+    var update = {$set: {description: req.body.description, lang : req.body.lang}};
+    Ideas.update(conditions, update, callback);
+    function callback (err, num) {
+      console.log("* " + req.user.github.login + " made changes to " + req.query.id);
+      res.redirect('/idea?id=' + req.query.id);
+    };
+  });
 };
 
 exports.contact = function(req, res) {

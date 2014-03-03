@@ -308,11 +308,13 @@ app.get('/join-team', ensureAuth, routes.join_team);
 app.get('/idea', routes.idea);
 app.get('/idea-team', routes.idea);
 app.get('/idea-plan', routes.idea);
+app.get('/idea-settings', routes.idea);
 app.post('/upvote', ensureAuth, routes.upvote);
 app.post('/flag', ensureAuth, routes.flag);
 
 app.post('/ideas', routes.ideas_post);
 app.post('/idea_comment', ensureAuth, routes.idea_comment);
+app.post('/idea-edit', ensureAuth, routes.idea_edit);
 
 
 app.use(function(req, res) {
