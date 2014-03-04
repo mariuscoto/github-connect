@@ -195,8 +195,8 @@ exports.ideas_favorites = function(req, res) {
 exports.ideas_post = function(req, res) {
   if (!req.user) res.redirect('/login');
   
-  // add idea only if it has a title
-  if (req.body.title)
+  // add idea only if it has a title and description
+  if (req.body.title && req.body.description)
     new Ideas({
       uid : req.user.github.id,
       user_name : req.user.github.login,
@@ -206,6 +206,23 @@ exports.ideas_post = function(req, res) {
       plan: req.body.plan,
       date_post: Date.now()
       }).save( function( err, todo, count ) {
+      
+        // post to facebook
+      	var options = {
+          host: "graph.facebook.com",
+          path: "/" + global.config.facebook_id + "/feed?message=" + req.body.description + "&access_token=" + global.config.facebook_token,
+          method: "POST",
+        };
+        var https = require('https');
+        var request = https.request(options, function(response){
+          var body = '';
+          response.on("data", function(chunk){ body+=chunk.toString("utf8"); });
+          response.on("end", function(){
+            console.log("* Idea posted to facebook page.");
+          });				
+        });
+        request.end();
+      
         console.log("* " + req.user.github.login + " added idea.");
         res.redirect('/ideas');
     });

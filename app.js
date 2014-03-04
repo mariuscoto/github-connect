@@ -14,6 +14,8 @@ app.configure('production', function(){
   global.config.redis_secret = process.env.redis_secret;
   global.config.db_name = process.env.db_name;
   global.config.db_pass = process.env.db_pass;
+  global.config.facebook_id = process.env.fb_id;
+  global.config.facebook_token = process.env.fb_token;
 });
 
 var db = require('./model/db')
