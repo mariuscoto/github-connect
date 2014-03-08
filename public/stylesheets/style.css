@@ -488,6 +488,10 @@ a:hover {
     float: left;
 }
 
+.left-plan {
+  padding-right: 50px;
+}
+
 .right {
     width: 140px;
     float: left;

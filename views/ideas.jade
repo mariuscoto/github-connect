@@ -201,11 +201,24 @@ block content
 
       - else if (tab == "/plan")
         .left
-          - if (idea.plan.length != 0)
-            p!= idea.plan
-          - else
-            h1 Nothing planned at this moment.
-            
+          .left-plan
+            - if (idea.plan.length != 0)
+              p!= idea.plan_md
+            - else
+              h1 Nothing planned at this moment.
+
+            - if (user && idea.uid == user.user_id)
+              a(href="/idea-plan-edit?id=" + idea._id)
+                input.btn.btn-success(type='submit', value='Edit')
+
+      - else if (tab == "/plan-edit")
+        .left
+          .left-plan
+            h3 Edit current plan
+            form(method='post', action='/idea-plan-edit?id=' + idea._id)
+              textarea.span9(name='plan', rows="10")= idea.plan
+              input.btn.btn-success(id='plan', type='submit', value='Update')
+          
       - else if (tab == "/settings")
         .left
           h3 Edit your idea
@@ -271,7 +284,7 @@ block content
           - else
             .submenu-item Team
         a(href='/idea-plan?id=' + idea._id)
-          - if (tab == "/plan")
+          - if (tab == "/plan" || tab == "/plan-edit")
             .submenu-item-selected Plan
           - else
             .submenu-item Plan

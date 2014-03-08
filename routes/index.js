@@ -294,6 +294,7 @@ exports.idea = function(req, res) {
   var tab, team;  
   if (req.route.path == "/idea-team") tab = "/team";
   else if (req.route.path == "/idea-plan") tab = "/plan";
+  else if (req.route.path == "/idea-plan-edit") tab = "/plan-edit";
   else if (req.route.path == "/idea-settings") tab = "/settings";
 
   Ideas
@@ -304,7 +305,7 @@ exports.idea = function(req, res) {
 		} else {
       
       // Markdown idea plan
-      idea.plan = markdown.toHTML(idea.plan);
+      idea.plan_md = markdown.toHTML(idea.plan);
       
       Users.findOne({ 'user_name': idea.user_name}, function (err, cuser) {
         if (err) return handleError(err);
@@ -384,6 +385,26 @@ exports.idea_edit = function(req, res) {
     function callback (err, num) {
       console.log("* " + req.user.github.login + " made changes to " + req.query.id);
       res.redirect('/idea?id=' + req.query.id);
+    };
+  });
+};
+
+exports.idea_plan_edit = function(req, res) {
+  if (!req.user) res.redirect('/ideas');
+
+  Ideas
+	.findOne({ '_id': req.query.id })
+	.exec(function(err, idea) {
+    // allow only edits by owner
+    if (idea.uid != req.user.github.id) res.redirect('/ideas');
+        
+    // apply changes
+    var conditions = {_id: req.query.id};
+    var update = {$set: {plan: req.body.plan}};
+    Ideas.update(conditions, update, callback);
+    function callback (err, num) {
+      console.log("* " + req.user.github.login + " made changes to plan " + req.query.id);
+      res.redirect('/idea-plan?id=' + req.query.id);
     };
   });
 };
