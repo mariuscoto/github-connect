@@ -14,6 +14,8 @@ app.configure('production', function(){
   global.config.redis_secret = process.env.redis_secret;
   global.config.db_name = process.env.db_name;
   global.config.db_pass = process.env.db_pass;
+  global.config.facebook_id = process.env.fb_id;
+  global.config.facebook_token = process.env.fb_token;
 });
 
 var db = require('./model/db')
@@ -308,17 +310,23 @@ app.get('/join-team', ensureAuth, routes.join_team);
 app.get('/idea', routes.idea);
 app.get('/idea-team', routes.idea);
 app.get('/idea-plan', routes.idea);
+app.get('/idea-plan-edit', routes.idea);
+app.get('/idea-settings', routes.idea);
 app.post('/upvote', ensureAuth, routes.upvote);
 app.post('/flag', ensureAuth, routes.flag);
 
 app.post('/ideas', routes.ideas_post);
 app.post('/idea_comment', ensureAuth, routes.idea_comment);
-
+app.post('/idea-edit', ensureAuth, routes.idea_edit);
+app.post('/idea-plan-edit', ensureAuth, routes.idea_plan_edit);
 
 
 app.use(function(req, res) {
-	res.status(404).end('error');
+  res.render('404', { 
+    title: "404: File not found"
+  });
 });
+
 
 // Make sure user is authenticated middleware
 function ensureAuth(req, res, next) {

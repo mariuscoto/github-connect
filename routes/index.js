@@ -5,6 +5,7 @@ var mongoose = require('mongoose');
 var Users = mongoose.model('Users');
 var Ideas = mongoose.model('Ideas');
 var IdeaComments = mongoose.model('IdeaComments');
+var markdown = require( "markdown" ).markdown;
 var app = express();
 
 exports.index = function(req, res) {
@@ -194,8 +195,8 @@ exports.ideas_favorites = function(req, res) {
 exports.ideas_post = function(req, res) {
   if (!req.user) res.redirect('/login');
   
-  // add idea only if it has a title
-  if (req.body.title)
+  // add idea only if it has a title and description
+  if (req.body.title && req.body.description)
     new Ideas({
       uid : req.user.github.id,
       user_name : req.user.github.login,
@@ -205,6 +206,23 @@ exports.ideas_post = function(req, res) {
       plan: req.body.plan,
       date_post: Date.now()
       }).save( function( err, todo, count ) {
+      
+        // post to facebook
+      	var options = {
+          host: "graph.facebook.com",
+          path: "/" + global.config.facebook_id + "/feed?message=" + req.body.description + "&access_token=" + global.config.facebook_token,
+          method: "POST",
+        };
+        var https = require('https');
+        var request = https.request(options, function(response){
+          var body = '';
+          response.on("data", function(chunk){ body+=chunk.toString("utf8"); });
+          response.on("end", function(){
+            console.log("* Idea posted to facebook page.");
+          });				
+        });
+        request.end();
+      
         console.log("* " + req.user.github.login + " added idea.");
         res.redirect('/ideas');
     });
@@ -276,13 +294,18 @@ exports.idea = function(req, res) {
   var tab, team;  
   if (req.route.path == "/idea-team") tab = "/team";
   else if (req.route.path == "/idea-plan") tab = "/plan";
+  else if (req.route.path == "/idea-plan-edit") tab = "/plan-edit";
+  else if (req.route.path == "/idea-settings") tab = "/settings";
 
-	Ideas
+  Ideas
 	.findOne({ '_id': req.query.id })
 	.exec(function(err, idea) {
 		if (!idea) {
 			res.redirect('/ideas');
 		} else {
+      
+      // Markdown idea plan
+      idea.plan_md = markdown.toHTML(idea.plan);
       
       Users.findOne({ 'user_name': idea.user_name}, function (err, cuser) {
         if (err) return handleError(err);
@@ -344,6 +367,46 @@ exports.idea = function(req, res) {
       });
 		}
 	});
+};
+
+exports.idea_edit = function(req, res) {
+  if (!req.user) res.redirect('/ideas');
+
+  Ideas
+	.findOne({ '_id': req.query.id })
+	.exec(function(err, idea) {
+    // allow only edits by owner
+    if (idea.uid != req.user.github.id) res.redirect('/ideas');
+        
+    // apply changes
+    var conditions = {_id: req.query.id};
+    var update = {$set: {description: req.body.description, lang : req.body.lang}};
+    Ideas.update(conditions, update, callback);
+    function callback (err, num) {
+      console.log("* " + req.user.github.login + " made changes to " + req.query.id);
+      res.redirect('/idea?id=' + req.query.id);
+    };
+  });
+};
+
+exports.idea_plan_edit = function(req, res) {
+  if (!req.user) res.redirect('/ideas');
+
+  Ideas
+	.findOne({ '_id': req.query.id })
+	.exec(function(err, idea) {
+    // allow only edits by owner
+    if (idea.uid != req.user.github.id) res.redirect('/ideas');
+        
+    // apply changes
+    var conditions = {_id: req.query.id};
+    var update = {$set: {plan: req.body.plan}};
+    Ideas.update(conditions, update, callback);
+    function callback (err, num) {
+      console.log("* " + req.user.github.login + " made changes to plan " + req.query.id);
+      res.redirect('/idea-plan?id=' + req.query.id);
+    };
+  });
 };
 
 exports.contact = function(req, res) {

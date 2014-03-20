@@ -41,8 +41,15 @@ block content
                 br
                 select.selectpicker.span5(name='lang', type='text')
                   option C/C++
+                  option C#
+                  option F#
                   option Java
+                  option Javascript
+                  option Objective-C
+                  option PHP
+                  option Python
                   option Ruby
+                  option Other
 
             .center-mini
               label Plan
@@ -65,8 +72,9 @@ block content
 
           
         .spacer
-        h5= idea.description
-        h5= idea.lang
+        #idea-description
+          h5= idea.description
+          h5= idea.lang
         
         .spacer
         #idea-desc-buttom  
@@ -87,7 +95,7 @@ block content
               input.btn.btn-success(type='submit', value='UnFav', disabled).idea-desc-buttom-btn
 
           - if (user && idea.uid == user.user_id)
-            a(href="/edit?id=" + idea._id)
+            a(href="/idea-settings?id=" + idea._id)
               input.btn.btn-success(type='submit', value='Edit').idea-desc-buttom-btn
 
           - else
@@ -189,14 +197,51 @@ block content
                 p= u.points_repos
                 p Last seen on #{u.last_seen}
           - else
-            p Not ready yet.
+            h1 No members yet. Join in.
 
       - else if (tab == "/plan")
         .left
-          - if (idea.plan.length != 0)
-            p= idea.plan
-          - else
-            p Nothing planned at this moment.
+          .left-plan
+            - if (idea.plan.length != 0)
+              p!= idea.plan_md
+            - else
+              h1 Nothing planned at this moment.
+
+            - if (user && idea.uid == user.user_id)
+              a(href="/idea-plan-edit?id=" + idea._id)
+                input.btn.btn-success(type='submit', value='Edit')
+
+      - else if (tab == "/plan-edit")
+        .left
+          .left-plan
+            h3 Edit current plan
+            form(method='post', action='/idea-plan-edit?id=' + idea._id)
+              textarea.span9(name='plan', rows="10")= idea.plan
+              input.btn.btn-success(id='plan', type='submit', value='Update')
+          
+      - else if (tab == "/settings")
+        .left
+          h3 Edit your idea
+            br
+            form(method='post', action='/idea-edit?id=' + idea._id)
+              label Preffered language
+                br
+                select.selectpicker.span5(name='lang', type='text')
+                  option C/C++
+                  option C#
+                  option F#
+                  option Java
+                  option Javascript
+                  option Objective-C
+                  option PHP
+                  option Python
+                  option Ruby
+                  option Other
+
+              label Description
+                br
+                textarea.span7(name='description', id='no_resize_textarea', rows="4")= idea.description
+              input.btn.btn-success(id='sub', type='submit', value='Update')
 
       - else
         .left
@@ -239,14 +284,14 @@ block content
           - else
             .submenu-item Team
         a(href='/idea-plan?id=' + idea._id)
-          - if (tab == "/plan")
+          - if (tab == "/plan" || tab == "/plan-edit")
             .submenu-item-selected Plan
           - else
             .submenu-item Plan
-        //- if (everyauth.loggedIn)
-          //a(href='/idea/settings?id=' + idea._id)
-            //- if (tab == "/settings")
-              //.submenu-item-selected Settings
-            //- else
-              //.submenu-item Settings
+        - if (user && idea.uid == user.user_id)
+          a(href='/idea-settings?id=' + idea._id)
+            - if (tab == "/settings")
+              .submenu-item-selected Settings
+            - else
+              .submenu-item Settings
     .spacer

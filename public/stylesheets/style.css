@@ -161,15 +161,13 @@ a:hover {
 }
 
 #idea-desc-top {
-    height: 70px;
     color: rgb(216, 216, 216);
 }
 
 #idea-desc-top-title {
     font-size: 50px;
     font-weight: bold;
-    padding-top: 20px;
-    margin-bottom: 10px;
+    line-height: 50px;
     color: black;
 }
 
@@ -488,6 +486,10 @@ a:hover {
 .left-half {
     width: 300px;
     float: left;
+}
+
+.left-plan {
+  padding-right: 50px;
 }
 
 .right {
