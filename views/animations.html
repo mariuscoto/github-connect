@@ -5,10 +5,16 @@ $('#idt').one('click', function () {
   $('.right-mini').show();
   $('.center-mini').show();
 });
-  
-$('#idt').on('change', function () {
-  $('#sub').removeAttr('disabled');  
-});
+
+$('#idt').bind('input', function () {
+  if($(this).val().length > 0) {
+    $('#sub').attr('disabled', false);
+  }
+  else {
+    $('#sub').attr('disabled', true);
+  }
+});  
+
 </script>
 
 <script>
