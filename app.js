@@ -5,6 +5,7 @@ global.config = [];
 app.configure('development', function(){
 	app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
   global.config = require('./lib/config')
+	global.config.status = 'dev';
 });
  
 app.configure('production', function(){
@@ -16,6 +17,7 @@ app.configure('production', function(){
   global.config.db_pass = process.env.db_pass;
   global.config.facebook_id = process.env.fb_id;
   global.config.facebook_token = process.env.fb_token;
+	global.config.status = 'prod';
 });
 
 var db = require('./model/db')

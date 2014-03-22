@@ -6,6 +6,8 @@ setup: package.json
 	sudo npm install
 	
 	sudo port install mongodb || sudo apt-get install mongodb
+	
+	NODE_ENV=development
 
 run:
 	echo "Server running at localhost:4000"

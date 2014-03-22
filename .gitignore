@@ -9,11 +9,9 @@ lib-cov
 *.swp
 *.DS_Store
 
-lib
 pids
 logs
 results
 node_modules
 
 npm-debug.log
-model/db.js
