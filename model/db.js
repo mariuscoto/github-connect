@@ -57,5 +57,5 @@ mongoose.model( 'Ideas', Ideas );
 mongoose.model( 'IdeaComments', IdeaComments );
 mongoose.model( 'Repo', Repo );
 
-mongoose.connect( 'mongodb://localhost/github-connect' );
-//mongoose.connect('mongodb://'+global.config.db_name+':'+global.config.db_pass+'@troup.mongohq.com:10059/github-connect' );
+//mongoose.connect( 'mongodb://localhost/github-connect' );
+mongoose.connect('mongodb://'+global.config.db_name+':'+global.config.db_pass+'@troup.mongohq.com:10059/github-connect' );
