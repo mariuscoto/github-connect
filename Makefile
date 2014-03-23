@@ -10,5 +10,9 @@ setup: package.json
 	NODE_ENV=development
 
 run:
-	echo "Server running at localhost:4000"
-	node app.js
+	@mongod &> /dev/null &
+
+	@echo "DB running."
+	@echo "Server running at localhost:3000"
+
+	@node app.js
