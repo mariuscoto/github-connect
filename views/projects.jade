@@ -1,6 +1,138 @@
 extends layout
 
 block content
-  h1= title
-  br
-  h2 Coming soon!
+  - if(!everyauth.loggedIn)
+    .announcement
+      .announcement-inner
+        p You need to 
+          a(href='/login') login
+          |  to comment or post your own projects.
+    .spacer
+    .spacer
+
+  #menu
+    - if (everyauth.loggedIn)
+      form(method='post', action='/projects')
+        #idea-new
+          h1 Add a new project
+          .right-mini
+            label Project Size
+              br
+              select.selectpicker.span5(name='size')
+                option Small
+                option Medium
+                option Large
+            label Preffered language
+              br
+              select.selectpicker.span5(name='lang')
+                option C/C++
+                option C#
+                option F#
+                option Java
+                option Javascript
+                option Objective-C
+                option PHP
+                option Python
+                option Ruby
+                option Other
+
+
+          #left-mini-title
+            label Repository
+              br
+              select.selectpicker.span5(id='idt', name='repo')
+                - each r in user.repos
+                  option= r.name
+
+          .left-mini
+            label Short title
+              br
+              input.span5(name='title')
+
+
+          .center-mini
+            label Description
+              br
+            textarea.span11(name='description', id='no_resize_textarea', rows="4")
+            input.btn.btn-success(id='sub', type='submit', value='Save')
+
+      .spacer
+    
+  #content 
+    - if (projects)
+      - if (projects.length != 0)
+        h1 Projects list
+
+      .left
+      
+        .search
+          p Search options will go here.
+          
+        #idea-table-header
+          ul
+            li
+              - if (sort == "most_recent")
+                | Most recent
+              - else
+                a(href=currentUrl+ '?sort=most_recent') Most recent
+            li
+              - if (sort == "most_followed")
+                | Most followed
+              - else
+                a(href=currentUrl + '?sort=most_followed') Most followed
+            li
+              - if (sort == "most_commented")
+                | Most commented
+              - else
+                a(href=currentUrl + '?sort=most_commented') Most commented
+      
+        - if (projects.length != 0)
+          .ideas-bubble
+            - each p in projects
+              .idea
+                .idea-title
+                  .idea-title-text
+                    a(href='/project?id=' + p._id)= p.title
+                    
+                  - if (!p.fav)
+                    .project-title-fav(id='#{p._id}')
+                  - else
+                    .project-title-fav-selected(id='#{p._id}')
+
+                .idea-content
+                  p= p.description
+                .idea-footer
+                  .idea-footer-left
+                    .idea-footer-comments
+                      = p.comments_num
+                  .idea-footer-right
+                    | by 
+                    a(href='/profile?id=' + p.uid)= p.user_name
+                    | , 
+                    = p.date_post
+        - else
+          - if (tab == "/favorites")
+            h3 No have no favorite projects.
+          - if (tab == "/user")
+            h3 You have not added any projects.
+
+      .right
+        .submenu
+          a(href='/projects')
+            - if (currentUrl == "/projects")
+              .submenu-item-selected All
+            - else
+              .submenu-item All
+          a(href='/projects_fav')
+            - if (currentUrl == "/projects_fav")
+              .submenu-item-selected Followed
+            - else
+              .submenu-item Followed
+          a(href='/projects_user')
+            - if (currentUrl == "/projects_user")
+              .submenu-item-selected Mine
+            - else
+              .submenu-item Mine
+
+
+    .spacer

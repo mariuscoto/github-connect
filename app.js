@@ -182,6 +182,9 @@ everyauth
 				Users.update(conditions, update, function (err, num) {
 					console.log("* User " + user.user_name + " logged in.");
 				});
+        
+        // add user info to session
+        ghUser.user = user;
 	    } else {
 
 				// Import data from github
@@ -298,7 +301,17 @@ app.get('/faq', routes.faq);
 
 app.get('/profile', routes.profile);
 
-app.get('/projects', routes.projects);
+var projects = require('./routes/projects.js');
+app.get('/projects', projects.index);
+app.get('/projects_fav', ensureAuth, projects.index);
+app.get('/projects_user', ensureAuth, projects.index);
+app.get('/project', projects.one);
+app.post('/projects', projects.add);
+app.post('/projects/follow', ensureAuth, projects.follow);
+app.post('/projects/unfollow', ensureAuth, projects.unfollow);
+app.post('/projects/comment', ensureAuth, projects.comment);
+app.post('/projects/upvote', ensureAuth, projects.upvote);
+app.post('/projects/flag', ensureAuth, projects.flag);
 
 app.get('/ideas', routes.ideas);
 app.get('/ideas-favorites', ensureAuth, routes.ideas_favorites);

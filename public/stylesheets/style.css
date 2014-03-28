@@ -207,9 +207,50 @@ a:hover {
     padding-left: 5px;
 }
 
+#idea-description {
+  width: 720px;
+  float: left;
+}
+
+#idea-description-right {
+  width: 160px;
+  float: left;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.description-item {
+  width: 120px;
+  position: relative;
+  padding: 5px 12px;
+  margin-bottom: 2px;
+  font-size: 13px;
+  font-weight: bold;
+  float: right;
+  text-shadow: 0px 1px 0px rgba(255, 255, 255, 0.9);
+  background-color: #EEE;
+  background-image: linear-gradient(#FCFCFC, #EEE);
+  background-repeat: repeat-x;
+  border-radius: 3px;
+  border: 1px solid #D5D5D5;
+  cursor: pointer;
+}
+.description-item:hover {
+  background-image: linear-gradient(#eee, #ddd);
+  background-image: -webkit-linear-gradient(#eee, #ddd);
+}
+
 #content {
     width: 900px;
     padding: 40px;
+}
+
+.search {
+    width: 750px;
+    height: 50px;
+    padding: 5px;
+    margin-bottom: 10px;
+    background-color: rgb(248, 248, 248);
 }
 
 .ideas-bubble {
@@ -270,6 +311,32 @@ a:hover {
 }
 
 .idea-title-fav-selected:hover {
+    background-repeat: no-repeat;
+    background-image: url('/images/icon-fav-semi.png');
+}
+
+.project-title-fav {
+    width: 20px;
+    height: 20px;
+    float: left;
+    background-repeat: no-repeat;
+    background-image: url('/images/icon-fav.png');
+}
+
+.project-title-fav:hover {
+    background-repeat: no-repeat;
+    background-image: url('/images/icon-fav-semi.png');
+}
+
+.project-title-fav-selected {
+    width: 20px;
+    height: 20px;
+    float: left;
+    background-repeat: no-repeat;
+    background-image: url('/images/icon-fav-selected.png');
+}
+
+.project-title-fav-selected:hover {
     background-repeat: no-repeat;
     background-image: url('/images/icon-fav-semi.png');
 }
@@ -401,6 +468,14 @@ a:hover {
     margin-right: 240px;
     margin-bottom: 2px;
     vertical-align: middle;
+    background-color: #E6F1F6;
+}
+
+.comment-long {
+    width: 860px;
+    padding: 10px;
+    margin-right: 240px;
+    margin-bottom: 2px;
     background-color: #E6F1F6;
 }
 

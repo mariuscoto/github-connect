@@ -1,0 +1,96 @@
+extends layout
+
+block content
+  - if(!everyauth.loggedIn)
+    .announcement
+      .announcement-inner
+        p You need to 
+          a(href='/login') login
+          |  to comment or post your own projects.
+    .spacer
+    .spacer
+
+  #menu
+    #idea-desc
+      #idea-desc-top
+        #idea-desc-top-title= project.title
+        | Posted on #{project.date_post}
+
+
+      .spacer
+      #idea-description
+        h5= project.description
+        h5= project.lang
+        
+      #idea-description-right
+        a(href=repo.html_url)
+          .description-item
+            = "#" + repo.name
+        .description-item
+          = "Watchers: "
+          div(style="float: right;")= repo.watchers_count
+        .description-item
+          = "Forks: "
+          div(style="float: right;")= repo.forks_count
+        .description-item
+          = "Comments: "
+          div(style="float: right;")= project.comments_num
+        a(href="#")
+          .description-item Other projects
+
+      .spacer
+      .spacer
+      #idea-desc-buttom  
+        #idea-desc-buttom-right
+          img(src=cuser.avatar_url, width="50px", height="50px")
+          a(href="/profile?id=" + cuser.user_id)= cuser.user_name
+          br
+          | last seen on #{cuser.last_seen_short}
+
+        - if (!user)
+          a(href="/login?rf=follow")
+            input.btn.btn-success(type='submit', value='Follow').idea-desc-buttom-btn
+        - if (user && !user.faved)
+          a(href="/projects/follow?id=" + project._id)
+            input.btn.btn-success(type='submit', value='Follow', disabled).idea-desc-buttom-btn
+        - if (user && user.faved)
+          a(href="/projects/unfollow?id=" + project._id)
+            input.btn.btn-success(type='submit', value='UnFollow', disabled).idea-desc-buttom-btn
+
+        - if (user && project.uid == user.user_id)
+          a(href="/idea-settings?id=" + project._id)
+            input.btn.btn-success(type='submit', value='Edit').idea-desc-buttom-btn
+
+      .spacer
+    .spacer
+    
+  #content 
+    .left
+      - if (comments && comments.length != 0)
+        - each c in comments
+          .comment-long
+            a(href='/profile?id=' + c.uid)= c.user_name + ": "
+            = c.content
+            .comment-bottom
+              .upvotes(id="#{c._id}#")= c.upvotes.length
+              - if (c.upvote)
+                .upvoted(id="#{c._id}")
+              - else
+                .upvote(id="#{c._id}")
+              - if (c.flag)
+                .flagged(id="#{c._id}f")
+              - else
+                .flag(id="#{c._id}f")
+              | Posted on #{c.date}
+      - else
+        h1 Be the first one to comment.
+
+      - if (everyauth.loggedIn)
+        .comment-long
+          form(method='post', action='/projects/comment?id=' + project._id)
+            img(src=user.avatar_url, width="60px", height="60px")
+            textarea.span8(name='content')
+            input.btn.btn-success(type='submit', value='Comment')
+
+  .spacer
+  .spacer

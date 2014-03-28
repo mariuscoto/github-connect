@@ -8,22 +8,6 @@ $('#idt').click(function () {
     $('.center-mini').show();
     hidden = 0;
   }
-  else {
-    $('#idea-new').animate({height: '150px'}, 250);
-    $('.left-mini').hide();
-    $('.right-mini').hide();
-    $('.center-mini').hide();
-    hidden = 1;
-  }
-});
-
-$('#idt').bind('input', function () {
-  if($(this).val().length > 0) {
-    $('#sub').attr('disabled', false);
-  }
-  else {
-    $('#sub').attr('disabled', true);
-  }
 });
 </script>
 
@@ -33,7 +17,7 @@ $('.upvote').click(function () {
   if (this.className == "upvote") {
     var id = this.id;
     $.ajax({
-     url: 'upvote?id=' + this.id,
+     url: window.location.pathname + 's/upvote?id=' + this.id,
      type: "POST",
      success: function(response) {
        if (response.success) {
@@ -52,7 +36,7 @@ $('.flag').click(function () {
   if (this.className == "flag") {
     var fid = this.id;
     $.ajax({
-     url: 'flag?id=' + this.id.substring(0, this.id.length-1),
+     url: window.location.pathname + 's/flag?id=' + this.id.substring(0, this.id.length-1),
      type: "POST",
      success: function(response) {
        if (response.success)
@@ -89,6 +73,38 @@ $('.idea-title-fav-selected').click(function () {
      success: function(response) {
        if (response.success)
          document.getElementById(id).setAttribute("class", "idea-title-fav");
+     }
+    });
+  }
+});
+</script>
+
+<script>
+$('.project-title-fav').click(function () {
+  // click just once
+  if (this.className == "project-title-fav") {
+    var id = this.id;
+    $.ajax({
+     url: 'projects/follow?id=' + this.id,
+     type: "POST",
+     success: function(response) {
+       if (response.success)
+         document.getElementById(id).setAttribute("class", "project-title-fav-selected");
+     }
+    });
+  }
+});
+  
+$('.project-title-fav-selected').click(function () {
+  // click just once
+  if (this.className == "project-title-fav-selected") {
+    var id = this.id;
+    $.ajax({
+     url: 'projects/unfollow?id=' + this.id,
+     type: "POST",
+     success: function(response) {
+       if (response.success)
+         document.getElementById(id).setAttribute("class", "project-title-fav");
      }
     });
   }

@@ -4,6 +4,7 @@ var express = require('express');
 var mongoose = require('mongoose');
 var Users = mongoose.model('Users');
 var Ideas = mongoose.model('Ideas');
+var Projects = mongoose.model('Projects');
 var IdeaComments = mongoose.model('IdeaComments');
 var markdown = require( "markdown" ).markdown;
 var app = express();
@@ -14,21 +15,24 @@ exports.index = function(req, res) {
 	
   Users.find (function (err, users, count) {
     Ideas.find (function (err, ideas, count) {
+      Projects.find (function (err, projects, count) {
 			
-			var user = null;
-			if (req.user) uid = req.user.github.id;
-			
-			Users.findOne ({ 'user_id': uid }, function (err, user) {
-				if (err) return handleError(err);
+        var user = null;
+        if (req.user) uid = req.user.github.id;
 
-				res.render('index', { 
-					title: "Welcome to Github-connect",
-					user: user,
-					users: users.length,
-					ideas: ideas.length,
-					projects: 0
-				});
-			});
+        Users.findOne ({ 'user_id': uid }, function (err, user) {
+          if (err) return handleError(err);
+
+          res.render('index', { 
+            title: "Welcome to Github-connect",
+            user: user,
+            users: users.length,
+            ideas: ideas.length,
+            projects: projects.length
+          });
+        });
+        
+      });
     });
   });
 };
@@ -60,6 +64,10 @@ exports.profile = function(req, res) {
       
       else {      
 				Users.findOne ({ 'user_id': uid }, function (err, user) {
+          
+          // keep vital info about logged user in session var
+          req.session.user = user;
+          
 					Ideas
 					.find({ 'uid': cuid })
 					.sort('-date_post')
@@ -423,23 +431,6 @@ exports.contact = function(req, res) {
 	else
 		res.render('contact', { 
 			title: "Get in touch with us"
-		});
-};
-
-exports.projects = function(req, res) {
-	if (req.user)
-		Users.findOne ({ 'user_id': req.user.github.id }, function (err, user) {
-			if (err) return handleError(err);
-			
-			res.render('projects', { 
-				title: "Projects page",
-				user: user
-			});
-		});
-									 
-	else
-		res.render('projects', { 
-			title: "Projects page"
 		});
 };
 

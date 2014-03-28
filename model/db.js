@@ -9,12 +9,24 @@ var Users = new Schema({
 	avatar_url:     String,
 	location:       String,
 	favorites:	    [String],
+  followed:       [String],
 	join_github:    String,
 	join_us:	    	Date,
   last_seen:      Date,
 	repos:          [Repo],
 	points_repos:   Number,
 	tentacles:			{type: Number, default: 0}
+});
+
+var Projects = new Schema({
+	uid:						Number,
+  user_name:      String,
+  repo:						String,
+  title:          String,
+  description:    String,
+  size:           String,
+	date_post:      Date,
+  comments_num:   {type: Number, default: 0}
 });
 
 var Ideas = new Schema({
@@ -39,6 +51,16 @@ var IdeaComments = new Schema({
   flags:      [Number]
 });
 
+var ProjectComments = new Schema({
+	uid:        Number,
+	user_name:  String,
+	project:    String,
+	content:		String,
+	date:       Date,
+  upvotes:    [Number],
+  flags:      [Number]
+});
+
 var Repo = new Schema({
 	name:           String,
 	description:    String,
@@ -53,8 +75,10 @@ var Repo = new Schema({
 });
  
 mongoose.model( 'Users', Users );
+mongoose.model( 'Projects', Projects );
 mongoose.model( 'Ideas', Ideas );
 mongoose.model( 'IdeaComments', IdeaComments );
+mongoose.model( 'ProjectComments', ProjectComments );
 mongoose.model( 'Repo', Repo );
 
 //mongoose.connect( 'mongodb://localhost/github-connect' );
