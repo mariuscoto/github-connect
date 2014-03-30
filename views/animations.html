@@ -110,3 +110,16 @@ $('.project-title-fav-selected').click(function () {
   }
 });
 </script>
+
+<script>
+$('#bug').live('click', function () {
+  $(this).addClass("active");
+  $('#feature').removeClass("active");
+  $('#type').val("bug");
+});
+$('#feature').live('click', function () {
+  $(this).addClass("active");
+  $('#bug').removeClass("active");
+  $('#type').val("feature");
+});
+</script>

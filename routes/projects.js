@@ -106,6 +106,7 @@ exports.add = function (req, res) {
   if (!req.user) res.redirect('/login');
   
   // add idea only if it has a title and description
+  // TODO: check if type is known
   if (req.body.repo && req.body.title)
     new Projects({
       repo:         req.body.repo,
@@ -113,6 +114,7 @@ exports.add = function (req, res) {
       user_name :   req.user.github.login,
       size:         req.body.size,
       title:        req.body.title,
+      type:         req.body.type,
       description:  req.body.description,
       date_post:    Date.now()
       
