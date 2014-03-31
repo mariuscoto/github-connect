@@ -1,7 +1,11 @@
+var CHAR_LIMIT = 330;
+
 var mongoose = require('mongoose');
 var Projects = mongoose.model('Projects');
 var Users = mongoose.model('Users');
 var ProjectComments = mongoose.model('ProjectComments');
+var markdown = require( "markdown" ).markdown;
+
 
 
 exports.index = function (req, res) {
@@ -38,6 +42,13 @@ exports.index = function (req, res) {
           // mark favorites
           if (user != null && user.followed.indexOf(projects[i]._id) > -1)
             projects[i].fav = true;
+          // markdown project description
+          //projects[i].description = markdown.toHTML(projects[i].description);
+          // remove new lines
+          projects[i].description = projects[i].description.replace(/(\r\n|\n|\r)/gm,"");
+          // shorten description
+				  if (projects[i].description.length > CHAR_LIMIT)
+				    projects[i].description = (projects[i].description).substring(0, CHAR_LIMIT) + " [...]";
         }
 
         res.render('projects', {
@@ -59,6 +70,9 @@ exports.one = function (req, res) {
   .findOne({ '_id': req.query.id })
   .exec(function (err, project) {
     if (!project) res.redirect('/projects');
+    
+    // Markdown project description
+    project.description = markdown.toHTML(project.description);
     
     Users
     .findOne({ 'user_name': project.user_name})

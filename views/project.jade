@@ -18,9 +18,6 @@ block content
 
 
       .spacer
-      #idea-description
-        h5= project.description
-        h5= project.lang
         
       #idea-description-right
         a(href=repo.html_url)
@@ -37,6 +34,13 @@ block content
           div(style="float: right;")= project.comments_num
         a(href="#")
           .description-item Other projects
+
+      #idea-description
+        h5!= project.description
+        h5= project.lang
+        
+      #idea-tags
+        p= "#" + project.type + " #" + project.languag + " #" + project.size
 
       .spacer
       .spacer

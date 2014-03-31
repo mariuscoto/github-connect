@@ -209,12 +209,16 @@ a:hover {
 
 #idea-description {
   width: 720px;
-  float: left;
+  min-height: 150px;
+}
+
+#idea-tags {
+  width: 720px;
 }
 
 #idea-description-right {
   width: 160px;
-  float: left;
+  float: right;
   padding-top: 10px;
   padding-bottom: 10px;
 }
