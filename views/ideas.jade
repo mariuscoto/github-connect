@@ -13,22 +13,22 @@ block content
   #menu
     - if (!idea)
       - if (everyauth.loggedIn)
-        form(method='post', action='/ideas')
+        form(method='post', action='/ideas', onSubmit='return checkdate(this.mydate)')
           #idea-new
             //input.btn.btn-success(type='button', id='add-btn', value='+')
             h1 Add a new idea                
             .right-mini
               label ETA
                 br
-                input.span5.datepicker(name='eta', type='text')
-              label Description
+                input.span5.datepicker(name='mydate', type='text', required)
+              label Description *
                 br
-                textarea.span5(name='description', id='no_resize_textarea', rows="4")
+                textarea.span5(name='description', id='no_resize_textarea', rows='4', required)
                 
             #left-mini-title
-              label Title
+              label Title *
                 br
-                input.span5(id='idt', name='title', type='text')  
+                input.span5(id='idt', name='title', type='text', required)
                 
             .left-mini
               label Project Size
