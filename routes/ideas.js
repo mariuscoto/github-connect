@@ -9,81 +9,6 @@ var IdeaComments = mongoose.model('IdeaComments');
 var markdown = require( "markdown" ).markdown;
 var app = express();
 
-exports.index = function(req, res) {
-	var uid;
-  if (req.user) uid = req.user.github.id;
-	
-  Users.find (function (err, users, count) {
-    Ideas.find (function (err, ideas, count) {
-      Projects.find (function (err, projects, count) {
-			
-        var user = null;
-        if (req.user) uid = req.user.github.id;
-
-        Users.findOne ({ 'user_id': uid }, function (err, user) {
-          if (err) return handleError(err);
-
-          res.render('index', { 
-            title: "Welcome to Github-connect",
-            user: user,
-            users: users.length,
-            ideas: ideas.length,
-            projects: projects.length
-          });
-        });
-        
-      });
-    });
-  });
-};
-
-exports.login = function(req, res) {
-  
-	if (req.user) res.redirect('/profile');
-
-  res.render('login', { 
-    title: "Log in",
-    tab: req.query.rf
-  });
-};
-
-exports.profile = function(req, res) {
-  //console.log(req.session.oauth);
-  var cuid, uid;
-  if (req.user) {
-		cuid = req.user.github.id;
-		uid = cuid;
-	}	
-  if (req.query.id) cuid = req.query.id;   
-  
-  // restrict /profile unless logged in or other user
-  if (!req.user && !req.query.id) res.redirect('/login');
-  else {
-    Users.findOne ({ 'user_id': cuid }, function (err, cuser) {
-      if (!cuser) res.redirect('/login');
-      
-      else {      
-				Users.findOne ({ 'user_id': uid }, function (err, user) {
-          
-          // keep vital info about logged user in session var
-          req.session.user = user;
-          
-					Ideas
-					.find({ 'uid': cuid })
-					.sort('-date_post')
-					.exec(function(err, ideas) {
-						res.render('profile', {
-							title: "User info",
-							cuser: cuser,
-							ideas: ideas,
-							user: user
-						});
-					});
-				});
-      }
-    });
-  }
-};
 
 exports.ideas = function(req, res) {
   var uid;
@@ -415,40 +340,6 @@ exports.idea_plan_edit = function(req, res) {
       res.redirect('/idea-plan?id=' + req.query.id);
     };
   });
-};
-
-exports.contact = function(req, res) {
-	if (req.user)
-		Users.findOne ({ 'user_id': req.user.github.id }, function (err, user) {
-			if (err) return handleError(err);
-			
-			res.render('contact', { 
-				title: "Get in touch with us",
-				user: user
-			});
-		});
-									 
-	else
-		res.render('contact', { 
-			title: "Get in touch with us"
-		});
-};
-
-exports.faq = function(req, res) {
-	if (req.user)
-		Users.findOne ({ 'user_id': req.user.github.id }, function (err, user) {
-			if (err) return handleError(err);
-			
-			res.render('faq', { 
-				title: "F.A.Q.",
-				user: user
-			});
-		});
-									 
-	else
-		res.render('faq', { 
-			title: "F.A.Q"
-		});
 };
 
 exports.upvote = function(req, res) {

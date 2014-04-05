@@ -42,9 +42,6 @@ var POINTS_WATCH = 1;
 var POINTS_PULL = 30;
 
 
-
-
-
 function addUser (source, sourceUser) {
 	var user;
 	if (arguments.length === 1) { // password-based
@@ -61,95 +58,7 @@ function addUser (source, sourceUser) {
 // Everyauth
 var usersByGhId = {};
 
-
-
-function update_repo_owner (repo, user, accessToken) {
-	var Users = mongoose.model('Users');
-	
-	var options = {
-		host: "api.github.com",
-		path: "/repos/" + user + "/" + repo + "?access_token=" + accessToken,
-		method: "GET",
-		headers: { "User-Agent": "github-connect" }
-	};
-
-	var request = https.request(options, function(response){
-		var body = '';
-		response.on("data", function(chunk){ body+=chunk.toString("utf8"); });
-
-		response.on("end", function(){
-			var repo_info = JSON.parse(body);
-			var repo_owner = repo_info.source.owner.login;
-			
-			// update element of array
-			var conditions = {user_name: user, 'repos.name': repo};
-			var update = {$set: {'repos.$.owner': repo_owner}};
-			Users.update(conditions, update, callback);
-
-			function callback (err, num) {
-				console.log("* Owner of " + repo + " updated.");
-				// also update pull req
-				update_pull_req(repo, repo_owner, user, accessToken);
-			}
-			
-			// also update pull req
-			//update_pull_req(repo, repo_owner, user, accessToken);
-			
-		});				
-	});
-	request.end();
-}
-
-function update_pull_req (repo, owner, user, accessToken) {
-	var Users = mongoose.model('Users');
-	
-	var options = {
-		host: "api.github.com",
-		path: "/repos/" + owner + "/" + repo + "/pulls?state=closed&&access_token=" + accessToken,
-		method: "GET",
-		headers: { "User-Agent": "github-connect" }
-	};
-
-	var request = https.request(options, function(response){
-		var body = '';
-		response.on("data", function(chunk){ body+=chunk.toString("utf8"); });
-
-		response.on("end", function(){
-			
-			var count = 0;
-			var pulls = JSON.parse(body);
-			
-			for (var i in pulls) {
-				
-				// consider just merged pulls of current user
-				if (pulls[i].state == 'closed' &&
-						pulls[i].user.login == user &&
-					  pulls[i].merged_at) {
-					
-					count++;
-				}
-			}
-						
-			// update pulls count, inc tentacles, add points, update total
-			var conditions = {user_name: user, 'repos.name': repo};
-			var update = {
-				$set: {'repos.$.closed_pulls': count},
-				$inc: {'tentacles': 1},
-				$set: {'repos.$.points': count*POINTS_PULL},
-				$inc: {'points_repos': count*POINTS_PULL}
-			};
-			Users.update(conditions, update, callback);
-
-			function callback (err, num) {
-				console.log("* Pulls of " + repo + " updated.");
-			}
-		});				
-	});
-	request.end();
-}
-
-
-
+var core = require('./core.js');
 
 everyauth
 .everymodule
@@ -230,7 +139,7 @@ everyauth
 						
 						// get owner of forked repos
 						if (json[k].fork) {
-							update_repo_owner (json[k].name, usersByGhId[ghUser.id].github.login, accessToken);
+							core.update_repo_owner (json[k].name, usersByGhId[ghUser.id].github.login, accessToken);
 							
 						// compute points for own repos
 						} else {
@@ -290,16 +199,33 @@ app.configure(function() {
 });
 
 
-// Routes
-var routes = require('./routes');
+// routes defined here
+var ideas = require('./routes/ideas.js');
+app.get('/ideas', ideas.ideas);
+app.get('/ideas-favorites', ensureAuth, ideas.ideas_favorites);
+app.get('/ideas-user', ensureAuth, ideas.ideas_user);
+app.post('/idea/fav', ensureAuth, ideas.idea_add_fav);
+app.post('/idea/unfav', ensureAuth, ideas.idea_remove_fav);
+app.get('/join-team', ensureAuth, ideas.join_team);
+app.get('/idea', ideas.idea);
+app.get('/idea-team', ideas.idea);
+app.get('/idea-plan', ideas.idea);
+app.get('/idea-plan-edit', ideas.idea);
+app.get('/idea-settings', ideas.idea);
+app.post('/upvote', ensureAuth, ideas.upvote);
+app.post('/flag', ensureAuth, ideas.flag);
+app.post('/ideas', ideas.ideas_post);
+app.post('/idea_comment', ensureAuth, ideas.idea_comment);
+app.post('/idea-edit', ensureAuth, ideas.idea_edit);
+app.post('/idea-plan-edit', ensureAuth, ideas.idea_plan_edit);
 
-app.get('/', routes.index);
-app.get('/login', routes.login);
-
-app.get('/contact', routes.contact);
-app.get('/faq', routes.faq);
-
-app.get('/profile', routes.profile);
+var other = require('./routes/other.js');
+app.get('/', other.index);
+app.get('/login', other.login);
+app.get('/login_dev', other.login_dev);
+app.get('/profile', other.profile);
+app.get('/contact', other.contact);
+app.get('/faq', other.faq);
 
 var projects = require('./routes/projects.js');
 app.get('/projects', projects.index);
@@ -312,28 +238,6 @@ app.post('/projects/unfollow', ensureAuth, projects.unfollow);
 app.post('/projects/comment', ensureAuth, projects.comment);
 app.post('/projects/upvote', ensureAuth, projects.upvote);
 app.post('/projects/flag', ensureAuth, projects.flag);
-
-app.get('/ideas', routes.ideas);
-app.get('/ideas-favorites', ensureAuth, routes.ideas_favorites);
-app.get('/ideas-user', ensureAuth, routes.ideas_user);
-
-app.post('/idea/fav', ensureAuth, routes.idea_add_fav);
-app.post('/idea/unfav', ensureAuth, routes.idea_remove_fav);
-
-app.get('/join-team', ensureAuth, routes.join_team);
-
-app.get('/idea', routes.idea);
-app.get('/idea-team', routes.idea);
-app.get('/idea-plan', routes.idea);
-app.get('/idea-plan-edit', routes.idea);
-app.get('/idea-settings', routes.idea);
-app.post('/upvote', ensureAuth, routes.upvote);
-app.post('/flag', ensureAuth, routes.flag);
-
-app.post('/ideas', routes.ideas_post);
-app.post('/idea_comment', ensureAuth, routes.idea_comment);
-app.post('/idea-edit', ensureAuth, routes.idea_edit);
-app.post('/idea-plan-edit', ensureAuth, routes.idea_plan_edit);
 
 
 app.use(function(req, res) {
