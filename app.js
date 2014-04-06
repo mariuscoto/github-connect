@@ -218,6 +218,7 @@ app.post('/ideas', ideas.ideas_post);
 app.post('/idea_comment', ensureAuth, ideas.idea_comment);
 app.post('/idea-edit', ensureAuth, ideas.idea_edit);
 app.post('/idea-plan-edit', ensureAuth, ideas.idea_plan_edit);
+app.get('/notifications', ensureAuth, ideas.notifications);
 
 var other = require('./routes/other.js');
 app.get('/', other.index);
