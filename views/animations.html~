@@ -97,7 +97,6 @@ $('.idea-title-fav-selected').click(function () {
        if (response.success)
 	{
         document.getElementById(id).setAttribute("class", "idea-title-fav");
-	
 	}
      }
     });

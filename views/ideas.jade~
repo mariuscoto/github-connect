@@ -137,7 +137,7 @@ block content
         - if (ideas.length != 0)
           .ideas-bubble
             - each idea in ideas
-              .idea
+              .idea(id='#{idea._id}')
                 .idea-title
                   .idea-title-text
                     a(href='/idea?id=' + idea._id)= idea.title
