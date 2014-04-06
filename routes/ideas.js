@@ -137,9 +137,11 @@ exports.ideas_post = function(req, res) {
       description : req.body.description,
       lang : req.body.lang,
       plan: req.body.plan,
-      date_post: Date.now()
+      date_post: Date.now(),
+      points: 5
       }).save( function( err, todo, count ) {
       
+
         // post to facebook
       	var options = {
           host: "graph.facebook.com",
@@ -155,7 +157,20 @@ exports.ideas_post = function(req, res) {
           });				
         });
         request.end();
-      
+        
+        //var conditions = { _id: req.query.id };
+        //var update = {$inc: {points: 5}};
+        //Ideas.update(conditions, update, function(err, num) {
+    //console.log(num);});
+
+        var conditions = {user_id: req.user.github.id};
+        var update = {$inc: {points_ideas: 5}};
+        Users.update(conditions, update, callback);
+        
+        function callback (err, num) {
+          console.log("* Added points " + num);
+        }
+
         console.log("* " + req.user.github.login + " added idea.");
         res.redirect('/ideas');
     });
@@ -170,6 +185,7 @@ exports.idea_comment = function(req, res) {
   var conditions = { _id: req.query.id };
   var update = {$inc: {comments_num: 1}};
   Ideas.update(conditions, update, callback);
+  
 
   function callback (err, num) {
     new IdeaComments({
@@ -213,8 +229,12 @@ exports.join_team = function(req, res) {
 	if (!req.user) res.redirect('/login');
 
   var conditions = {_id: req.query.id};
-  var update = {$addToSet: {team: req.user.github.id}};
+  var update = {$addToSet: {team: req.user.github.id}, $inc: {points: 20}};
   Ideas.update(conditions, update, callback);
+
+  var conditions = {user_id: req.user.github.id};
+  var update = {$inc: {points_ideas: 15}};
+  Users.update(conditions, update);
 
   function callback (err, num) {
     res.redirect('/idea?id=' + req.query.id);
