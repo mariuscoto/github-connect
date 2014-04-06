@@ -74,6 +74,15 @@ var Repo = new Schema({
 	owner:					String,
 	closed_pulls:		Number
 });
+
+var Notifications = new Schema({
+	src: Number,
+	dest: Number,
+	type: String,
+	seen: Boolean,
+	date: Date,
+	link: String
+});
  
 mongoose.model( 'Users', Users );
 mongoose.model( 'Projects', Projects );
@@ -81,6 +90,7 @@ mongoose.model( 'Ideas', Ideas );
 mongoose.model( 'IdeaComments', IdeaComments );
 mongoose.model( 'ProjectComments', ProjectComments );
 mongoose.model( 'Repo', Repo );
+mongoose.model( 'Notifications', Notifications );
 
 //mongoose.connect( 'mongodb://localhost/github-connect' );
 mongoose.connect('mongodb://'+global.config.db_name+':'+global.config.db_pass+'@troup.mongohq.com:10059/github-connect' );

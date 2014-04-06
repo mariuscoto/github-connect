@@ -6,6 +6,7 @@ var Users = mongoose.model('Users');
 var Ideas = mongoose.model('Ideas');
 var Projects = mongoose.model('Projects');
 var IdeaComments = mongoose.model('IdeaComments');
+var Notifications = mongoose.model('Notifications');
 var markdown = require( "markdown" ).markdown;
 var app = express();
 
@@ -181,7 +182,21 @@ exports.idea_comment = function(req, res) {
     }).save(function(err, comm, count) {
 			console.log("* " + req.user.github.login + " commented on " + req.query.id);
 			res.redirect('/idea?id=' + req.query.id);
- 		});
+    });
+    Ideas
+    .findOne({ '_id': req.query.id })
+    .exec(function(err, idea) {
+      new Notifications({
+        src: req.user.github.id,
+        dest: idea.uid,
+        type: "Comentariu",
+        seen: false,
+        date: new Date(),
+        link: "/idea?id=" + req.query.id
+      }).save(function(err, comm, count) {
+        console.log("* " + req.user.github.login + " a comentat " + req.query.id);
+      });
+    });
   };
 };
 
@@ -369,3 +384,19 @@ exports.flag = function(req, res) {
     };
   }
 };
+
+exports.notifications = function(req, res) {
+  if (!req.user) res.redirect('/login');
+
+  var sort_type = null;
+
+  Notifications
+  .find({ 'dest': req.user.github.id })
+  .sort({ date : -1 })
+  .exec(function(err, notif) {
+    res.render('notifications', {
+                  title: "TITLU",
+                  notif: notif
+    });
+  });
+}
