@@ -30,7 +30,7 @@ html
             a(href="/login") Login
           - else
             - if (user)
-              = user.points_repos
+              = user.points_repos + user.points_ideas
               |  cups for 
               a(href="/profile")= user.user_name + " "
             a(href="/logout")
