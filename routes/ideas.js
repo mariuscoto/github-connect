@@ -16,9 +16,9 @@ exports.ideas = function(req, res) {
   if (req.query.sort == "most_recent") {
     sort_type = '-date_post';
   } else if (req.query.sort == "most_commented") {
-    sort_type = '-date_post';
+    sort_type = '-comments_num';
   }
-  
+
   if (req.user) uid = req.user.github.id;
 
 	Users.findOne ({ 'user_id': uid }, function (err, user) {
