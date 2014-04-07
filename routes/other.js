@@ -96,7 +96,7 @@ exports.profile = function(req, res) {
 					.sort('-date_post')
 					.exec(function(err, ideas) {
             Projects
-            .find({ 'uid': cuid })
+            .find({ 'user_id': cuser.id })
             .sort('-date_post')
             .exec(function(err, projects) {
 
