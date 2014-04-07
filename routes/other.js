@@ -83,7 +83,6 @@ exports.profile = function(req, res) {
     Users.findOne ({ 'user_name': cuname }, function (err, cuser) {
 
       if (!cuser) res.redirect('/login');
-      
       else {      
 				Users.findOne ({ 'user_name': uname }, function (err, user) {
           
@@ -92,11 +91,11 @@ exports.profile = function(req, res) {
           //req.session.user = user;
           
 					Ideas
-					.find({ 'user_id': cuser.id })
+					.find({ 'uid': cuser.user_id })
 					.sort('-date_post')
 					.exec(function(err, ideas) {
             Projects
-            .find({ 'user_id': cuser.id })
+            .find({ 'uid': cuser.user_id })
             .sort('-date_post')
             .exec(function(err, projects) {
 
