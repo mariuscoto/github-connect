@@ -48,6 +48,8 @@ html
           img(src='images/gc-logo-footer.png')
         #menu-footer
           ul
+            li
+              a(href="/login_dev") Offline
             //li 
             //  a(href="/about") About
             li 
@@ -59,4 +61,4 @@ html
     script var userid = "#{user.user_id}"; var cups = "#{user.points_repos}";
 
   include facebook.html
-  include animations.html
+  include ../public/javascripts/animations.js

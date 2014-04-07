@@ -16,48 +16,48 @@ exports.index = function (req, res) {
     sort_type = '-comments_num';
   }
   
-  // set find conditions
-  var conditions = null;
-  if (req.path == "/projects_user")
-    conditions = { 'uid': req.session.user.user_id }
-  else if (req.path == "/projects_fav")
-    conditions = { _id: { $in: req.session.user.followed }}
     
   // set user
   var uid;
-  if (req.session.user) uid = req.session.user.user_id;
+  if (req.session.auth) uid = req.session.auth.github.user.id;
   
-  Projects
-  .find(conditions)
-  .sort(sort_type)
-  .exec(function (err, projects) {
+  Users
+  .findOne({ 'user_id': uid })
+  .exec(function (err, user) {
+    if (err) return handleError(err);
 
-    Users
-    .findOne({ 'user_id': uid })
-    .select({ 'followed': true })
-    .exec(function (err, user) {
-      if (err) return handleError(err);
+    // set find conditions
+    var conditions = null;
+    if (req.path == "/projects_user")
+      conditions = { 'uid': user.user_id }
+    else if (req.path == "/projects_fav")
+      conditions = { _id: { $in: user.followed }}  
+      
+    Projects
+    .find(conditions)
+    .sort(sort_type)
+    .exec(function (err, projects) {
+    
+      for (var i=0; i<projects.length; i++) {
+        // mark favorites
+        if (user != null && user.followed.indexOf(projects[i]._id) > -1)
+          projects[i].fav = true;
+        // markdown project description
+        //projects[i].description = markdown.toHTML(projects[i].description);
+        // remove new lines
+        projects[i].description = projects[i].description.replace(/(\r\n|\n|\r)/gm,"");
+        // shorten description
+        if (projects[i].description.length > CHAR_LIMIT)
+          projects[i].description = (projects[i].description).substring(0, CHAR_LIMIT) + " [...]";
+      }
 
-        for (var i=0; i<projects.length; i++) {
-          // mark favorites
-          if (user != null && user.followed.indexOf(projects[i]._id) > -1)
-            projects[i].fav = true;
-          // markdown project description
-          //projects[i].description = markdown.toHTML(projects[i].description);
-          // remove new lines
-          projects[i].description = projects[i].description.replace(/(\r\n|\n|\r)/gm,"");
-          // shorten description
-				  if (projects[i].description.length > CHAR_LIMIT)
-				    projects[i].description = (projects[i].description).substring(0, CHAR_LIMIT) + " [...]";
-        }
-
-        res.render('projects', {
-          title:      "Projects",
-          user:       req.session.user,
-          projects:   projects,
-          currentUrl: req.path,
-          sort:       req.query.sort,
-        });
+      res.render('projects', {
+        title:      "Projects",
+        user:       user,
+        projects:   projects,
+        currentUrl: req.path,
+        sort:       req.query.sort,
+      });
     });
   });
 };
@@ -65,6 +65,8 @@ exports.index = function (req, res) {
 
 exports.one = function (req, res) {
   if (!req.query.id) res.redirect('/projects');
+  var uid;
+  if (req.session.auth) uid = req.session.auth.github.user.id;
   
   Projects
   .findOne({ '_id': req.query.id })
@@ -82,33 +84,39 @@ exports.one = function (req, res) {
       ProjectComments
       .find({ 'project': req.query.id })
       .exec(function(err, comments) {
-        
-        if (req.session.user) {
-          for (i in comments) {
-            // check for already voted comments
-            if (comments[i].upvotes.indexOf(req.session.user.user_id) > -1)
-              comments[i].upvote = true;                
-            // check for flagged comments
-            if (comments[i].flags.indexOf(req.session.user.user_id) > -1)
-              comments[i].flag = true;
-          }
-        }
-      
+
         // get project repo
         var repo;
         for (var i=0; i<cuser.repos.length; i++)
           if (cuser.repos[i].name == project.repo)
             repo = cuser.repos[i]
 
-        res.render('project', {
-          title:      project.title,
-          user:       req.session.user,
-          cuser:      cuser,
-          repo:       repo,
-          project:    project,
-          currentUrl: req.path,
-          sort:       req.query.sort,
-          comments:   comments
+        Users
+        .findOne({ 'user_id': uid })
+        .exec(function (err, user) {
+          
+          if (user) {
+            for (i in comments) {  
+              // check for already voted comments
+              if (comments[i].upvotes.indexOf(user.user_id) > -1)
+                comments[i].upvote = true;                
+              // check for flagged comments
+              if (comments[i].flags.indexOf(user.user_id) > -1)
+                comments[i].flag = true;
+            }
+          }
+          
+          res.render('project', {
+            title:      project.title,
+            user:       user,
+            cuser:      cuser,
+            repo:       repo,
+            project:    project,
+            currentUrl: req.path,
+            sort:       req.query.sort,
+            comments:   comments
+          });
+          
         });
       });
     });
@@ -117,15 +125,15 @@ exports.one = function (req, res) {
 
 
 exports.add = function (req, res) {
-  if (!req.user) res.redirect('/login');
+  if (!req.session.auth) res.redirect('/login');
   
   // add idea only if it has a title and description
   // TODO: check if type is known
   if (req.body.repo && req.body.title)
     new Projects({
       repo:         req.body.repo,
-      uid :         req.user.github.id,
-      user_name :   req.user.github.login,
+      uid :         req.session.auth.github.user.id,
+      user_name :   req.session.auth.github.user.login,
       size:         req.body.size,
       title:        req.body.title,
       type:         req.body.type,
@@ -133,7 +141,7 @@ exports.add = function (req, res) {
       date_post:    Date.now()
       
     }).save(function (err, todo, count) {
-      console.log("* " + req.user.github.login + " added project.");
+      console.log("* " + req.session.auth.github.user.login + " added project.");
       res.redirect('/projects');
     });
   else
@@ -142,7 +150,7 @@ exports.add = function (req, res) {
 
 
 exports.comment = function(req, res) {
-  if (!req.user) res.redirect('/login');
+  if (!req.session.auth) res.redirect('/login');
   
   // increment comments number
   var conditions = { _id: req.query.id };
@@ -151,14 +159,14 @@ exports.comment = function(req, res) {
 
   function callback (err, num) {
     new ProjectComments({
-      uid:        req.user.github.id,
-      user_name:  req.user.github.login,
+      uid:        req.session.auth.github.user.id,
+      user_name:  req.session.auth.github.user.login,
       project:    req.query.id,
       content:    req.body.content,
       date:       Date.now()
       
     }).save(function(err, comm, count) {
-			console.log("* " + req.user.github.login + " commented on " + req.query.id);
+			console.log("* " + req.session.auth.github.user.login + " commented on " + req.query.id);
 			res.redirect('/project?id=' + req.query.id);
  		});
   };
@@ -166,9 +174,9 @@ exports.comment = function(req, res) {
 
 
 exports.follow = function(req, res) {
-	if (!req.user) res.redirect('/login');
+	if (!req.session.auth) res.redirect('/login');
   
-  var conditions = {user_id: req.user.github.id};
+  var conditions = {user_id: req.session.auth.github.user.id};
   var update = {$push: {followed: req.query.id}};
   Users.update(conditions, update, callback);
 
@@ -179,9 +187,9 @@ exports.follow = function(req, res) {
 
 
 exports.unfollow = function(req, res) {
-	if (!req.user) res.redirect('/login');
+	if (!req.session.auth) res.redirect('/login');
   
-  var conditions = {user_id: req.user.github.id};
+  var conditions = {user_id: req.session.auth.github.user.id};
   var update = {$pop: {followed: req.query.id}};
   Users.update(conditions, update, callback);
 
@@ -192,14 +200,14 @@ exports.unfollow = function(req, res) {
 
 
 exports.upvote = function(req, res) {
-  if (!req.user) res.json({success: false});
+  if (!req.session.auth) res.json({success: false});
   else {
     // increment upvotes number
     var conditions = {_id: req.query.id};
-    var update = {$addToSet: {upvotes: req.user.github.id}};
+    var update = {$addToSet: {upvotes: req.session.auth.github.user.id}};
     ProjectComments.update(conditions, update, callback);
     function callback (err, num) {
-      console.log("* " + req.user.github.login + " upvoted on " + req.query.id);
+      console.log("* " + req.session.auth.github.user.login + " upvoted on " + req.query.id);
       res.json({success: true});
     };
   }
@@ -207,14 +215,14 @@ exports.upvote = function(req, res) {
 
 
 exports.flag = function(req, res) {
-  if (!req.user) res.json({success: false});
+  if (!req.session.auth) res.json({success: false});
   else {
     // increment flags number
     var conditions = {_id: req.query.id};
-    var update = {$addToSet: {flags: req.user.github.id}};
+    var update = {$addToSet: {flags: req.session.auth.github.user.id}};
     ProjectComments.update(conditions, update, callback);
     function callback (err, num) {
-      console.log("* " + req.user.github.login + " flagged " + req.query.id);
+      console.log("* " + req.session.auth.github.user.login + " flagged " + req.query.id);
       res.json({success: true});
     };
   }

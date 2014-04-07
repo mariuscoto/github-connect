@@ -41,7 +41,12 @@ var POINTS_FORK = 10;
 var POINTS_WATCH = 1;
 var POINTS_PULL = 30;
 
+// Import core functions
+var core = require('./core.js');
 
+
+// Everyauth github login
+var usersByGhId = {};
 function addUser (source, sourceUser) {
 	var user;
 	if (arguments.length === 1) { // password-based
@@ -54,11 +59,6 @@ function addUser (source, sourceUser) {
 	}
 	return user;
 }
-
-// Everyauth
-var usersByGhId = {};
-
-var core = require('./core.js');
 
 everyauth
 .everymodule
@@ -249,7 +249,7 @@ app.use(function(req, res) {
 
 // Make sure user is authenticated middleware
 function ensureAuth(req, res, next) {
-	if (req.user) return next();
+	if (req.session.auth) return next();
 	res.redirect('/login')
 }
 

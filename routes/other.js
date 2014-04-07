@@ -6,15 +6,11 @@ var Projects = mongoose.model('Projects');
 
 exports.index = function(req, res) {
 	var uid;
-  if (req.user) uid = req.user.github.id;
+  if (req.session.auth) uid = req.session.auth.github.user.id;
 	
   Users.find (function (err, users, count) {
     Ideas.find (function (err, ideas, count) {
       Projects.find (function (err, projects, count) {
-			
-        var user = null;
-        if (req.user) uid = req.user.github.id;
-
         Users.findOne ({ 'user_id': uid }, function (err, user) {
           if (err) return handleError(err);
 
@@ -25,34 +21,46 @@ exports.index = function(req, res) {
             ideas: ideas.length,
             projects: projects.length
           });
-        });
-        
+          
+        }); 
       });
     });
   });
 };
 
 exports.login_dev = function(req, res) {
+  if (global.config.status == 'prod') res.redirect('/login');
+  
   var u = {
-    id: 1,
-    github: {
-      id: '1830744',
-      login: 'cmarius02',
-      user_id: 'cmarius02',
-      user: {id: '1830744'},
-      repos: [],
-      projects: [{}]
-    },
-    loggedIn: true,
-    userId: 0
-  }
-  req.session.auth = u;
-  req.user = u;
-  res.redirect('/');
+    id: 666,
+    login: 'dev_user',
+    followed: [],
+    repos: []
+  } 
+  var update = {
+    user_id: u.id,
+    user_name: u.login,
+    user_fullname: 'Dev user',
+    user_email: 'dev@github-connect.com',
+    avatar_url: '',
+    location: 'Somewhere',
+    join_github: Date.now(),
+    join_us: Date.now(),
+    last_seen: Date.now()
+  };
+  Users.update({ user_id: u.id}, update, {upsert: true}, function (err, num) {
+    req.session.regenerate(function (err) {
+      req.session.auth = {};
+      req.session.auth.loggedIn = true;
+      req.session.auth.github = {};
+      req.session.auth.github.user = u;
+      res.redirect('/profile');
+    });  
+  });
 }
 
 exports.login = function(req, res) {
-	if (req.user) res.redirect('/profile');
+	if (req.session.auth) res.redirect('/profile');
   res.render('login', { 
     title: "Log in",
     tab: req.query.rf
@@ -60,16 +68,15 @@ exports.login = function(req, res) {
 };
 
 exports.profile = function(req, res) {
-  //console.log(req.session.oauth);
   var cuid, uid;
-  if (req.user) {
-		cuid = req.user.github.id;
+  if (req.session.auth) {
+		cuid = req.session.auth.github.user.id;
 		uid = cuid;
 	}	
   if (req.query.id) cuid = req.query.id;   
   
   // restrict /profile unless logged in or other user
-  if (!req.user && !req.query.id) res.redirect('/login');
+  if (!req.session.auth && !req.query.id) res.redirect('/login');
   else {
     Users.findOne ({ 'user_id': cuid }, function (err, cuser) {
       if (!cuser) res.redirect('/login');
@@ -77,8 +84,9 @@ exports.profile = function(req, res) {
       else {      
 				Users.findOne ({ 'user_id': uid }, function (err, user) {
           
+          //TODO: remove this
           // keep vital info about logged user in session var
-          req.session.user = user;
+          //req.session.user = user;
           
 					Ideas
 					.find({ 'uid': cuid })
@@ -98,35 +106,27 @@ exports.profile = function(req, res) {
 };
 
 exports.contact = function(req, res) {
-	if (req.user)
-		Users.findOne ({ 'user_id': req.user.github.id }, function (err, user) {
-			if (err) return handleError(err);
-			
-			res.render('contact', { 
-				title: "Get in touch with us",
-				user: user
-			});
-		});
-									 
-	else
-		res.render('contact', { 
-			title: "Get in touch with us"
-		});
+  var uid;
+	if (req.session.auth) uid = req.session.auth.github.user.id;
+  
+  Users.findOne ({ 'user_id': uid }, function (err, user) {
+    if (err) return handleError(err);
+    res.render('contact', { 
+      title: "Get in touch with us",
+      user: user
+    });
+  });
 };
 
 exports.faq = function(req, res) {
-	if (req.user)
-		Users.findOne ({ 'user_id': req.user.github.id }, function (err, user) {
-			if (err) return handleError(err);
-			
-			res.render('faq', { 
-				title: "F.A.Q.",
-				user: user
-			});
-		});
-									 
-	else
-		res.render('faq', { 
-			title: "F.A.Q"
-		});
+  var uid;
+	if (req.session.auth) uid = req.session.auth.github.user.id;
+  
+  Users.findOne ({ 'user_id': uid }, function (err, user) {
+    if (err) return handleError(err);
+    res.render('faq', { 
+      title: "F.A.Q.",
+      user: user
+    });
+  });
 };
