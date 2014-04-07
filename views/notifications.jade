@@ -1,0 +1,10 @@
+extends layout
+
+block content
+  p= title
+  - each u in notif
+    p= "type = " + u.type
+    p
+      a(href="#{u.link}") Link
+    p= "seen = " + u.seen
+    p= "date = " + u.date
