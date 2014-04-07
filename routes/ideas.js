@@ -357,14 +357,12 @@ exports.flag = function(req, res) {
 };
 
 exports.idea_remove = function(req, res) {
-    var conditions = {_id: req.query.id};
-    Ideas.remove(conditions, function (err, num) {
-      console.log("* " + req.user.github.login + " removed an idea " + req.query.id);
+    Ideas.remove({_id: req.query.id}, function (err, num) {
+      console.log("* " + req.session.auth.github.user.login + " removed an idea " + req.query.id);
       res.redirect('/ideas');
     });
-    var conditions = {idea: req.query.id};
-    IdeaComments.remove(conditions, function callback (err, num) {
-      console.log("* " + req.user.github.login + " removed all comments from " + req.query.id);
+    IdeaComments.remove({idea: req.query.id}, function (err, num) {
+      console.log("* " + req.session.auth.github.user.login + " removed all comments from " + req.query.id);
     });
 };
 
