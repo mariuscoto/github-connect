@@ -111,6 +111,40 @@ everyauth
           last_seen: Date.now()
 				}).save (function (err, user, count) {
 					console.log("* User " + user.user_name + " added.");
+
+                    var nodemailer = require("nodemailer");
+
+                    // create reusable transport method (opens pool of SMTP connections)
+                    var smtpTransport = nodemailer.createTransport("SMTP",{
+                            service: "Gmail",
+                                auth: {
+                                            user: "",
+                                            pass: ""
+                                       }
+                    });
+
+                    // setup e-mail data with unicode symbols
+                    var mailOptions = {
+                            from: "github_connectTeam", // sender address
+                            to: user.user_email,
+                            subject: "Welcome to github-connect", // Subject line
+                            text: "Welcome to the most wonderful site in the world", // plaintext body
+                            html: "<b>Hello world ✔</b>" // html body
+                    }
+
+                    // send mail with defined transport object
+                    smtpTransport.sendMail(mailOptions, function(error, response){
+                            if(error){
+                                     console.log(error);
+                            }else{
+                                     console.log("Message sent: " + response.message);
+                                  }
+
+                           smtpTransport.close(); // shut down the connection pool, no more messages
+                    });
+
+        
+
 				});
 	    }
 		})

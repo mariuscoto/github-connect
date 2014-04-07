@@ -17,11 +17,10 @@ exports.ideas = function(req, res) {
   if (req.query.sort == "most_recent") {
     sort_type = '-date_post';
   } else if (req.query.sort == "most_commented") {
-    sort_type = '-date_post';
+    sort_type = '-comments_num';
   }
   
   if (req.session.auth) uid = req.session.auth.github.user.id;
-
 	Users.findOne ({ 'user_id': uid }, function (err, user) {
 		if (err) return handleError(err);
 

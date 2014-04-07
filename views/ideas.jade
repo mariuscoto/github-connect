@@ -155,7 +155,7 @@ block content
                       = idea.comments_num
                   .idea-footer-right
                     | by 
-                    a(href='/profile?id=' + idea.uid)= idea.user_name 
+                    a(href='/profile?name=' + idea.user_name)= idea.user_name 
                     | , 
                     = idea.date_post_short
         - else

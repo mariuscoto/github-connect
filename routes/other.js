@@ -68,28 +68,31 @@ exports.login = function(req, res) {
 };
 
 exports.profile = function(req, res) {
-  var cuid, uid;
+
+  var cuname, uname;
   if (req.session.auth) {
-		cuid = req.session.auth.github.user.id;
-		uid = cuid;
-	}	
-  if (req.query.id) cuid = req.query.id;   
+    cuname = req.session.auth.github.user.login;
+    uname = cuname;
+  }
+	
+  if (req.query.name) cuname = req.query.name;   
   
   // restrict /profile unless logged in or other user
-  if (!req.session.auth && !req.query.id) res.redirect('/login');
+  if (!req.session.auth && !req.query.name) res.redirect('/login');
   else {
-    Users.findOne ({ 'user_id': cuid }, function (err, cuser) {
+    Users.findOne ({ 'user_name': cuname }, function (err, cuser) {
+
       if (!cuser) res.redirect('/login');
       
       else {      
-				Users.findOne ({ 'user_id': uid }, function (err, user) {
+				Users.findOne ({ 'user_name': uname }, function (err, user) {
           
           //TODO: remove this
           // keep vital info about logged user in session var
           //req.session.user = user;
           
 					Ideas
-					.find({ 'uid': cuid })
+					.find({ 'user_id': cuser.id })
 					.sort('-date_post')
 					.exec(function(err, ideas) {
             Projects
