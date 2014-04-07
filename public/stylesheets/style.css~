@@ -120,7 +120,7 @@ a:hover {
 .left-box{
     width: 425px;
     padding: 10px;
-    float: left;
+    
 }
 
 #left-mini-title {
