@@ -6,6 +6,8 @@ var POINTS_REPO = 20;
 var POINTS_FORK = 10;
 var POINTS_WATCH = 1;
 var POINTS_PULL = 30;
+var POINTS_ADD_IDEAS = 5;
+var POINTS_COMMENT = 10; 
 
 exports.update_repo_owner = function(repo, user, accessToken) {
 	var Users = mongoose.model('Users');

@@ -92,12 +92,20 @@ exports.profile = function(req, res) {
 					.find({ 'uid': cuid })
 					.sort('-date_post')
 					.exec(function(err, ideas) {
-						res.render('profile', {
-							title: "User info",
-							cuser: cuser,
-							ideas: ideas,
-							user: user
-						});
+            Projects
+            .find({ 'uid': cuid })
+            .sort('-date_post')
+            .exec(function(err, projects) {
+
+  						res.render('profile', {
+  							title: "User info",
+  							cuser: cuser,
+                projects: projects,
+  							ideas: ideas,
+  							user: user
+						  });
+
+            });
 					});
 				});
       }

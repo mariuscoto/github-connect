@@ -15,6 +15,7 @@ var Users = new Schema({
   last_seen:      Date,
 	repos:          [Repo],
 	points_repos:   Number,
+	points_ideas:   {type: Number, default: 0},
 	tentacles:			{type: Number, default: 0}
 });
 
@@ -39,6 +40,7 @@ var Ideas = new Schema({
 	plan:           String,
 	date_post:      Date,
 	team:           [Number],
+	points: 		{type: Number, default: 0},
 	comments_num:   {type: Number, default: 0}
 });
 

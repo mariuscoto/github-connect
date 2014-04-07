@@ -38,6 +38,20 @@ block content
         - each idea in ideas
           .profile-idea
             a(href='/idea?id=' + idea._id)= idea.title
+            - if (idea.points != 0) 
+              .profile-repo-points
+                | +
+                = idea.points
+            .profile-repo-desc
+              = idea.description
+      
+      .spacer
+      .profile-ideas
+        .profile-header Projects
+        - each project in projects
+          .profile-idea
+            a(href='/project?id=' + project._id)= project.title
+
       .spacer
       .profile-repos
         .profile-header All public repositories
