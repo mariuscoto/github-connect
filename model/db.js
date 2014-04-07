@@ -40,7 +40,7 @@ var Ideas = new Schema({
 	plan:           String,
 	date_post:      Date,
 	team:           [Number],
-	points: 		{type: Number, default: 0},
+	points:         {type: Number, default: 0},
 	comments_num:   {type: Number, default: 0}
 });
 
