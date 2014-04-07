@@ -1,11 +1,10 @@
 <script type="text/javascript">
 function ideaDelete(input) {
-	if(confirm("Are you sure you want to remove this idea?")) {
-		return true;
-		}
-	else {
-		return false;
-		}
+    if(confirm("Are you sure you want to remove this idea?")) {
+	return true;
+    } else {
+	return false;
+    }
 }
 </script>
 
