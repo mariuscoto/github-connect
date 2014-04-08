@@ -61,7 +61,7 @@ exports.login_dev = function(req, res) {
 }
 
 exports.login = function(req, res) {
-  if (global.config.status == 'dev') res.redirect('login_dev');
+  if (global.config.status == 'dev') res.redirect('/login_dev');
 	if (req.session.auth) res.redirect('/profile');
   res.render('login', {
     title: "Log in",
