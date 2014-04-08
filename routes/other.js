@@ -140,3 +140,9 @@ exports.faq = function(req, res) {
     });
   });
 };
+
+exports.not_found = function(req, res) {
+  res.render('404', { 
+    title: "404: File not found"
+  });
+}
