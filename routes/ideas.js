@@ -294,7 +294,7 @@ exports.idea = function(req, res) {
                   }
                 }
 
-                res.render('ideas', {
+                res.render('idea', {
                   title: idea.title,
                   cuser: cuser,
                   user: user,
@@ -306,7 +306,7 @@ exports.idea = function(req, res) {
               });
 
             else
-              res.render('ideas', {
+              res.render('idea', {
                 title: idea.title,
                 idea: idea,
                 cuser: cuser,

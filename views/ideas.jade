@@ -11,218 +11,23 @@ block content
     .spacer
 
   #menu
-    - if (!idea)
-      - if (everyauth.loggedIn)
-        form(method='post', action='/ideas', onSubmit='return checkdate(this.mydate)')
-          #idea-new
-            //input.btn.btn-success(type='button', id='add-btn', value='+')
-            h1 Add a new idea      
-            .left-box
-              #left-mini-title
-                label Title *
-                  br
-                  input.span5(id='idt', name='title', type='text', required)
-              .left-mini    
-                label Project Size
-                  br
-                  select.selectpicker.span5(name='size', type='text')
-                    option Small
-                    option Medium
-                    option Large
-                label Preffered language
-                  br
-                  select.selectpicker.span5(name='lang', type='text')
-                    option C/C++
-                    option C#
-                    option F#
-                    option Java
-                    option Javascript
-                    option Objective-C
-                    option PHP
-                    option Python
-                    option Ruby
-                    option Other
-
-            .right-mini
-              label ETA
+    - if (everyauth.loggedIn)
+      form(method='post', action='/ideas', onSubmit='return checkdate(this.mydate)')
+        #idea-new
+          //input.btn.btn-success(type='button', id='add-btn', value='+')
+          h1 Add a new idea      
+          .left-box
+            #left-mini-title
+              label Title *
                 br
-                input.span5.datepicker(name='mydate', type='text', required)
-              label Description *
+                input.span5(id='idt', name='title', type='text', required)
+            .left-mini    
+              label Project Size
                 br
-                textarea.span5(name='description', id='no_resize_textarea', rows='4', required)  
-            
-
-            .center-mini
-              label Plan
-                br
-              textarea.span11(name='plan', id='no_resize_textarea', rows="4")
-              input.btn.btn-success(id='sub', type='submit', value='Save')
-    - else
-      #idea-desc
-        #idea-desc-top
-          .ideas-desc-top-square
-            =idea.comments_num
-            h5 comments
-          .ideas-desc-top-square
-            =idea.team.length
-            h5 members
-          #idea-desc-top-title= idea.title
-          | Posted on #{idea.date_post}
-
-          
-        .spacer
-        #idea-description
-          h5= idea.description
-          h5= idea.lang
-        
-        .spacer
-        #idea-desc-buttom  
-          #idea-desc-buttom-right
-            img(src=cuser.avatar_url, width="50px", height="50px")
-            a(href="/profile?name=" + cuser.user_name)= cuser.user_name
-            br
-            | last seen on #{cuser.last_seen_short}
-            
-          - if (!user)
-            a(href="/login?rf=fav")
-              input.btn.btn-success(type='submit', value='Fav').idea-desc-buttom-btn
-          - if (user && !user.faved)
-            a(href="/idea/fav?id=" + idea._id)
-              input.btn.btn-success(type='submit', value='Fav', disabled).idea-desc-buttom-btn
-          - if (user && user.faved)
-            a(href="/idea/unfav?id=" + idea._id)
-              input.btn.btn-success(type='submit', value='UnFav', disabled).idea-desc-buttom-btn
-
-          - if (user && idea.uid == user.user_id)
-            a(href="/idea-settings?id=" + idea._id)
-              input.btn.btn-success(type='submit', value='Edit').idea-desc-buttom-btn
-
-          - else
-            - if (user && !user.joined)
-              a(href="/join-team?id=" + idea._id)
-                input.btn.btn-success(type='submit', value='Join Team').idea-desc-buttom-btn
-            - if (!user)
-              a(href="/login?rf=join_team")
-                input.btn.btn-success(type='submit', value='Join Team').idea-desc-buttom-btn
-            - if (user && user.joined)
-              input.btn.btn-success(type='submit', value='Joined', disabled).idea-desc-buttom-btn
-
-          
-        .spacer
-      .spacer
-    
-  #content 
-    - if (ideas)
-      - if (ideas.length != 0)
-        h1 Ideas list
-        #idea-table-header
-          ul
-            li
-              - if (sort == "most_recent")
-                | Most recent
-              - else
-                a(href='/ideas' + tab + '?sort=most_recent') Most recent
-            li
-              - if (sort == "most_viewed")
-                | Most visited
-              - else
-                a(href='/ideas' + tab + '?sort=most_viewed') Most visited
-            li
-              - if (sort == "most_commented")
-                | Most commented
-              - else
-                a(href='/ideas' + tab + '?sort=most_commented') Most commented
-
-      .left
-        - if (ideas.length != 0)
-          .ideas-bubble
-            - each idea in ideas
-              .idea
-                .idea-title
-                  .idea-title-text
-                    a(href='/idea?id=' + idea._id)= idea.title
-
-                  - if (!idea.fav)
-                    .idea-title-fav(id='#{idea._id}')
-                  - else
-                    .idea-title-fav-selected(id='#{idea._id}')
-
-                .idea-content
-                  p= idea.description
-                .idea-footer
-                  .idea-footer-left
-                    .idea-footer-comments
-                      = idea.comments_num
-                  .idea-footer-right
-                    | by 
-                    a(href='/profile?name=' + idea.user_name)= idea.user_name 
-                    | , 
-                    = idea.date_post_short
-        - else
-          - if (tab == "/favorites")
-            h3 No have no favorite ideas.
-          - if (tab == "/user")
-            h3 You have not added any ideas.
-
-      .right
-        .submenu
-          a(href='/ideas')
-            - if (tab)
-              .submenu-item All
-            - else
-              .submenu-item-selected All
-          a(href='/ideas-favorites')
-            - if (tab == "/favorites")
-              .submenu-item-selected Favorites
-            - else
-              .submenu-item Favorites
-          a(href='/ideas-user')
-            - if (tab == "/user")
-              .submenu-item-selected Mine
-            - else
-              .submenu-item Mine
-
-
-    - else if (idea)
-
-      - if (tab == "/team")
-        .left
-          - if (team && team.length != 0)
-            - each u in team
-              .team-member
-                .team-member-avatar
-                  img(src=u.avatar_url)
-                a(href='/profile?name=' + u.user_name)= u.user_name
-                p= u.points_repos
-                p Last seen on #{u.last_seen}
-          - else
-            h1 No members yet. Join in.
-
-      - else if (tab == "/plan")
-        .left
-          .left-plan
-            - if (idea.plan.length != 0)
-              p!= idea.plan_md
-            - else
-              h1 Nothing planned at this moment.
-
-            - if (user && idea.uid == user.user_id)
-              a(href="/idea-plan-edit?id=" + idea._id)
-                input.btn.btn-success(type='submit', value='Edit')
-
-      - else if (tab == "/plan-edit")
-        .left
-          .left-plan
-            h3 Edit current plan
-            form(method='post', action='/idea-plan-edit?id=' + idea._id)
-              textarea.span9(name='plan', rows="10")= idea.plan
-              input.btn.btn-success(id='plan', type='submit', value='Update')
-          
-      - else if (tab == "/settings")
-        .left
-          h3 Edit your idea
-            br
-            form(method='post', action='/idea-edit?id=' + idea._id)
+                select.selectpicker.span5(name='size', type='text')
+                  option Small
+                  option Medium
+                  option Large
               label Preffered language
                 br
                 select.selectpicker.span5(name='lang', type='text')
@@ -237,63 +42,89 @@ block content
                   option Ruby
                   option Other
 
-              label Description
-                br
-                textarea.span7(name='description', id='no_resize_textarea', rows="4")= idea.description
-              input.btn.btn-success(id='sub', type='submit', value='Update')
+          .right-mini
+            label ETA
+              br
+              input.span5.datepicker(name='mydate', type='text', required)
+            label Description *
+              br
+              textarea.span5(name='description', id='no_resize_textarea', rows='4', required)  
 
-            a(href='/idea-remove?id=' + idea._id)
-              input.btn.btn-danger(id='rmv', value='Remove this idea', onclick="return ideaDelete(this.rmv)")
 
-      - else
-        .left
-          - if (comments && comments.length != 0)
-            - each c in comments
-              .comment
-                a(href='/profile?name=' + c.user_name)= c.user_name + ": "
-                = c.content
-                .comment-bottom
-                  .upvotes(id="#{c._id}#")= c.upvotes.length
-                  - if (c.upvote)
-                    .upvoted(id="#{c._id}")
-                  - else
-                    .upvote(id="#{c._id}")
-                  - if (c.flag)
-                    .flagged(id="#{c._id}f")
-                  - else
-                    .flag(id="#{c._id}f")
-                  | Posted on #{c.date}
-          - else
-            h1 Be the first one to comment.
+          .center-mini
+            label Plan
+              br
+            textarea.span11(name='plan', id='no_resize_textarea', rows="4")
+            input.btn.btn-success(id='sub', type='submit', value='Save')
 
-          - if (everyauth.loggedIn)
-            .comment
-              form(method='post', action='/idea_comment?id=' + idea._id)
-                //textarea(name='content')
-                textarea.span5(name='content', type='text')
-                input.btn.btn-success(type='submit', value='Comment')
-                //input(type='submit', value='Comment')
-
-      .right
-        a(href='/idea?id=' + idea._id)
-          - if (!tab)
-            .submenu-item-selected Comments
-          - else
-            .submenu-item Comments
-        a(href='/idea-team?id=' + idea._id)
-          - if (tab == "/team")
-            .submenu-item-selected Team
-          - else
-            .submenu-item Team
-        a(href='/idea-plan?id=' + idea._id)
-          - if (tab == "/plan" || tab == "/plan-edit")
-            .submenu-item-selected Plan
-          - else
-            .submenu-item Plan
-        - if (user && idea.uid == user.user_id)
-          a(href='/idea-settings?id=' + idea._id)
-            - if (tab == "/settings")
-              .submenu-item-selected Settings
+    
+  #content
+    - if (ideas.length != 0)
+      h1 Ideas list
+      #idea-table-header
+        ul
+          li
+            - if (sort == "most_recent")
+              | Most recent
             - else
-              .submenu-item Settings
+              a(href='/ideas' + tab + '?sort=most_recent') Most recent
+          li
+            - if (sort == "most_viewed")
+              | Most visited
+            - else
+              a(href='/ideas' + tab + '?sort=most_viewed') Most visited
+          li
+            - if (sort == "most_commented")
+              | Most commented
+            - else
+              a(href='/ideas' + tab + '?sort=most_commented') Most commented
+
+    .left
+      - if (ideas.length != 0)
+        .ideas-bubble
+          - each idea in ideas
+            .idea
+              .idea-title
+                .idea-title-text
+                  a(href='/idea?id=' + idea._id)= idea.title
+
+                - if (!idea.fav)
+                  .idea-title-fav(id='#{idea._id}')
+                - else
+                  .idea-title-fav-selected(id='#{idea._id}')
+
+              .idea-content
+                p= idea.description
+              .idea-footer
+                .idea-footer-left
+                  .idea-footer-comments
+                    = idea.comments_num
+                .idea-footer-right
+                  | by 
+                  a(href='/profile?name=' + idea.user_name)= idea.user_name 
+                  | , 
+                  = idea.date_post_short
+      - else
+        - if (tab == "/favorites")
+          h3 No have no favorite ideas.
+        - if (tab == "/user")
+          h3 You have not added any ideas.
+
+    .right
+      .submenu
+        a(href='/ideas')
+          - if (tab)
+            .submenu-item All
+          - else
+            .submenu-item-selected All
+        a(href='/ideas-favorites')
+          - if (tab == "/favorites")
+            .submenu-item-selected Favorites
+          - else
+            .submenu-item Favorites
+        a(href='/ideas-user')
+          - if (tab == "/user")
+            .submenu-item-selected Mine
+          - else
+            .submenu-item Mine
     .spacer
