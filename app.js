@@ -4,7 +4,8 @@ global.config = [];
 
 app.configure('development', function(){
 	app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-  global.config = require('./lib/config')
+	global.config.redis_secret = 'big secret'
+  //global.config = require('./lib/config')
 	global.config.status = 'dev';
 });
 
