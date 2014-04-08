@@ -11,9 +11,9 @@ html
     script(type="text/javascript", src='/javascripts/bootstrap-datepicker.js')
 
   body
-  
-    
-  
+
+
+
     #container
       #header
         #logo
@@ -26,12 +26,12 @@ html
             li
               a(href="/ideas") Ideas
         #controls
-          - if (!everyauth.loggedIn)          
+          - if (!everyauth.loggedIn)
             a(href="/login") Login
           - else
             - if (user)
               = user.points_repos + user.points_ideas
-              |  cups for 
+              |  cups for
               a(href="/profile")= user.user_name + " "
             a(href="/logout")
               img(id='logout', src='images/icon-logout.png')
@@ -49,12 +49,12 @@ html
         #menu-footer
           ul
             li
-              a(href="/login_dev") Offline
-            //li 
+              a(href="/login_dev") Development
+            //li
             //  a(href="/about") About
-            li 
+            li
               a(href="/faq") FAQ
-            li 
+            li
               a(href="/contact") Contact
 
   - if (everyauth.loggedIn)

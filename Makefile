@@ -5,11 +5,10 @@ setup: package.json
 	npm config set registry http://registry.npmjs.org/
 	sudo npm install
 	
-	sudo port install mongodb || sudo apt-get install mongodb
-	
+	sudo port install mongodb || sudo apt-get install mongodb	
 	NODE_ENV=development
 
 run:
+	@mongod &
 	@echo "Server running at localhost:3000"
-
 	@node app.js

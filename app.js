@@ -7,7 +7,7 @@ app.configure('development', function(){
   global.config = require('./lib/config')
 	global.config.status = 'dev';
 });
- 
+
 app.configure('production', function(){
 	app.use(express.errorHandler());
   global.config.gh_clientId = process.env.clientId;
@@ -46,7 +46,7 @@ everyauth
 app.configure(function() {
 	app.set('views', __dirname + '/views');
 	app.set('view engine', 'jade');
-	app.use(express.favicon("public/images/github-icon.ico")); 
+	app.use(express.favicon("public/images/github-icon.ico"));
 	app.use(express.bodyParser());
 	app.use(express.cookieParser());
 	app.use(express.session({secret: global.config.redis_secret}));
@@ -83,7 +83,7 @@ app.get('/notifications', ensureAuth, ideas.notifications);
 var other = require('./routes/other.js');
 app.get('/', other.index);
 app.get('/login', other.login);
-app.get('/login_dev', other.login_dev);
+app.get('/login_dev', ensureDev, other.login_dev);
 app.get('/profile', other.profile);
 app.get('/contact', other.contact);
 app.get('/faq', other.faq);
@@ -106,7 +106,12 @@ app.use(other.not_found);
 // Make sure user is authenticated middleware
 function ensureAuth(req, res, next) {
 	if (req.session.auth) return next();
-	res.redirect('/login')
+	res.redirect('/login');
+}
+// Make sure offline login only available in dev mode
+function ensureDev(req, res, next) {
+	if (global.config.status == 'dev') return next();
+	res.redirect('/');
 }
 
 // Launch server

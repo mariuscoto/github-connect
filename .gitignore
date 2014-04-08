@@ -13,5 +13,7 @@ pids
 logs
 results
 node_modules
+lib
 
 npm-debug.log
+zMakefile

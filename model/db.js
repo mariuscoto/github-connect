@@ -1,28 +1,28 @@
 var mongoose = require( 'mongoose' );
 var Schema   = mongoose.Schema;
- 
+
 var Users = new Schema({
-	user_id:	    	String,
-	user_name:	    String,
-	user_fullname:  String,
+	user_id:         String,
+	user_name:       String,
+	user_fullname:   String,
 	user_email:	    String,
-	avatar_url:     String,
-	location:       String,
-	favorites:	    [String],
-  followed:       [String],
-	join_github:    String,
-	join_us:	    	Date,
-  last_seen:      Date,
-	repos:          [Repo],
-	points_repos:   Number,
-	points_ideas:   {type: Number, default: 0},
-	tentacles:			{type: Number, default: 0}
+	avatar_url:      String,
+	location:        String,
+	favorites:	     [String],
+  followed:        [String],
+	join_github:     String,
+	join_us:	    	 Date,
+  last_seen:       Date,
+	repos:           [Repo],
+	points_repos:    Number,
+	points_ideas:    {type: Number, default: 0},
+	tentacles:			 {type: Number, default: 0}
 });
 
 var Projects = new Schema({
 	uid:						Number,
   user_name:      String,
-  repo:						String,
+  repo:           String,
   title:          String,
   type:           String,
   description:    String,
@@ -71,21 +71,21 @@ var Repo = new Schema({
 	fork:           Boolean,
 	forks_count:    Number,
 	points:         {type: Number, default: 0},
-	size:						Number,
-	watchers_count:	Number,
+	size:					 Number,
+	watchers_count: Number,
 	owner:					String,
-	closed_pulls:		Number
+	closed_pulls:	 Number
 });
 
 var Notifications = new Schema({
-	src: Number,
-	dest: Number,
-	type: String,
-	seen: Boolean,
-	date: Date,
-	link: String
+	src:   Number,
+	dest:  Number,
+	type:  String,
+	seen:  Boolean,
+	date:  Date,
+	link:  String
 });
- 
+
 mongoose.model( 'Users', Users );
 mongoose.model( 'Projects', Projects );
 mongoose.model( 'Ideas', Ideas );
@@ -94,5 +94,4 @@ mongoose.model( 'ProjectComments', ProjectComments );
 mongoose.model( 'Repo', Repo );
 mongoose.model( 'Notifications', Notifications );
 
-//mongoose.connect( 'mongodb://localhost/github-connect' );
-mongoose.connect('mongodb://'+global.config.db_name+':'+global.config.db_pass+'@troup.mongohq.com:10059/github-connect' );
+mongoose.connect( 'mongodb://localhost/github-connect' );
