@@ -94,4 +94,8 @@ mongoose.model( 'ProjectComments', ProjectComments );
 mongoose.model( 'Repo', Repo );
 mongoose.model( 'Notifications', Notifications );
 
-mongoose.connect( 'mongodb://localhost/github-connect' );
+
+if (global.config.status == 'dev')
+	mongoose.connect( 'mongodb://localhost/github-connect' );
+else
+	mongoose.connect('mongodb://'+global.config.db_name+':'+global.config.db_pass+'@troup.mongohq.com:10059/github-connect');
