@@ -19,7 +19,7 @@ exports.ideas = function(req, res) {
   } else if (req.query.sort == "most_commented") {
     sort_type = '-comments_num';
   }
-  
+
   if (req.session.auth) uid = req.session.auth.github.user.id;
 	Users.findOne ({ 'user_id': uid }, function (err, user) {
 		if (err) return handleError(err);
@@ -55,10 +55,10 @@ exports.ideas_user = function(req, res) {
   } else if (req.query.sort == "most_commented") {
     sort_type = '-comments_num';
   }
-  
+
   Users.findOne ({ 'user_id': req.session.auth.github.user.id }, function (err, user) {
     if (err) return handleError(err);
-		
+
 		Ideas
 		.find({ 'uid': user.user_id })
 		.sort(sort_type)
@@ -91,7 +91,7 @@ exports.ideas_favorites = function(req, res) {
   } else if (req.query.sort == "most_commented") {
     sort_type = '-comments_num';
   }
-    
+
   Users.findOne ({ 'user_id': req.session.auth.github.user.id }, function (err, user) {
     if (err) return handleError(err);
 
@@ -109,7 +109,7 @@ exports.ideas_favorites = function(req, res) {
 				if (ideas[i].description.length > CHAR_LIMIT)
 					ideas[i].description = (ideas[i].description).substring(0, CHAR_LIMIT) + " [...]";
 			}
-      
+
       if (ideas == null) {
         res.redirect('/ideas');
       } else {
@@ -138,7 +138,7 @@ exports.ideas_post = function(req, res) {
       date_post:    Date.now(),
       points:       5
     }).save( function( err, todo, count ) {
-      
+
 
         // post to facebook
       	var options = {
@@ -152,14 +152,14 @@ exports.ideas_post = function(req, res) {
           response.on("data", function(chunk){ body+=chunk.toString("utf8"); });
           response.on("end", function(){
             console.log("* Idea posted to facebook page.");
-          });				
+          });
         });
         request.end();
 
-        var conditions = {user_id: req.user.github.id};
+        var conditions = {user_id: req.session.auth.github.user.id};
         var update = {$inc: {points_ideas: 5}};
         Users.update(conditions, update, callback);
-        
+
         function callback (err, num) {
           console.log("* Added points " + num);
         }
@@ -176,7 +176,7 @@ exports.idea_comment = function(req, res) {
   var conditions = { _id: req.query.id };
   var update = {$inc: {comments_num: 1}};
   Ideas.update(conditions, update, callback);
-  
+
 
   function callback (err, num) {
     new IdeaComments({
@@ -193,14 +193,14 @@ exports.idea_comment = function(req, res) {
     .findOne({ '_id': req.query.id })
     .exec(function(err, idea) {
       new Notifications({
-        src: req.user.github.id,
+        src: req.session.auth.github.user.id,
         dest: idea.uid,
         type: "Comentariu",
         seen: false,
         date: new Date(),
         link: "/idea?id=" + req.query.id
       }).save(function(err, comm, count) {
-        console.log("* " + req.user.github.login + " a comentat " + req.query.id);
+        console.log("* " + req.session.auth.github.user.login + " a comentat " + req.query.id);
       });
     });
   };
@@ -231,7 +231,7 @@ exports.join_team = function(req, res) {
   var update = {$addToSet: {team: req.session.auth.github.user.id}, $inc: {points: 20}};
   Ideas.update(conditions, update, callback);
 
-  var conditions = {user_id: req.user.github.id};
+  var conditions = {user_id: req.session.auth.github.user.id};
   var update = {$inc: {points_ideas: 15}};
   Users.update(conditions, update);
 
@@ -242,8 +242,8 @@ exports.join_team = function(req, res) {
 
 exports.idea = function(req, res) {
   if (!req.query.id) res.redirect('/ideas');
-  
-  var tab, team;  
+
+  var tab, team;
   if (req.route.path == "/idea-team") tab = "/team";
   else if (req.route.path == "/idea-plan") tab = "/plan";
   else if (req.route.path == "/idea-plan-edit") tab = "/plan-edit";
@@ -255,19 +255,19 @@ exports.idea = function(req, res) {
 		if (!idea) {
 			res.redirect('/ideas');
 		} else {
-      
+
       // Markdown idea plan
       idea.plan_md = markdown.toHTML(idea.plan);
-      
+
       Users.findOne({ 'user_name': idea.user_name}, function (err, cuser) {
         if (err) return handleError(err);
-        
+
         // prettify date
         cuser.last_seen_short = (cuser.last_seen.toString()).substring(0, 15);
 
         Users.find({ 'user_id': idea.team }, function(err, project_team) {
           if (err) return handleError(err);
-        
+
           IdeaComments
           .find({ 'idea': req.query.id })
           .exec(function(err, comments) {
@@ -275,19 +275,19 @@ exports.idea = function(req, res) {
             if (req.session.auth)
               Users.findOne ({ 'user_id': req.session.auth.github.user.id }, function (err, user) {
                 if (err) return handleError(err);
-                
+
                 // see if user joined team
                 if (user && idea.team.indexOf(user.user_id) > -1)
                   user.joined = true;
                 // see if user faved idea
                 if (user && user.favorites.indexOf(idea._id) > -1)
                   user.faved = true;
-                
+
                 if (user) {
                   for (i in comments) {
                     // check for already voted comments
                     if (comments[i].upvotes.indexOf(user.user_id) > -1)
-                      comments[i].upvote = true;                
+                      comments[i].upvote = true;
                     // check for flagged comments
                     if (comments[i].flags.indexOf(user.user_id) > -1)
                       comments[i].flag = true;
@@ -327,7 +327,7 @@ exports.idea_edit = function(req, res) {
 	.exec(function(err, idea) {
     // allow only edits by owner
     if (idea.uid != req.session.auth.github.user.id) res.redirect('/ideas');
-        
+
     // apply changes
     var conditions = {_id: req.query.id};
     var update = {$set: {description: req.body.description, lang : req.body.lang}};
@@ -345,7 +345,7 @@ exports.idea_plan_edit = function(req, res) {
 	.exec(function(err, idea) {
     // allow only edits by owner
     if (idea.uid != req.session.auth.github.user.id) res.redirect('/ideas');
-        
+
     // apply changes
     var conditions = {_id: req.query.id};
     var update = {$set: {plan: req.body.plan}};
@@ -386,12 +386,14 @@ exports.flag = function(req, res) {
 };
 
 exports.idea_remove = function(req, res) {
-    Ideas.remove({_id: req.query.id}, function (err, num) {
+    Ideas.remove({_id: req.query.id, uid: req.session.auth.github.user.id}, function (err, num) {
       console.log("* " + req.session.auth.github.user.login + " removed an idea " + req.query.id);
+
+      IdeaComments.remove({idea: req.query.id}, function (err, num) {
+        console.log("* " + req.session.auth.github.user.login + " removed all comments from " + req.query.id);
+      });
+
       res.redirect('/ideas');
-    });
-    IdeaComments.remove({idea: req.query.id}, function (err, num) {
-      console.log("* " + req.session.auth.github.user.login + " removed all comments from " + req.query.id);
     });
 };
 

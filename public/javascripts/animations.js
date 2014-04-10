@@ -15,7 +15,7 @@ var validformat=/^\d{2}\/\d{2}\/\d{4}$/ //Basic check for format validity
 var returnval=false
 if (!validformat.test(input.value))
 alert("Invalid Date Format. Make sure the format is dd/mm/yyyy.")
-else{ 
+else{
 //Detailed check for valid date ranges
 var dayfield=input.value.split("/")[0]
 var monthfield=input.value.split("/")[1]
@@ -50,7 +50,7 @@ $('.upvote').click(function () {
   if (this.className == "upvote") {
     var id = this.id;
     $.ajax({
-     url: window.location.pathname + 's/upvote?id=' + this.id,
+     url: window.location.pathname + '/upvote?id=' + this.id,
      type: "POST",
      success: function(response) {
        if (response.success) {
@@ -69,7 +69,7 @@ $('.flag').click(function () {
   if (this.className == "flag") {
     var fid = this.id;
     $.ajax({
-     url: window.location.pathname + 's/flag?id=' + this.id.substring(0, this.id.length-1),
+     url: window.location.pathname + '/flag?id=' + this.id.substring(0, this.id.length-1),
      type: "POST",
      success: function(response) {
        if (response.success)
@@ -95,7 +95,7 @@ $('.idea-title-fav').click(function () {
     });
   }
 });
-  
+
 $('.idea-title-fav-selected').click(function () {
   // click just once
   if (this.className == "idea-title-fav-selected") {
@@ -107,7 +107,7 @@ $('.idea-title-fav-selected').click(function () {
        if (response.success)
 	{
         document.getElementById(id).setAttribute("class", "idea-title-fav");
-	
+
 	}
      }
     });
@@ -130,7 +130,7 @@ $('.project-title-fav').click(function () {
     });
   }
 });
-  
+
 $('.project-title-fav-selected').click(function () {
   // click just once
   if (this.className == "project-title-fav-selected") {

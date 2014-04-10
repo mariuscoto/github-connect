@@ -31,7 +31,7 @@ html
           - else
             - if (user)
               = user.points_repos + user.points_ideas
-              |  cups for
+              |  cups for 
               a(href="/profile")= user.user_name + " "
             a(href="/logout")
               img(id='logout', src='images/icon-logout.png')
@@ -48,8 +48,6 @@ html
           img(src='images/gc-logo-footer.png')
         #menu-footer
           ul
-            li
-              a(href="/login_dev") Development
             //li
             //  a(href="/about") About
             li

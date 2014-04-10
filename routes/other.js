@@ -28,15 +28,28 @@ exports.index = function(req, res) {
 };
 
 exports.login_dev = function(req, res) {
-  if (global.config.status == 'prod')
-    res.redirect('https://github.com/cmarius02/github-connect');
-
+	// init default user
   var u = {
-    id:       666,
+    id:       777,
     login:    'dev_user',
     followed: [],
     repos:    []
-  }
+  };
+	// overwrite with query name, and generated id
+	if (req.query.name) {
+		u.login = req.query.name;
+		u.id = parseInt(u.login, 36);
+	}
+	var repo = {
+		name: 					u.login + '\'s cool repo',
+		description: 	 'A very nice description should be added here.',
+		html_url: 			'http://www.github.com',
+		fork: 					true,
+		forks_count: 	 3,
+		watchers_count: 5,
+		closed_pulls: 	3,
+		points: 				100
+	};
   var update = {
     user_id: 			u.id,
     user_name: 		u.login,
@@ -44,11 +57,13 @@ exports.login_dev = function(req, res) {
     user_email: 	 'dev@github-connect.com',
     avatar_url: 	 'https://avatars.githubusercontent.com/u/0',
     location: 		 'Somewhere',
-		points_repos:  9999,
+		points_repos:  0,
     join_github: 	Date.now(),
     join_us: 			Date.now(),
-    last_seen: 		Date.now()
+    last_seen: 		Date.now(),
+		repos: 				[repo]
   };
+
   Users.update({user_id: u.id}, update, {upsert: true}, function(err, num) {
     req.session.regenerate(function (err) {
       req.session.auth = {};

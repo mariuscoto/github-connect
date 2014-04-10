@@ -71,8 +71,8 @@ app.get('/idea-team', ideas.idea);
 app.get('/idea-plan', ideas.idea);
 app.get('/idea-plan-edit', ideas.idea);
 app.get('/idea-settings', ideas.idea);
-app.post('/upvote', ensureAuth, ideas.upvote);
-app.post('/flag', ensureAuth, ideas.flag);
+app.post('/idea/upvote', ensureAuth, ideas.upvote);
+app.post('/idea/flag', ensureAuth, ideas.flag);
 app.post('/ideas', ideas.ideas_post);
 app.post('/idea_comment', ensureAuth, ideas.idea_comment);
 app.post('/idea-edit', ensureAuth, ideas.idea_edit);
@@ -112,7 +112,7 @@ function ensureAuth(req, res, next) {
 // Make sure offline login only available in dev mode
 function ensureDev(req, res, next) {
 	if (global.config.status == 'dev') return next();
-	res.redirect('/');
+	res.redirect('/login');
 }
 
 // Launch server
