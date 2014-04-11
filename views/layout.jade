@@ -12,13 +12,11 @@ html
 
   body
 
-
-
     #container
       #header
-        #logo
-          a(href="/")
-            img(id='logo', src='images/gc-logo.png', width="42", height="42")
+
+        a(href="/")
+          #logo
         #nav
           ul
             li
@@ -34,7 +32,7 @@ html
               |  cups for 
               a(href="/profile")= user.user_name + " "
             a(href="/logout")
-              img(id='logout', src='images/icon-logout.png')
+              #logout
 
       #body
         block content
@@ -45,7 +43,6 @@ html
         #copyright
           b &copy; Github-connect, 2014
         #logo-footer
-          img(src='images/gc-logo-footer.png')
         #menu-footer
           ul
             //li
