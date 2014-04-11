@@ -1,4 +1,5 @@
 var CHAR_LIMIT = 330;
+var JOIN_POINTS = 10;
 
 var express = require('express');
 var mongoose = require('mongoose');
@@ -8,11 +9,12 @@ var Projects = mongoose.model('Projects');
 var IdeaComments = mongoose.model('IdeaComments');
 var Notifications = mongoose.model('Notifications');
 var markdown = require( "markdown" ).markdown;
-var app = express();
 
 
-exports.ideas = function(req, res) {
-  var uid;
+
+exports.index = function(req, res) {
+  var uid = ((req.session.auth) ? req.session.auth.github.user.id : null);
+
   var sort_type = null;
   if (req.query.sort == "most_recent") {
     sort_type = '-date_post';
@@ -20,13 +22,23 @@ exports.ideas = function(req, res) {
     sort_type = '-comments_num';
   }
 
-  if (req.session.auth) uid = req.session.auth.github.user.id;
-	Users.findOne ({ 'user_id': uid }, function (err, user) {
+	Users
+  .findOne({ 'user_id': uid })
+  .exec(function (err, user) {
 		if (err) return handleError(err);
 
-		Ideas.find()
+    // set find conditions
+    var conditions = null;
+    if (req.path == "/ideas_user")
+      conditions = { 'uid': user.user_id }
+    else if (req.path == "/ideas_fav")
+      conditions = { _id: { $in: user.favorites }}
+
+		Ideas
+    .find(conditions)
 		.sort(sort_type)
 		.exec(function(err, ideas) {
+
 			for (var i=0; i<ideas.length; i++) {
 				// mark favorites
 				if (user != null && user.favorites.indexOf(ideas[i]._id) > -1)
@@ -37,95 +49,94 @@ exports.ideas = function(req, res) {
 				if (ideas[i].description.length > CHAR_LIMIT)
 					ideas[i].description = (ideas[i].description).substring(0, CHAR_LIMIT) + " [...]";
 			}
+
 			res.render('ideas', {
-				title: "Ideas",
-				user: user,
-				sort: req.query.sort,
-				tab: "",
-				ideas: ideas
+				title:      "Ideas",
+				user:       user,
+        ideas:      ideas,
+        currentUrl: req.path,
+				sort:       req.query.sort
 			});
+
 		});
 	});
 };
 
-exports.ideas_user = function(req, res) {
-  var sort_type = null;
-  if (req.query.sort == "most_recent") {
-    sort_type = '-date_post';
-  } else if (req.query.sort == "most_commented") {
-    sort_type = '-comments_num';
-  }
 
-  Users.findOne ({ 'user_id': req.session.auth.github.user.id }, function (err, user) {
-    if (err) return handleError(err);
+exports.one = function(req, res) {
+  if (!req.query.id) res.redirect('/ideas');
+  var uid = ((req.session.auth) ? req.session.auth.github.user.id : null);
 
-		Ideas
-		.find({ 'uid': user.user_id })
-		.sort(sort_type)
-		.exec(function(err, ideas) {
-      for (var i=0; i<ideas.length; i++) {
-				// mark favorites
-				if (user != null && user.favorites.indexOf(ideas[i]._id) > -1)
-					ideas[i].fav = true;
-				// format date
-				ideas[i].date_post_short = (ideas[i].date_post.toString()).substring(0, 15);
-				// shorten description
-				if (ideas[i].description.length > CHAR_LIMIT)
-					ideas[i].description = (ideas[i].description).substring(0, CHAR_LIMIT) + " [...]";
-			}
-			res.render('ideas', {
-				title: "Ideas",
-				user: user,
-				sort: req.query.sort,
-				tab: "/user",
-				ideas: ideas
-			});
-		});
-	});
-};
+  Ideas
+  .findOne({ '_id': req.query.id })
+  .exec(function(err, idea) {
+    if (!idea) res.redirect('/ideas');
 
-exports.ideas_favorites = function(req, res) {
-  var sort_type = null;
-  if (req.query.sort == "most_recent") {
-    sort_type = '-date_post';
-  } else if (req.query.sort == "most_commented") {
-    sort_type = '-comments_num';
-  }
+    // Markdown idea plan
+    idea.plan_md = markdown.toHTML(idea.plan);
 
-  Users.findOne ({ 'user_id': req.session.auth.github.user.id }, function (err, user) {
-    if (err) return handleError(err);
+    Users
+    .find({ 'user_id': idea.team })
+    .exec(function(err, project_team) {
+      if (err) return handleError(err);
 
-    Ideas
-    .find({ _id: { $in: user.favorites }})
-    .sort(sort_type)
-    .exec(function(err, ideas) {
-      for (var i=0; i<ideas.length; i++) {
-				// mark favorites
-				if (user != null && user.favorites.indexOf(ideas[i]._id) > -1)
-					ideas[i].fav = true;
-				// format date
-				ideas[i].date_post_short = (ideas[i].date_post.toString()).substring(0, 15);
-				// shorten description
-				if (ideas[i].description.length > CHAR_LIMIT)
-					ideas[i].description = (ideas[i].description).substring(0, CHAR_LIMIT) + " [...]";
-			}
+      Users
+      .findOne({ 'user_name': idea.user_name})
+      .exec(function(err, cuser) {
+        if (err) return handleError(err);
 
-      if (ideas == null) {
-        res.redirect('/ideas');
-      } else {
-        res.render('ideas', {
-          title: "fav ideas",
-          user: user,
-          sort: req.query.sort,
-          tab: "/favorites",
-          ideas: ideas
+        IdeaComments
+        .find({ 'idea': req.query.id })
+        .exec(function(err, comments) {
+
+          Users
+          .findOne({ 'user_id': uid })
+          .exec(function (err, user) {
+
+// console.log(new Date(idea.date_post).getTime());
+// console.log(Date.now());
+// var diff = Date.now() - new Date(idea.date_post).getTime();
+// console.log(diff);
+// console.log(new Date(diff * 1000).getMinutes());
+
+            if (user) {
+              // see if user joined team
+              if (user && idea.team.indexOf(user.user_id) > -1)
+                user.joined = true;
+              // see if user faved idea
+              if (user && user.favorites.indexOf(idea._id) > -1)
+                user.faved = true;
+
+              for (i in comments) {
+                // check for already voted comments
+                if (comments[i].upvotes.indexOf(user.user_id) > -1)
+                  comments[i].upvote = true;
+                // check for flagged comments
+                if (comments[i].flags.indexOf(user.user_id) > -1)
+                  comments[i].flag = true;
+              }
+            }
+
+            res.render('idea', {
+              title:      idea.title,
+              user:       user,
+              cuser:      cuser,
+              idea:       idea,
+              team:       project_team,
+              currentUrl: req.path,
+              sort:       req.query.sort,
+              comments:   comments
+            });
+
+          });
         });
-      }
+      });
     });
   });
 };
 
-exports.ideas_post = function(req, res) {
+
+exports.add = function(req, res) {
   // add idea only if it has a title and description
   if (req.body.title && req.body.description)
     new Ideas({
@@ -138,7 +149,6 @@ exports.ideas_post = function(req, res) {
       date_post:    Date.now(),
       points:       5
     }).save( function( err, todo, count ) {
-
 
         // post to facebook
       	var options = {
@@ -171,14 +181,12 @@ exports.ideas_post = function(req, res) {
     res.redirect('/ideas');
 };
 
-exports.idea_comment = function(req, res) {
+
+exports.comment = function(req, res) {
   // increment comments number
   var conditions = { _id: req.query.id };
   var update = {$inc: {comments_num: 1}};
-  Ideas.update(conditions, update, callback);
-
-
-  function callback (err, num) {
+  Ideas.update(conditions, update, function (err, num) {
     new IdeaComments({
       uid:        req.session.auth.github.user.id,
       user_name:  req.session.auth.github.user.login,
@@ -189,6 +197,7 @@ exports.idea_comment = function(req, res) {
 			console.log("* " + req.session.auth.github.user.login + " commented on " + req.query.id);
 			res.redirect('/idea?id=' + req.query.id);
     });
+
     Ideas
     .findOne({ '_id': req.query.id })
     .exec(function(err, idea) {
@@ -200,126 +209,71 @@ exports.idea_comment = function(req, res) {
         date: new Date(),
         link: "/idea?id=" + req.query.id
       }).save(function(err, comm, count) {
-        console.log("* " + req.session.auth.github.user.login + " a comentat " + req.query.id);
+        console.log("* " + req.session.auth.github.user.login +
+                    " commented on " + req.query.id);
       });
     });
-  };
+  });
 };
 
-exports.idea_add_fav = function(req, res) {
+
+exports.fav = function(req, res) {
   var conditions = {user_id: req.session.auth.github.user.id};
   var update = {$push: {favorites: req.query.id}};
-  Users.update(conditions, update, callback);
-
-  function callback (err, num) {
-		res.json({success: true});
-  }
+  Users.update(conditions, update, function (err, num) {
+		if (num) res.json({success: true});
+  });
 };
 
-exports.idea_remove_fav = function(req, res) {
+
+exports.unfav = function(req, res) {
   var conditions = {user_id: req.session.auth.github.user.id};
   var update = {$pop: {favorites: req.query.id}};
-  Users.update(conditions, update, callback);
-
-  function callback (err, num) {
-		res.json({success: true});
-  }
+  Users.update(conditions, update, function (err, num) {
+		if (num) res.json({success: true});
+  });
 };
+
+
+exports.upvote = function(req, res) {
+  var conditions = {_id: req.query.id};
+  var update = {$addToSet: {upvotes: req.session.auth.github.user.id}};
+  IdeaComments.update(conditions, update, function (err, num) {
+    if (num) {
+      console.log("* " + req.session.auth.github.user.login +
+                  " upvoted " + req.query.id);
+      res.json({success: true});
+    }
+  });
+};
+
+
+exports.flag = function(req, res) {
+  var conditions = {_id: req.query.id};
+  var update = {$addToSet: {flags: req.session.auth.github.user.id}};
+  IdeaComments.update(conditions, update, function (err, num) {
+    if (num) {
+      console.log("* " + req.session.auth.github.user.login +
+                  " flagged " + req.query.id);
+      res.json({success: true});
+    }
+  });
+};
+
 
 exports.join_team = function(req, res) {
   var conditions = {_id: req.query.id};
-  var update = {$addToSet: {team: req.session.auth.github.user.id}, $inc: {points: 20}};
-  Ideas.update(conditions, update, callback);
+  var update = {$addToSet: {team: req.session.auth.github.user.id},
+                $inc: {points: JOIN_POINTS}};
+  Ideas.update(conditions, update, function (err, num) {
+    var conditions = {user_id: req.session.auth.github.user.id};
+    var update = {$inc: {points_ideas: JOIN_POINTS}};
+    Users.update(conditions, update);
 
-  var conditions = {user_id: req.session.auth.github.user.id};
-  var update = {$inc: {points_ideas: 15}};
-  Users.update(conditions, update);
-
-  function callback (err, num) {
     res.redirect('/idea?id=' + req.query.id);
-  }
+  });
 };
 
-exports.idea = function(req, res) {
-  if (!req.query.id) res.redirect('/ideas');
-
-  var tab, team;
-  if (req.route.path == "/idea-team") tab = "/team";
-  else if (req.route.path == "/idea-plan") tab = "/plan";
-  else if (req.route.path == "/idea-plan-edit") tab = "/plan-edit";
-  else if (req.route.path == "/idea-settings") tab = "/settings";
-
-  Ideas
-	.findOne({ '_id': req.query.id })
-	.exec(function(err, idea) {
-		if (!idea) {
-			res.redirect('/ideas');
-		} else {
-
-      // Markdown idea plan
-      idea.plan_md = markdown.toHTML(idea.plan);
-
-      Users.findOne({ 'user_name': idea.user_name}, function (err, cuser) {
-        if (err) return handleError(err);
-
-        // prettify date
-        cuser.last_seen_short = (cuser.last_seen.toString()).substring(0, 15);
-
-        Users.find({ 'user_id': idea.team }, function(err, project_team) {
-          if (err) return handleError(err);
-
-          IdeaComments
-          .find({ 'idea': req.query.id })
-          .exec(function(err, comments) {
-
-            if (req.session.auth)
-              Users.findOne ({ 'user_id': req.session.auth.github.user.id }, function (err, user) {
-                if (err) return handleError(err);
-
-                // see if user joined team
-                if (user && idea.team.indexOf(user.user_id) > -1)
-                  user.joined = true;
-                // see if user faved idea
-                if (user && user.favorites.indexOf(idea._id) > -1)
-                  user.faved = true;
-
-                if (user) {
-                  for (i in comments) {
-                    // check for already voted comments
-                    if (comments[i].upvotes.indexOf(user.user_id) > -1)
-                      comments[i].upvote = true;
-                    // check for flagged comments
-                    if (comments[i].flags.indexOf(user.user_id) > -1)
-                      comments[i].flag = true;
-                  }
-                }
-
-                res.render('idea', {
-                  title: idea.title,
-                  cuser: cuser,
-                  user: user,
-                  team: project_team,
-                  idea: idea,
-                  tab: tab,
-                  comments: comments
-                });
-              });
-
-            else
-              res.render('idea', {
-                title: idea.title,
-                idea: idea,
-                cuser: cuser,
-                team: project_team,
-                tab: tab,
-                comments: comments
-              });
-          });
-        });
-      });
-		}
-	});
-};
 
 exports.idea_edit = function(req, res) {
   Ideas
@@ -331,13 +285,14 @@ exports.idea_edit = function(req, res) {
     // apply changes
     var conditions = {_id: req.query.id};
     var update = {$set: {description: req.body.description, lang : req.body.lang}};
-    Ideas.update(conditions, update, callback);
-    function callback (err, num) {
-      console.log("* " + req.session.auth.github.user.login + " made changes to " + req.query.id);
+    Ideas.update(conditions, update, function (err, num) {
+      console.log("* " + req.session.auth.github.user.login +
+                  " made changes to " + req.query.id);
       res.redirect('/idea?id=' + req.query.id);
-    };
+    });
   });
 };
+
 
 exports.idea_plan_edit = function(req, res) {
   Ideas
@@ -349,53 +304,39 @@ exports.idea_plan_edit = function(req, res) {
     // apply changes
     var conditions = {_id: req.query.id};
     var update = {$set: {plan: req.body.plan}};
-    Ideas.update(conditions, update, callback);
-    function callback (err, num) {
-      console.log("* " + req.session.auth.github.user.login + " made changes to plan " + req.query.id);
+    Ideas.update(conditions, update, function (err, num) {
+      console.log("* " + req.session.auth.github.user.login +
+                  " made changes to plan " + req.query.id);
       res.redirect('/idea-plan?id=' + req.query.id);
-    };
+    });
   });
 };
 
-exports.upvote = function(req, res) {
-  if (!req.session.auth) res.json({success: false});
-  else {
-    // increment upvotes number
-    var conditions = {_id: req.query.id};
-    var update = {$addToSet: {upvotes: req.session.auth.github.user.id}};
-    IdeaComments.update(conditions, update, callback);
-    function callback (err, num) {
-      console.log("* " + req.session.auth.github.user.login + " upvoted on " + req.query.id);
-      res.json({success: true});
-    };
-  }
-};
 
-exports.flag = function(req, res) {
-  if (!req.session.auth) res.json({success: false});
-  else {
-    // increment flags number
-    var conditions = {_id: req.query.id};
-    var update = {$addToSet: {flags: req.session.auth.github.user.id}};
-    IdeaComments.update(conditions, update, callback);
-    function callback (err, num) {
-      console.log("* " + req.session.auth.github.user.login + " flagged " + req.query.id);
-      res.json({success: true});
-    };
-  }
-};
+exports.remove = function(req, res) {
+  Ideas
+  .findOne({ '_id': req.query.id })
+  .exec(function(err, idea) {
+    // allow only edits by owner
+    if (idea.uid != req.session.auth.github.user.id) res.redirect('/ideas');
 
-exports.idea_remove = function(req, res) {
-    Ideas.remove({_id: req.query.id, uid: req.session.auth.github.user.id}, function (err, num) {
-      console.log("* " + req.session.auth.github.user.login + " removed an idea " + req.query.id);
+    Ideas
+    .remove({_id: req.query.id, uid: req.session.auth.github.user.id}, function (err, num) {
+      console.log("* " + req.session.auth.github.user.login +
+                  " removed an idea " + req.query.id);
 
       IdeaComments.remove({idea: req.query.id}, function (err, num) {
-        console.log("* " + req.session.auth.github.user.login + " removed all comments from " + req.query.id);
+        console.log("* " + req.session.auth.github.user.login +
+                    " removed all comments from " + req.query.id);
       });
 
-      res.redirect('/ideas');
+      //TODO: remove all associated points
     });
+
+    res.redirect('/ideas');
+  });
 };
+
 
 exports.notifications = function(req, res) {
   Notifications

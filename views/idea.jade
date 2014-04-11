@@ -4,7 +4,7 @@ block content
   - if(!everyauth.loggedIn)
     .announcement
       .announcement-inner
-        p You need to 
+        p You need to
           a(href='/login') login
           |  to comment or post your own ideas.
     .spacer
@@ -25,11 +25,11 @@ block content
 
       .spacer
       #idea-description
-        h5= idea.description
+        h5!= idea.description
         h5= idea.lang
 
       .spacer
-      #idea-desc-buttom  
+      #idea-desc-buttom
         #idea-desc-buttom-right
           img(src=cuser.avatar_url, width="50px", height="50px")
           a(href="/profile?name=" + cuser.user_name)= cuser.user_name
@@ -62,9 +62,9 @@ block content
 
         .spacer
       .spacer
-    
-  #content 
-    - if (tab == "/team")
+
+  #content
+    - if (currentUrl == "/idea-team")
       .left
         - if (team && team.length != 0)
           - each u in team
@@ -77,7 +77,7 @@ block content
         - else
           h1 No members yet. Join in.
 
-    - else if (tab == "/plan")
+    - else if (currentUrl == "/idea-plan")
       .left
         .left-plan
           - if (idea.plan.length != 0)
@@ -89,7 +89,7 @@ block content
             a(href="/idea-plan-edit?id=" + idea._id)
               input.btn.btn-success(type='submit', value='Edit')
 
-    - else if (tab == "/plan-edit")
+    - else if (currentUrl == "/idea-plan-edit")
       .left
         .left-plan
           h3 Edit current plan
@@ -97,7 +97,7 @@ block content
             textarea.span9(name='plan', rows="10")= idea.plan
             input.btn.btn-success(id='plan', type='submit', value='Update')
 
-    - else if (tab == "/settings")
+    - else if (currentUrl == "/idea-settings")
       .left
         h3 Edit your idea
           br
@@ -121,7 +121,7 @@ block content
               textarea.span7(name='description', id='no_resize_textarea', rows="4")= idea.description
             input.btn.btn-success(id='sub', type='submit', value='Update')
 
-          a(href='/idea-remove?id=' + idea._id)
+          a(href='/idea/remove?id=' + idea._id)
             input.btn.btn-danger(id='rmv', value='Remove this idea', onclick="return ideaDelete(this.rmv)")
 
     - else
@@ -147,31 +147,29 @@ block content
 
         - if (everyauth.loggedIn)
           .comment
-            form(method='post', action='/idea_comment?id=' + idea._id)
-              //textarea(name='content')
+            form(method='post', action='/ideas/comment?id=' + idea._id)
               textarea.span5(name='content', type='text')
               input.btn.btn-success(type='submit', value='Comment')
-              //input(type='submit', value='Comment')
 
     .right
       a(href='/idea?id=' + idea._id)
-        - if (!tab)
+        - if (currentUrl == "/idea")
           .submenu-item-selected Comments
         - else
           .submenu-item Comments
       a(href='/idea-team?id=' + idea._id)
-        - if (tab == "/team")
+        - if (currentUrl == "/idea-team")
           .submenu-item-selected Team
         - else
           .submenu-item Team
       a(href='/idea-plan?id=' + idea._id)
-        - if (tab == "/plan" || tab == "/plan-edit")
+        - if (currentUrl == "/idea-plan" || currentUrl == "/idea-plan-edit")
           .submenu-item-selected Plan
         - else
           .submenu-item Plan
       - if (user && idea.uid == user.user_id)
         a(href='/idea-settings?id=' + idea._id)
-          - if (tab == "/settings")
+          - if (currentUrl == "/idea-settings")
             .submenu-item-selected Settings
           - else
             .submenu-item Settings

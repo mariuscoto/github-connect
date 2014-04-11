@@ -4,7 +4,7 @@ block content
   - if(!everyauth.loggedIn)
     .announcement
       .announcement-inner
-        p You need to 
+        p You need to
           a(href='/login') login
           |  to comment or post your own projects.
     .spacer
@@ -16,13 +16,13 @@ block content
         #idea-new
           h1 Add a new project
           .right-mini
-          
+
             label Project Size
             select.selectpicker.span5(name='size')
               option Small
               option Medium
               option Large
-              
+
             label Preffered language
             select.selectpicker.span5(name='lang')
               option C/C++
@@ -46,7 +46,7 @@ block content
           .left-mini
             label Short title
             input.span5(name='title')
-              
+
             br
             br
             label Type
@@ -63,17 +63,15 @@ block content
             input.btn.btn-success(id='sub', type='submit', value='Save')
 
       .spacer
-    
-  #content 
-    - if (projects)
-      - if (projects.length != 0) 
+
+  #content
+    .left
+      - if (projects.length != 0)
         h1 Projects list
 
-      .left
-      
         .search
           p Search options will go here.
-          
+
         #idea-table-header
           ul
             li
@@ -91,7 +89,7 @@ block content
                 | Most commented
               - else
                 a(href=currentUrl + '?sort=most_commented') Most commented
-      
+
         - if (projects.length != 0)
           .ideas-bubble
             - each p in projects
@@ -99,7 +97,7 @@ block content
                 .idea-title
                   .idea-title-text
                     a(href='/project?id=' + p._id)= p.title
-                    
+
                   - if (!p.fav)
                     .project-title-fav(id='#{p._id}')
                   - else
@@ -112,14 +110,14 @@ block content
                     .idea-footer-comments
                       = p.comments_num
                   .idea-footer-right
-                    | by 
+                    | by
                     a(href='/profile?name=' + p.user_name)= p.user_name
-                    | , 
+                    | ,
                     = p.date_post
         - else
-          - if (tab == "/favorites")
+          - if (currentUrl == "/projects_fav")
             h3 No have no favorite projects.
-          - if (tab == "/user")
+          - if (currentUrl == "/projects_user")
             h3 You have not added any projects.
 
       .right
@@ -139,6 +137,5 @@ block content
               .submenu-item-selected Mine
             - else
               .submenu-item Mine
-
 
     .spacer

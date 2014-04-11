@@ -60,24 +60,24 @@ app.configure(function() {
 
 // routes defined here
 var ideas = require('./routes/ideas.js');
-app.get('/ideas', ideas.ideas);
-app.get('/ideas-favorites', ensureAuth, ideas.ideas_favorites);
-app.get('/ideas-user', ensureAuth, ideas.ideas_user);
-app.post('/idea/fav', ensureAuth, ideas.idea_add_fav);
-app.post('/idea/unfav', ensureAuth, ideas.idea_remove_fav);
+app.get('/ideas', ideas.index);
+app.get('/ideas_fav', ensureAuth, ideas.index);
+app.get('/ideas_user', ensureAuth, ideas.index);
+app.get('/idea', ideas.one);
 app.get('/join-team', ensureAuth, ideas.join_team);
-app.get('/idea', ideas.idea);
-app.get('/idea-team', ideas.idea);
-app.get('/idea-plan', ideas.idea);
-app.get('/idea-plan-edit', ideas.idea);
-app.get('/idea-settings', ideas.idea);
+app.get('/idea-team', ideas.one);
+app.get('/idea-plan', ideas.one);
+app.get('/idea-plan-edit', ideas.one);
+app.get('/idea-settings', ideas.one);
+app.post('/ideas', ideas.add);
+app.post('/idea/fav', ensureAuth, ideas.fav);
+app.post('/idea/unfav', ensureAuth, ideas.unfav);
 app.post('/idea/upvote', ensureAuth, ideas.upvote);
 app.post('/idea/flag', ensureAuth, ideas.flag);
-app.post('/ideas', ideas.ideas_post);
-app.post('/idea_comment', ensureAuth, ideas.idea_comment);
+app.post('/ideas/comment', ensureAuth, ideas.comment);
 app.post('/idea-edit', ensureAuth, ideas.idea_edit);
 app.post('/idea-plan-edit', ensureAuth, ideas.idea_plan_edit);
-app.get('/idea-remove', ensureAuth, ideas.idea_remove);
+app.get('/idea/remove', ensureAuth, ideas.remove);
 
 app.get('/notifications', ensureAuth, ideas.notifications);
 

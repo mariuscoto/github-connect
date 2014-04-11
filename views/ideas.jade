@@ -4,7 +4,7 @@ block content
   - if(!everyauth.loggedIn)
     .announcement
       .announcement-inner
-        p You need to 
+        p You need to
           a(href='/login') login
           |  to comment or post your own ideas.
     .spacer
@@ -15,13 +15,13 @@ block content
       form(method='post', action='/ideas', onSubmit='return checkdate(this.mydate)')
         #idea-new
           //input.btn.btn-success(type='button', id='add-btn', value='+')
-          h1 Add a new idea      
+          h1 Add a new idea
           .left-box
             #left-mini-title
               label Title *
                 br
                 input.span5(id='idt', name='title', type='text', required)
-            .left-mini    
+            .left-mini
               label Project Size
                 br
                 select.selectpicker.span5(name='size', type='text')
@@ -48,7 +48,7 @@ block content
               input.span5.datepicker(name='mydate', type='text', required)
             label Description *
               br
-              textarea.span5(name='description', id='no_resize_textarea', rows='4', required)  
+              textarea.span5(name='description', id='no_resize_textarea', rows='4', required)
 
 
           .center-mini
@@ -57,30 +57,33 @@ block content
             textarea.span11(name='plan', id='no_resize_textarea', rows="4")
             input.btn.btn-success(id='sub', type='submit', value='Save')
 
-    
-  #content
-    - if (ideas.length != 0)
-      h1 Ideas list
-      #idea-table-header
-        ul
-          li
-            - if (sort == "most_recent")
-              | Most recent
-            - else
-              a(href='/ideas' + tab + '?sort=most_recent') Most recent
-          li
-            - if (sort == "most_viewed")
-              | Most visited
-            - else
-              a(href='/ideas' + tab + '?sort=most_viewed') Most visited
-          li
-            - if (sort == "most_commented")
-              | Most commented
-            - else
-              a(href='/ideas' + tab + '?sort=most_commented') Most commented
 
+  #content
     .left
       - if (ideas.length != 0)
+        h1 Ideas list
+
+        .search
+          p Search options will go here.
+
+        #idea-table-header
+          ul
+            li
+              - if (sort == "most_recent")
+                | Most recent
+              - else
+                a(href=currentUrl + '?sort=most_recent') Most recent
+            li
+              - if (sort == "most_viewed")
+                | Most visited
+              - else
+                a(href=currentUrl + '?sort=most_viewed') Most visited
+            li
+              - if (sort == "most_commented")
+                | Most commented
+              - else
+                a(href=currentUrl + '?sort=most_commented') Most commented
+
         .ideas-bubble
           - each idea in ideas
             .idea
@@ -100,31 +103,32 @@ block content
                   .idea-footer-comments
                     = idea.comments_num
                 .idea-footer-right
-                  | by 
-                  a(href='/profile?name=' + idea.user_name)= idea.user_name 
-                  | , 
+                  | by
+                  a(href='/profile?name=' + idea.user_name)= idea.user_name
+                  | ,
                   = idea.date_post_short
       - else
-        - if (tab == "/favorites")
-          h3 No have no favorite ideas.
-        - if (tab == "/user")
+        - if (currentUrl == "/ideas_fav")
+          h3 You have no favorite ideas.
+        - if (currentUrl == "/ideas_user")
           h3 You have not added any ideas.
 
     .right
       .submenu
         a(href='/ideas')
-          - if (tab)
-            .submenu-item All
-          - else
+          - if (currentUrl == "/ideas")
             .submenu-item-selected All
-        a(href='/ideas-favorites')
-          - if (tab == "/favorites")
+          - else
+            .submenu-item All
+        a(href='/ideas_fav')
+          - if (currentUrl == "/ideas_fav")
             .submenu-item-selected Favorites
           - else
             .submenu-item Favorites
-        a(href='/ideas-user')
-          - if (tab == "/user")
+        a(href='/ideas_user')
+          - if (currentUrl == "/ideas_user")
             .submenu-item-selected Mine
           - else
             .submenu-item Mine
+
     .spacer
