@@ -5,7 +5,7 @@ var Projects = mongoose.model('Projects');
 var Users = mongoose.model('Users');
 var ProjectComments = mongoose.model('ProjectComments');
 var markdown = require( "markdown" ).markdown;
-
+var core = require('../core.js')
 
 
 exports.index = function(req, res) {
@@ -41,6 +41,8 @@ exports.index = function(req, res) {
           projects[i].fav = true;
         // markdown project description
         //projects[i].description = markdown.toHTML(projects[i].description);
+        // format date
+        projects[i].date_post_f = core.get_time_from(projects[i].date_post);
         // remove new lines
         projects[i].description = projects[i].description.replace(/(\r\n|\n|\r)/gm,"");
         // shorten description
@@ -72,11 +74,16 @@ exports.one = function(req, res) {
 
     // Markdown project description
     project.description = markdown.toHTML(project.description);
+    // compute post date
+    project.date_post_f = core.get_time_from(project.date_post);
 
     Users
     .findOne({ 'user_name': project.user_name})
     .exec(function(err, cuser) {
       if (err) return handleError(err);
+
+      // compute last seen date
+      cuser.last_seen_f = core.get_time_from(cuser.last_seen);
 
       ProjectComments
       .find({ 'project': req.query.id })
@@ -87,6 +94,11 @@ exports.one = function(req, res) {
         for (var i=0; i<cuser.repos.length; i++)
           if (cuser.repos[i].name == project.repo)
             repo = cuser.repos[i]
+
+        for (i in comments) {
+          // compute post date
+          comments[i].date_f = core.get_time_from(comments[i].date);
+        }
 
         Users
         .findOne({ 'user_id': uid })

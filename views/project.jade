@@ -4,7 +4,7 @@ block content
   - if(!everyauth.loggedIn)
     .announcement
       .announcement-inner
-        p You need to 
+        p You need to
           a(href='/login') login
           |  to comment or post your own projects.
     .spacer
@@ -14,11 +14,11 @@ block content
     #idea-desc
       #idea-desc-top
         #idea-desc-top-title= project.title
-        | Posted on #{project.date_post}
+        | Posted #{project.date_post_f}.
 
 
       .spacer
-        
+
       #idea-description-right
         a(href=repo.html_url)
           .description-item
@@ -38,18 +38,18 @@ block content
       #idea-description
         h5!= project.description
         h5= project.lang
-        
+
       #idea-tags
         p= "#" + project.type + " #" + project.languag + " #" + project.size
 
       .spacer
       .spacer
-      #idea-desc-buttom  
+      #idea-desc-buttom
         #idea-desc-buttom-right
           img(src=cuser.avatar_url, width="50px", height="50px")
           a(href="/profile?name=" + cuser.user_name)= cuser.user_name
           br
-          | last seen on #{cuser.last_seen_short}
+          | last seen #{cuser.last_seen_f}
 
         - if (!user)
           a(href="/login?rf=follow")
@@ -67,8 +67,8 @@ block content
 
       .spacer
     .spacer
-    
-  #content 
+
+  #content
     .left
       - if (comments && comments.length != 0)
         - each c in comments
@@ -85,7 +85,7 @@ block content
                 .flagged(id="#{c._id}f")
               - else
                 .flag(id="#{c._id}f")
-              | Posted on #{c.date}
+              | Posted #{c.date_f}
       - else
         h1 Be the first one to comment.
 

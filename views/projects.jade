@@ -110,10 +110,9 @@ block content
                     .idea-footer-comments
                       = p.comments_num
                   .idea-footer-right
-                    | by
+                    | by 
                     a(href='/profile?name=' + p.user_name)= p.user_name
-                    | ,
-                    = p.date_post
+                    | , #{p.date_post_f}
         - else
           - if (currentUrl == "/projects_fav")
             h3 No have no favorite projects.

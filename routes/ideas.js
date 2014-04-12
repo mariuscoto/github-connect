@@ -9,7 +9,7 @@ var Projects = mongoose.model('Projects');
 var IdeaComments = mongoose.model('IdeaComments');
 var Notifications = mongoose.model('Notifications');
 var markdown = require( "markdown" ).markdown;
-
+var core = require('../core.js')
 
 
 exports.index = function(req, res) {
@@ -44,7 +44,7 @@ exports.index = function(req, res) {
 				if (user != null && user.favorites.indexOf(ideas[i]._id) > -1)
 					ideas[i].fav = true;
 				// format date
-				ideas[i].date_post_short = (ideas[i].date_post.toString()).substring(0, 15);
+				ideas[i].date_post_f = core.get_time_from(ideas[i].date_post);
 				// shorten description
 				if (ideas[i].description.length > CHAR_LIMIT)
 					ideas[i].description = (ideas[i].description).substring(0, CHAR_LIMIT) + " [...]";
@@ -74,30 +74,38 @@ exports.one = function(req, res) {
 
     // Markdown idea plan
     idea.plan_md = markdown.toHTML(idea.plan);
+    // compute post date
+    idea.date_post_f = core.get_time_from(idea.date_post);
 
     Users
     .find({ 'user_id': idea.team })
-    .exec(function(err, project_team) {
+    .exec(function(err, team) {
       if (err) return handleError(err);
+
+      for (i in team) {
+        team[i].last_seen_f = core.get_time_from(team[i].last_seen);
+      }
 
       Users
       .findOne({ 'user_name': idea.user_name})
       .exec(function(err, cuser) {
         if (err) return handleError(err);
 
+        // compute last seen date
+        cuser.last_seen_f = core.get_time_from(cuser.last_seen);
+
         IdeaComments
         .find({ 'idea': req.query.id })
         .exec(function(err, comments) {
 
+          for (i in comments) {
+            // compute post date
+            comments[i].date_f = core.get_time_from(comments[i].date);
+          }
+
           Users
           .findOne({ 'user_id': uid })
           .exec(function (err, user) {
-
-// console.log(new Date(idea.date_post).getTime());
-// console.log(Date.now());
-// var diff = Date.now() - new Date(idea.date_post).getTime();
-// console.log(diff);
-// console.log(new Date(diff * 1000).getMinutes());
 
             if (user) {
               // see if user joined team
@@ -122,7 +130,7 @@ exports.one = function(req, res) {
               user:       user,
               cuser:      cuser,
               idea:       idea,
-              team:       project_team,
+              team:       team,
               currentUrl: req.path,
               sort:       req.query.sort,
               comments:   comments

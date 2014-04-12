@@ -20,7 +20,7 @@ block content
           =idea.team.length
           h5 members
         #idea-desc-top-title= idea.title
-        | Posted on #{idea.date_post}
+        | Posted #{idea.date_post_f}.
 
 
       .spacer
@@ -34,7 +34,7 @@ block content
           img(src=cuser.avatar_url, width="50px", height="50px")
           a(href="/profile?name=" + cuser.user_name)= cuser.user_name
           br
-          | last seen on #{cuser.last_seen_short}
+          | last seen #{cuser.last_seen_f}
 
         - if (!user)
           a(href="/login?rf=fav")
@@ -73,7 +73,7 @@ block content
                 img(src=u.avatar_url)
               a(href='/profile?name=' + u.user_name)= u.user_name
               p= u.points_repos
-              p Last seen on #{u.last_seen}
+              p Last seen #{u.last_seen_f}.
         - else
           h1 No members yet. Join in.
 
@@ -141,7 +141,7 @@ block content
                   .flagged(id="#{c._id}f")
                 - else
                   .flag(id="#{c._id}f")
-                | Posted on #{c.date}
+                | Posted #{c.date_f}.
         - else
           h1 Be the first one to comment.
 

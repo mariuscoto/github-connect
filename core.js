@@ -13,7 +13,7 @@ var POINTS_FORK = 10;
 var POINTS_WATCH = 1;
 var POINTS_PULL = 30;
 var POINTS_ADD_IDEAS = 5;
-var POINTS_COMMENT = 10; 
+var POINTS_COMMENT = 10;
 
 
 function addUser (source, sourceUser) {
@@ -31,7 +31,7 @@ function addUser (source, sourceUser) {
 
 function update_repo_owner(repo, user, accessToken) {
 	var Users = mongoose.model('Users');
-	
+
 	var options = {
 		host: "api.github.com",
 		path: "/repos/" + user + "/" + repo + "?access_token=" + accessToken,
@@ -46,7 +46,7 @@ function update_repo_owner(repo, user, accessToken) {
 		response.on("end", function(){
 			var repo_info = JSON.parse(body);
 			var repo_owner = repo_info.source.owner.login;
-			
+
 			// update element of array
 			var conditions = {user_name: user, 'repos.name': repo};
 			var update = {$set: {'repos.$.owner': repo_owner}};
@@ -57,18 +57,18 @@ function update_repo_owner(repo, user, accessToken) {
 				// also update pull req
 				update_pull_req(repo, repo_owner, user, accessToken);
 			}
-			
+
 			// also update pull req
 			//update_pull_req(repo, repo_owner, user, accessToken);
-			
-		});				
+
+		});
 	});
 	request.end();
 }
 
 function update_pull_req (repo, owner, user, accessToken) {
 	var Users = mongoose.model('Users');
-	
+
 	var options = {
 		host: "api.github.com",
 		path: "/repos/" + owner + "/" + repo + "/pulls?state=closed&&access_token=" + accessToken,
@@ -81,21 +81,21 @@ function update_pull_req (repo, owner, user, accessToken) {
 		response.on("data", function(chunk){ body+=chunk.toString("utf8"); });
 
 		response.on("end", function(){
-			
+
 			var count = 0;
 			var pulls = JSON.parse(body);
-			
+
 			for (var i in pulls) {
-				
+
 				// consider just merged pulls of current user
 				if (pulls[i].state == 'closed' &&
 						pulls[i].user.login == user &&
 					  pulls[i].merged_at) {
-					
+
 					count++;
 				}
 			}
-						
+
 			// update pulls count, inc tentacles, add points, update total
 			var conditions = {user_name: user, 'repos.name': repo};
 			var update = {
@@ -109,7 +109,7 @@ function update_pull_req (repo, owner, user, accessToken) {
 			function callback (err, num) {
 				console.log("* Pulls of " + repo + " updated.");
 			}
-		});				
+		});
 	});
 	request.end();
 }
@@ -124,7 +124,7 @@ exports.login = function(sess, accessToken, accessTokenExtra, ghUser) {
 		// Check if user already in db
 		// else request info and add him.
 		var Users = mongoose.model('Users');
-        
+
 		Users
 		.findOne({ 'user_id': usersByGhId[ghUser.id].github.id }, 'user_name', function (err, user) {
 			if (err) return handleError(err);
@@ -135,7 +135,7 @@ exports.login = function(sess, accessToken, accessTokenExtra, ghUser) {
 				Users.update(conditions, update, function (err, num) {
 					console.log("* User " + user.user_name + " logged in.");
 				});
-        
+
         // add user info to session
         ghUser.user = user;
 	    } else {
@@ -185,12 +185,12 @@ exports.login = function(sess, accessToken, accessTokenExtra, ghUser) {
                            smtpTransport.close(); // shut down the connection pool, no more messages
                     });
 
-        
+
 
 				});
 	    }
 		})
-    
+
 		var options = {
 			host: "api.github.com",
 			path: "/users/" + usersByGhId[ghUser.id].github.login + "/repos?access_token=" + accessToken,
@@ -204,27 +204,27 @@ exports.login = function(sess, accessToken, accessTokenExtra, ghUser) {
 
 			response.on("end", function(){
 				var json = JSON.parse(body);
-				//console.log(json);  
+				//console.log(json);
 
 				// prepaire repos
 				var repos = [];
 				var total = 0;
-				
+
 				for (var k in json) {
-					
+
 					var points = 0; // total points
 					if ({}.hasOwnProperty.call(json, k) && !json[k].private) {
-						
+
 						// get owner of forked repos
 						if (json[k].fork) {
 							update_repo_owner (json[k].name, usersByGhId[ghUser.id].github.login, accessToken);
-							
+
 						// compute points for own repos
 						} else {
-							points = POINTS_REPO + POINTS_FORK * json[k].forks_count + 
+							points = POINTS_REPO + POINTS_FORK * json[k].forks_count +
 								       POINTS_WATCH * json[k].watchers_count ;
 							total += points;
-							
+
 						}
 					}
 
@@ -240,7 +240,7 @@ exports.login = function(sess, accessToken, accessTokenExtra, ghUser) {
 						owner: null
 					}));
 				}
-				
+
 				// update repos and score
 				var conditions = {user_id: usersByGhId[ghUser.id].github.id};
 				var update = {$set: {repos: repos, points_repos: total}};
@@ -248,14 +248,42 @@ exports.login = function(sess, accessToken, accessTokenExtra, ghUser) {
 				function callback (err, num) {
 					console.log("* Updated repos for " + usersByGhId[ghUser.id].github.id);
 				}
-				
+
 			});
 		});
-		
+
 		request.end();
 		return usersByGhId[ghUser.id];
 
 	} else {
 		return usersByGhId[ghUser.id];
+	}
+}
+
+
+exports.get_time_from = function (then) {
+	var now = Date.now();
+	
+	// interval between time now and db date
+	var msec = now - new Date(then).getTime();
+
+	var hh = Math.floor(msec / 1000 / 60 / 60);
+	if (hh > 24) { // older that 24 hours
+		// return actual date
+		return "on " + then.toString().substring(4, 15);
+
+	} else if (hh > 1) { // older than 1 hour
+		return hh + " hours ago";
+
+	} else {
+		msec -= hh * 1000 * 60 * 60;
+		var mm = Math.floor(msec / 1000 / 60);
+
+		if (mm > 1) { // older than 1 mnute
+			return mm + " minutes ago";
+
+		} else {
+			return "one minute ago";
+		}
 	}
 }
