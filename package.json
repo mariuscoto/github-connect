@@ -7,7 +7,8 @@
     "connect": "2.10.x",
     "jade": "0.31.x",
     "mongoose": "3.2.0",
-    "markdown": "0.5.x"
+    "markdown": "0.5.x",
+    "nodemailer": "~0.6.3"
   },
   "engines": {
     "node": "0.8.x",

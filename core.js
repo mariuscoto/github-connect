@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var https = require('https');
+var fs = require('fs');
 
 var Repo = mongoose.model('Repo');
 
@@ -14,6 +15,40 @@ var POINTS_WATCH = 1;
 var POINTS_PULL = 30;
 var POINTS_ADD_IDEAS = 5;
 var POINTS_COMMENT = 10;
+
+
+function send_mail (destination, type) {
+	var nodemailer = require("nodemailer");
+
+	// create reusable transport method (opens pool of SMTP connections)
+	var smtpTransport = nodemailer.createTransport("SMTP",{
+		service: "Gmail",
+		auth: {
+			user: global.config.mail_user,
+			pass: global.config.mail_pass
+		}
+	});
+
+	fs.readFile(__dirname + '/public/emails/' + type + '.html', 'utf8', function (err, html) {
+			var mailOpt = {};
+
+			if (type == 'welcome') {
+				mailOpt['from'] = "welcome@gconnect.com";
+				mailOpt['to'] = destination,
+				mailOpt['subject'] = 'Welcome to Github-connect',
+				mailOpt['text'] = '',
+				mailOpt['html'] = html;
+			}
+
+			// send mail with defined transport object
+			smtpTransport.sendMail(mailOpt, function(err, response){
+				if (err) console.log(err);
+				else console.log("* Email sent to " + destination);
+
+				smtpTransport.close();
+			});
+	});
+}
 
 
 function addUser (source, sourceUser) {
@@ -153,40 +188,7 @@ exports.login = function(sess, accessToken, accessTokenExtra, ghUser) {
           last_seen: Date.now()
 				}).save (function (err, user, count) {
 					console.log("* User " + user.user_name + " added.");
-
-                    var nodemailer = require("nodemailer");
-
-                    // create reusable transport method (opens pool of SMTP connections)
-                    var smtpTransport = nodemailer.createTransport("SMTP",{
-                            service: "Gmail",
-                                auth: {
-                                            user: "",
-                                            pass: ""
-                                       }
-                    });
-
-                    // setup e-mail data with unicode symbols
-                    var mailOptions = {
-                            from: "github_connectTeam", // sender address
-                            to: user.user_email,
-                            subject: "Welcome to github-connect", // Subject line
-                            text: "Welcome to the most wonderful site in the world", // plaintext body
-                            html: "<b>Hello world ✔</b>" // html body
-                    }
-
-                    // send mail with defined transport object
-                    smtpTransport.sendMail(mailOptions, function(error, response){
-                            if(error){
-                                     console.log(error);
-                            }else{
-                                     console.log("Message sent: " + response.message);
-                                  }
-
-                           smtpTransport.close(); // shut down the connection pool, no more messages
-                    });
-
-
-
+					send_mail(user.user_email, 'welcome');
 				});
 	    }
 		})
@@ -263,7 +265,7 @@ exports.login = function(sess, accessToken, accessTokenExtra, ghUser) {
 
 exports.get_time_from = function (then) {
 	var now = Date.now();
-	
+
 	// interval between time now and db date
 	var msec = now - new Date(then).getTime();
 
