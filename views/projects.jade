@@ -110,7 +110,7 @@ block content
                     .idea-footer-comments
                       = p.comments_num
                   .idea-footer-right
-                    | by 
+                    | by
                     a(href='/profile?name=' + p.user_name)= p.user_name
                     | , #{p.date_post_f}
         - else
@@ -119,22 +119,22 @@ block content
           - if (currentUrl == "/projects_user")
             h3 You have not added any projects.
 
-      .right
-        .submenu
-          a(href='/projects')
-            - if (currentUrl == "/projects")
-              .submenu-item-selected All
-            - else
-              .submenu-item All
-          a(href='/projects_fav')
-            - if (currentUrl == "/projects_fav")
-              .submenu-item-selected Followed
-            - else
-              .submenu-item Followed
-          a(href='/projects_user')
-            - if (currentUrl == "/projects_user")
-              .submenu-item-selected Mine
-            - else
-              .submenu-item Mine
+    .right
+      .submenu
+        a(href='/projects')
+          - if (currentUrl == "/projects")
+            .submenu-item-selected All
+          - else
+            .submenu-item All
+        a(href='/projects_fav')
+          - if (currentUrl == "/projects_fav")
+            .submenu-item-selected Followed
+          - else
+            .submenu-item Followed
+        a(href='/projects_user')
+          - if (currentUrl == "/projects_user")
+            .submenu-item-selected Mine
+          - else
+            .submenu-item Mine
 
     .spacer
