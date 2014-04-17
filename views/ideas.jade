@@ -103,8 +103,8 @@ block content
                   .idea-footer-comments
                     = idea.comments_num
                 .idea-footer-right
-                  | by 
-                  a(href='/profile?name=' + idea.user_name)= idea.user_name
+                  | by
+                  a(href='/' + idea.user_name)= " " + idea.user_name
                   | , #{idea.date_post_f}
       - else
         - if (currentUrl == "/ideas_fav")

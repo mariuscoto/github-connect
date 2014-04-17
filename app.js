@@ -88,7 +88,6 @@ var other = require('./routes/other.js');
 app.get('/', other.index);
 app.get('/login', other.login);
 app.get('/login_dev', ensureDev, other.login_dev);
-app.get('/profile', other.profile);
 app.get('/contact', other.contact);
 app.get('/faq', other.faq);
 
@@ -104,7 +103,7 @@ app.post('/projects/comment', ensureAuth, projects.comment);
 app.post('/projects/upvote', ensureAuth, projects.upvote);
 app.post('/projects/flag', ensureAuth, projects.flag);
 
-app.use(other.not_found);
+app.use(other.profile);
 
 
 // Make sure user is authenticated middleware

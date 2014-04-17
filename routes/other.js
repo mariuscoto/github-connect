@@ -70,14 +70,15 @@ exports.login_dev = function(req, res) {
       req.session.auth.loggedIn = true;
       req.session.auth.github = {};
       req.session.auth.github.user = u;
-      res.redirect('/profile');
+      res.redirect('/' + u.login);
     });
   });
 }
 
 exports.login = function(req, res) {
   if (global.config.status == 'dev') res.redirect('/login_dev');
-	if (req.session.auth) res.redirect('/profile');
+	if (req.session.auth) res.redirect('/' + req.session.auth.github.user.login);
+
   res.render('login', {
     title: "Log in",
     tab: 	req.query.rf
@@ -85,52 +86,38 @@ exports.login = function(req, res) {
 };
 
 exports.profile = function(req, res) {
+	var cname = req.url.toString().substring(1);
+	var uid = ((req.session.auth) ? req.session.auth.github.user.id : null);
 
-  var cuname, uname;
-  if (req.session.auth) {
-    cuname = req.session.auth.github.user.login;
-    uname = cuname;
-  }
+	Users.findOne ({ 'user_name': cname }, function(err, cuser) {
+		if (!cuser) res.render('404', {title: "404: File not found"});
+		else {
 
-  if (req.query.name) cuname = req.query.name;
-
-  // restrict /profile unless logged in or other user
-  if (!req.session.auth && !req.query.name) res.redirect('/login');
-  else {
-    Users.findOne ({ 'user_name': cuname }, function(err, cuser) {
-
-      if (!cuser) res.redirect('/login');
-      else {
-				Users.findOne ({ 'user_name': uname }, function(err, user) {
-
-          //TODO: remove this
-          // keep vital info about logged user in session var
-          //req.session.user = user;
-
-					Ideas
+			Users.findOne ({ 'user_id': uid }, function(err, user) {
+				Ideas
+				.find({ 'uid': cuser.user_id })
+				.sort('-date_post')
+				.exec(function(err, ideas) {
+					Projects
 					.find({ 'uid': cuser.user_id })
 					.sort('-date_post')
-					.exec(function(err, ideas) {
-            Projects
-            .find({ 'uid': cuser.user_id })
-            .sort('-date_post')
-            .exec(function(err, projects) {
+					.exec(function(err, projects) {
 
-  						res.render('profile', {
-  							title: 		"User info",
-  							cuser: 	  cuser,
-                projects:  projects,
-  							ideas: 		ideas,
-  							user: 		 user
-						  });
+						res.render('profile', {
+							title: 		"User info",
+							cuser: 	  cuser,
+							projects:  projects,
+							ideas: 		ideas,
+							user: 		 user
+						});
 
-            });
 					});
 				});
-      }
-    });
-  }
-};
+			});
+
+		}
+	});
+}
 
 exports.contact = function(req, res) {
 	var uid = ((req.session.auth) ? req.session.auth.github.user.id : null);

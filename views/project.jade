@@ -47,7 +47,7 @@ block content
       #idea-desc-buttom
         #idea-desc-buttom-right
           img(src=cuser.avatar_url, width="50px", height="50px")
-          a(href="/profile?name=" + cuser.user_name)= cuser.user_name
+          a(href='/' + cuser.user_name)= cuser.user_name
           br
           | last seen #{cuser.last_seen_f}
 
@@ -73,7 +73,7 @@ block content
       - if (comments && comments.length != 0)
         - each c in comments
           .comment-long
-            a(href='/profile?name=' + c.user_name)= c.user_name + ": "
+            a(href='/' + c.user_name)= c.user_name + ": "
             = c.content
             .comment-bottom
               .upvotes(id="#{c._id}#")= c.upvotes.length
