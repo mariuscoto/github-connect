@@ -15,6 +15,24 @@ block content
       form(method='post', action='/projects')
         #idea-new
           h1 Add a new project
+          .left-box
+            #left-mini-title
+              label Repository
+              select.selectpicker.span5(id='idt', name='repo')
+                - each r in user.repos
+                  option= r.name
+
+            .left-mini
+              label Short title
+              input.span5(name='title')
+
+              br
+              br
+              label Type
+              .btn-group
+                button.btn.active#bug(type='button', value='bug') Bug
+                button.btn#feature(type='button', value='feature') Feature
+              input#type(name='type', type='hidden', value='bug')
           .right-mini
 
             label Project Size
@@ -35,25 +53,6 @@ block content
               option Python
               option Ruby
               option Other
-
-
-          #left-mini-title
-            label Repository
-            select.selectpicker.span5(id='idt', name='repo')
-              - each r in user.repos
-                option= r.name
-
-          .left-mini
-            label Short title
-            input.span5(name='title')
-
-            br
-            br
-            label Type
-            .btn-group
-              button.btn.active#bug(type='button', value='bug') Bug
-              button.btn#feature(type='button', value='feature') Feature
-            input#type(name='type', type='hidden', value='bug')
 
 
           .center-mini
