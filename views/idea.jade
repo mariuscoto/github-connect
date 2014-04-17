@@ -121,8 +121,8 @@ block content
               textarea.span7(name='description', id='no_resize_textarea', rows="4")= idea.description
             input.btn.btn-success(id='sub', type='submit', value='Update')
 
-          a(href='/idea/remove?id=' + idea._id)
-            input.btn.btn-danger(id='rmv', value='Remove this idea', onclick="return ideaDelete(this.rmv)")
+          form(method='post', action='/idea/remove?id=' + idea._id)
+            input.btn.btn-danger(id='rmv', type='submit', value='Remove this idea', onclick="return ideaDelete(this.rmv)")
 
     - else
       .left

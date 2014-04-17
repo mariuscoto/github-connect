@@ -72,7 +72,7 @@ app.get('/idea-team', ideas.one);
 app.get('/idea-plan', ideas.one);
 app.get('/idea-plan-edit', ideas.one);
 app.get('/idea-settings', ideas.one);
-app.get('/idea/remove', ensureAuth, ideas.remove);
+app.post('/idea/remove', ensureAuth, ideas.remove);
 app.post('/ideas', ideas.add);
 app.post('/idea/fav', ensureAuth, ideas.fav);
 app.post('/idea/unfav', ensureAuth, ideas.unfav);

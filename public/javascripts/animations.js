@@ -1,4 +1,4 @@
-<script type="text/javascript">
+
 function ideaDelete(input) {
     if(confirm("Are you sure you want to remove this idea?")) {
 	return true;
@@ -8,7 +8,7 @@ function ideaDelete(input) {
 }
 </script>
 
-<script type="text/javascript">
+<script>
 
 function checkdate(input){
 var validformat=/^\d{2}\/\d{2}\/\d{4}$/ //Basic check for format validity
