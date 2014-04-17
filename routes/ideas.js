@@ -315,7 +315,7 @@ exports.idea_plan_edit = function(req, res) {
     Ideas.update(conditions, update, function (err, num) {
       console.log("* " + req.session.auth.github.user.login +
                   " made changes to plan " + req.query.id);
-      res.redirect('/idea-plan?id=' + req.query.id);
+      res.redirect('/idea/plan?id=' + req.query.id);
     });
   });
 };

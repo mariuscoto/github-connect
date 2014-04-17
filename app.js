@@ -67,20 +67,20 @@ app.get('/ideas', ideas.index);
 app.get('/ideas_fav', ensureAuth, ideas.index);
 app.get('/ideas_user', ensureAuth, ideas.index);
 app.get('/idea', ideas.one);
-app.get('/join-team', ensureAuth, ideas.join_team);
-app.get('/idea-team', ideas.one);
-app.get('/idea-plan', ideas.one);
-app.get('/idea-plan-edit', ideas.one);
-app.get('/idea-settings', ideas.one);
+app.get('/idea/team', ideas.one);
+app.get('/idea/team/join', ensureAuth, ideas.join_team);
+app.get('/idea/plan', ideas.one);
+app.get('/idea/plan/edit', ideas.one);
+app.get('/idea/settings', ideas.one);
 app.post('/idea/remove', ensureAuth, ideas.remove);
 app.post('/ideas', ideas.add);
 app.post('/idea/fav', ensureAuth, ideas.fav);
 app.post('/idea/unfav', ensureAuth, ideas.unfav);
+app.post('/idea/edit', ensureAuth, ideas.idea_edit);
 app.post('/idea/upvote', ensureAuth, ideas.upvote);
 app.post('/idea/flag', ensureAuth, ideas.flag);
 app.post('/ideas/comment', ensureAuth, ideas.comment);
-app.post('/idea-edit', ensureAuth, ideas.idea_edit);
-app.post('/idea-plan-edit', ensureAuth, ideas.idea_plan_edit);
+app.post('/idea/plan/edit', ensureAuth, ideas.idea_plan_edit);
 
 app.get('/notifications', ensureAuth, ideas.notifications);
 
