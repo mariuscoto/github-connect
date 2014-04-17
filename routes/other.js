@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var Users    = mongoose.model('Users');
 var Ideas    = mongoose.model('Ideas');
 var Projects = mongoose.model('Projects');
+var core 		= require('../core.js');
 
 
 exports.index = function(req, res) {
@@ -118,6 +119,15 @@ exports.profile = function(req, res) {
 		}
 	});
 }
+
+exports.feedback = function(req, res) {
+	if (req.body.email && req.body.msg) {
+		core.send_mail(null, 'feedback', req.body);
+		res.redirect('/login?rf=back');
+	} else {
+		res.redirect('/contact');
+	}
+};
 
 exports.contact = function(req, res) {
 	var uid = ((req.session.auth) ? req.session.auth.github.user.id : null);

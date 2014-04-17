@@ -43,7 +43,7 @@ everyauth
 .appId(global.config.gh_clientId)
 .appSecret(global.config.gh_secret)
 .findOrCreateUser(core.login)
-.redirectPath('/profile');
+.redirectPath('/login');
 
 
 app.configure(function() {
@@ -88,8 +88,10 @@ var other = require('./routes/other.js');
 app.get('/', other.index);
 app.get('/login', other.login);
 app.get('/login_dev', ensureDev, other.login_dev);
-app.get('/contact', other.contact);
 app.get('/faq', other.faq);
+app.get('/contact', other.contact);
+app.post('/contact', other.feedback);
+
 
 var projects = require('./routes/projects.js');
 app.get('/projects', projects.index);

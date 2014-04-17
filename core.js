@@ -3,6 +3,7 @@ var https = require('https');
 var fs = require('fs');
 
 var Repo = mongoose.model('Repo');
+var Users = mongoose.model('Users');
 
 var nextUserId = 0;
 global.usersById = {};
@@ -17,7 +18,7 @@ var POINTS_ADD_IDEAS = 5;
 var POINTS_COMMENT = 10;
 
 
-function send_mail (destination, type) {
+exports.send_mail = function (destination, type, body) {
 	var nodemailer = require("nodemailer");
 
 	// create reusable transport method (opens pool of SMTP connections)
@@ -33,11 +34,16 @@ function send_mail (destination, type) {
 			var mailOpt = {};
 
 			if (type == 'welcome') {
-				mailOpt['from'] = "welcome@gconnect.com";
-				mailOpt['to'] = destination,
+				mailOpt['from'] 	 = "welcome@gconnect.com";
+				mailOpt['to'] 		 = destination,
 				mailOpt['subject'] = 'Welcome to Github-connect',
-				mailOpt['text'] = '',
-				mailOpt['html'] = html;
+				mailOpt['text'] 	 = '',
+				mailOpt['html'] 	 = html;
+			} else if (type == 'feedback') {
+				mailOpt['from'] 	 = "welcome@gconnect.com";
+				mailOpt['to'] 		 = 'cmarius02@gmail.com',
+				mailOpt['subject'] = 'Feedback Github-connect: ' + body.email,
+				mailOpt['text'] 	 = body.msg
 			}
 
 			// send mail with defined transport object
@@ -149,16 +155,76 @@ function update_pull_req (repo, owner, user, accessToken) {
 	request.end();
 }
 
+function get_repos (ghUser, accessToken) {
+	var options = {
+		host: "api.github.com",
+		path: "/users/" + ghUser.github.login + "/repos?access_token=" + accessToken,
+		method: "GET",
+		headers: { "User-Agent": "github-connect" }
+	};
+
+	var request = https.request(options, function(response){
+		var body = '';
+		response.on("data", function(chunk){ body+=chunk.toString("utf8"); });
+
+		response.on("end", function(){
+			var json = JSON.parse(body);
+			//console.log(json);
+
+			// prepaire repos
+			var repos = [];
+			var total = 0;
+
+			for (var k in json) {
+
+				var points = 0; // total points
+				if ({}.hasOwnProperty.call(json, k) && !json[k].private) {
+
+					// get owner of forked repos
+					if (json[k].fork) {
+						update_repo_owner (json[k].name, ghUser.github.login, accessToken);
+
+					// compute points for own repos
+					} else {
+						points = POINTS_REPO + POINTS_FORK * json[k].forks_count +
+										POINTS_WATCH * json[k].watchers_count ;
+						total += points;
+
+					}
+				}
+
+				repos.push(new Repo({
+					name: json[k].name,
+					description: json[k].description,
+					html_url: json[k].html_url,
+					fork: json[k].fork,
+					forks_count: json[k].forks_count,
+					size: json[k].size,
+					watchers_count: json[k].watchers_count,
+					points: points,
+					owner: null
+				}));
+			}
+
+			// update repos and score
+			var conditions = {user_id: ghUser.github.id};
+			var update = {$set: {repos: repos, points_repos: total}};
+			Users.update(conditions, update, {upsert: true}, function (err, num) {
+				console.log("* Updated repos for " + ghUser.github.id);
+			});
+
+		});
+	});
+
+	request.end();
+}
+
 exports.login = function(sess, accessToken, accessTokenExtra, ghUser) {
 
 	sess.oauth = accessToken;
 	if (typeof usersByGhId[ghUser.id] === 'undefined') {
 
 		usersByGhId[ghUser.id] = addUser('github', ghUser);
-
-		// Check if user already in db
-		// else request info and add him.
-		var Users = mongoose.model('Users');
 
 		Users
 		.findOne({ 'user_id': usersByGhId[ghUser.id].github.id }, 'user_name', function (err, user) {
@@ -176,7 +242,7 @@ exports.login = function(sess, accessToken, accessTokenExtra, ghUser) {
 	    } else {
 
 				// Import data from github
-				new Users ({
+				return new Users ({
 					user_id: usersByGhId[ghUser.id].github.id,
 					user_name: usersByGhId[ghUser.id].github.login,
 					user_fullname: usersByGhId[ghUser.id].github.name,
@@ -188,73 +254,12 @@ exports.login = function(sess, accessToken, accessTokenExtra, ghUser) {
           last_seen: Date.now()
 				}).save (function (err, user, count) {
 					console.log("* User " + user.user_name + " added.");
-					send_mail(user.user_email, 'welcome');
+
+					get_repos(usersByGhId[ghUser.id], accessToken);
+					module.exports.send_mail(user.user_email, 'welcome');
 				});
 	    }
-		})
-
-		var options = {
-			host: "api.github.com",
-			path: "/users/" + usersByGhId[ghUser.id].github.login + "/repos?access_token=" + accessToken,
-			method: "GET",
-			headers: { "User-Agent": "github-connect" }
-		};
-
-		var request = https.request(options, function(response){
-    	var body = '';
-    	response.on("data", function(chunk){ body+=chunk.toString("utf8"); });
-
-			response.on("end", function(){
-				var json = JSON.parse(body);
-				//console.log(json);
-
-				// prepaire repos
-				var repos = [];
-				var total = 0;
-
-				for (var k in json) {
-
-					var points = 0; // total points
-					if ({}.hasOwnProperty.call(json, k) && !json[k].private) {
-
-						// get owner of forked repos
-						if (json[k].fork) {
-							update_repo_owner (json[k].name, usersByGhId[ghUser.id].github.login, accessToken);
-
-						// compute points for own repos
-						} else {
-							points = POINTS_REPO + POINTS_FORK * json[k].forks_count +
-								       POINTS_WATCH * json[k].watchers_count ;
-							total += points;
-
-						}
-					}
-
-					repos.push(new Repo({
-						name: json[k].name,
-						description: json[k].description,
-						html_url: json[k].html_url,
-						fork: json[k].fork,
-						forks_count: json[k].forks_count,
-						size: json[k].size,
-						watchers_count: json[k].watchers_count,
-						points: points,
-						owner: null
-					}));
-				}
-
-				// update repos and score
-				var conditions = {user_id: usersByGhId[ghUser.id].github.id};
-				var update = {$set: {repos: repos, points_repos: total}};
-				Users.update(conditions, update, {upsert: true}, callback);
-				function callback (err, num) {
-					console.log("* Updated repos for " + usersByGhId[ghUser.id].github.id);
-				}
-
-			});
 		});
-
-		request.end();
 		return usersByGhId[ghUser.id];
 
 	} else {

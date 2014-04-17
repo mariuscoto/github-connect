@@ -8,10 +8,12 @@ block content
           p Please log in to join a team and start developing. You just need a GitHub account.
         - if (tab == "fav")
           p To keep a list of your favorite ideas, log in. We'll do the rest.
+        - if (tab == "back")
+          p Thank you for your feedback. We will get back to you shortly. Enjoy Github-connect.
     .spacer
     .spacer
-    
-    
+
+
   h1= title
   - if (!everyauth.loggedIn)
     .card.css3-shadow
@@ -40,5 +42,5 @@ block content
     | * easily find projects that need your help
     br
     | * socialize and code
-    
+
   .spacer

@@ -14,7 +14,7 @@ var Users = new Schema({
 	join_us:	    	 Date,
   last_seen:       Date,
 	repos:           [Repo],
-	points_repos:    Number,
+	points_repos:    {type: Number, default: 0},
 	points_ideas:    {type: Number, default: 0},
 	tentacles:			 {type: Number, default: 0}
 });
