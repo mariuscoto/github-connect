@@ -99,6 +99,26 @@ block content
 
     - else if (currentUrl == "/idea/settings")
       .left
+        h3 Status
+        - if (idea.plan.length != 0)
+          .plan-stat-done You have a purpose, you have a
+            a(href='/idea/plan?id=' + idea._id)  plan.
+        - else
+          .plan-stat Make a plan. You can't go anywhere without a map.
+        - if (idea.size == 'Small' && idea.team.length == 3 || idea.size == 'Medium' && idea.team.length == 5 || idea.size == 'Large' && idea.team.length == 10)
+          .plan-stat-done Go team go! All
+            a(href='/idea/team?id=' + idea._id)= " " + idea.team.length + " teammates "
+            | are set up.
+
+          - if (idea.plan.length != 0)
+            .plan-stat-done Create a repo now.
+          - else
+            .plan-stat You need some prep before creating a repo.
+        - else
+          .plan-stat You need more help. Find some people to join your quest.
+          .plan-stat You need some prep before creating a repo.
+
+        br
         h3 Edit your idea
           br
           form(method='post', action='/idea/edit?id=' + idea._id)
@@ -118,11 +138,14 @@ block content
 
             label Description
               br
-              textarea.span7(name='description', id='no_resize_textarea', rows="4")= idea.description
+              textarea.span8(name='description', id='no_resize_textarea', rows="4")= idea.description
             input.btn.btn-success(id='sub', type='submit', value='Update')
 
-          form(method='post', action='/idea/remove?id=' + idea._id)
-            input.btn.btn-danger(id='rmv', type='submit', value='Remove this idea', onclick="return ideaDelete(this.rmv)")
+        br
+        h3 Remove your idea
+        form(method='post', action='/idea/remove?id=' + idea._id)
+          input.btn.btn-danger(id='rmv', type='submit', value='Remove this idea', onclick="return ideaDelete(this.rmv)")
+          b  It cannot be undone.
 
     - else
       .left

@@ -586,6 +586,24 @@ a:hover {
   padding-right: 50px;
 }
 
+.plan-stat {
+  width: 570px;
+  font-weight: bold;
+  padding: 10px 0px 10px 50px;
+  margin-bottom: 5px;
+  background-color: rgba(58, 172, 58, 0.2);
+  border-radius: 8px;
+}
+
+.plan-stat-done {
+  width: 570px;
+  font-weight: bold;
+  padding: 10px 0px 10px 50px;
+  margin-bottom: 5px;
+  background-color: rgba(58, 172, 58, 0.8);
+  border-radius: 8px;
+}
+
 .right {
     width: 140px;
     float: left;
