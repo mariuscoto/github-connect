@@ -40,6 +40,7 @@ var Ideas = new Schema({
 	lang:           String,
 	plan:           String,
 	size: 					String,
+	eta:  					String,
 	date_post:      Date,
 	team:           [Number],
 	points:         {type: Number, default: 0},

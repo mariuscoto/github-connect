@@ -154,7 +154,8 @@ exports.add = function(req, res) {
       description : req.body.description,
       lang :        req.body.lang,
       plan:         req.body.plan,
-      size:         req.body.size, 
+      size:         req.body.size,
+      eta:          req.body.eta,
       date_post:    Date.now(),
       points:       5
     }).save( function( err, todo, count ) {
