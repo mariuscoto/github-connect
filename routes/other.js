@@ -86,34 +86,82 @@ exports.login = function(req, res) {
   });
 };
 
+function profile_edit(res) {
+	res.render('404', {title: "404: File not found"});
+}
+
 exports.profile = function(req, res) {
-	var cname = req.url.toString().substring(1);
+	var cname = req.url.substring(1, (req.url + '/').substring(1).indexOf('/')+1);
+	var tab = req.url.substring(cname.length+2);
 	var uid = ((req.session.auth) ? req.session.auth.github.user.id : null);
+
 
 	Users.findOne ({ 'user_name': cname }, function(err, cuser) {
 		if (!cuser) res.render('404', {title: "404: File not found"});
 		else {
 
 			Users.findOne ({ 'user_id': uid }, function(err, user) {
-				Ideas
-				.find({ 'uid': cuser.user_id })
-				.sort('-date_post')
-				.exec(function(err, ideas) {
+
+				if (tab == 'ideas')
+					Ideas
+					.find({ 'uid': cuser.user_id })
+					.sort('-date_post')
+					.exec(function(err, ideas) {
+						res.render('profile', {
+							currentUrl:tab,
+							cuser: 	  cuser,
+							projects:  '',
+							ideas: 		ideas,
+							user: 		 user
+						});
+					});
+
+				else if (tab == 'projects')
 					Projects
 					.find({ 'uid': cuser.user_id })
 					.sort('-date_post')
 					.exec(function(err, projects) {
-
 						res.render('profile', {
-							title: 		"User info",
+							currentUrl:tab,
 							cuser: 	  cuser,
 							projects:  projects,
-							ideas: 		ideas,
+							ideas: 		'',
 							user: 		 user
 						});
-
 					});
-				});
+
+				else if (tab == 'repos')
+					res.render('profile', {
+						currentUrl:tab,
+						cuser: 	  cuser,
+						projects:  '',
+						ideas: 		'',
+						user: 		 user
+					});
+
+				else {
+					Ideas
+					.find({ 'uid': cuser.user_id })
+					.sort('-date_post')
+					.limit(3)
+					.exec(function(err, ideas) {
+						Projects
+						.find({ 'uid': cuser.user_id })
+						.sort('-date_post')
+						.limit(3)
+						.exec(function(err, projects) {
+
+							res.render('profile', {
+								currentUrl:tab,
+								cuser: 	  cuser,
+								projects:  projects,
+								ideas: 		ideas,
+								user: 		 user
+							});
+
+						});
+					});
+				}
 			});
 
 		}

@@ -33,49 +33,64 @@ block content
           a(href='/logout') Logout
 
     .profile-right
-      .profile-ideas
-        .profile-header Ideas
-        - if (ideas.length == 0)
-          .profile-idea No ideas. Get started now!
-        - else
-          - each idea in ideas
-            .profile-idea
-              a(href='/idea?id=' + idea._id)= idea.title
-              - if (idea.points != 0)
-                .profile-repo-points
-                  | +
-                  = idea.points
-              .profile-repo-desc
-                = idea.description
+      - if (currentUrl == '' || currentUrl == 'ideas')
+        .profile-ideas
+          .profile-header Ideas
+          - if (ideas.length == 0)
+            .profile-idea No ideas. Get started now!
+          - else
+            - each idea in ideas
+              .profile-idea
+                a(href='/idea?id=' + idea._id)= idea.title
+                - if (idea.points != 0)
+                  .profile-repo-points
+                    | +
+                    = idea.points
+                .profile-repo-desc
+                  = idea.description
+            - if (currentUrl == '')
+              .profile-idea
+                a(href='/' + cuser.user_name + '/ideas')
+                  b View all ideas
 
 
-      .spacer
-      .profile-ideas
-        .profile-header Projects
-        - if (projects.length == 0)
-          .profile-idea No projects. Get to work!
-        - else
-          - each project in projects
-            .profile-idea
-              a(href='/project?id=' + project._id)= project.title
+        .spacer
+      - if (currentUrl == '' || currentUrl == 'projects')
+        .profile-ideas
+          .profile-header Projects
+          - if (projects.length == 0)
+            .profile-idea No projects. Get to work!
+          - else
+            - each project in projects
+              .profile-idea
+                a(href='/project?id=' + project._id)= project.title
+            - if (currentUrl == '')
+              .profile-idea
+                a(href='/' + cuser.user_name + '/projects')
+                  b View all projects
 
-      .spacer
-      .profile-repos
-        .profile-header All public repositories
-        - if (cuser.repos == 0)
-          .profile-repo No personal repos.
-        - else
-          - each repo in cuser.repos
-            .profile-repo
-              - if (repo.fork)
-                .profile-repo-icon-forked
-              - else
-                .profile-repo-icon
-              .profile-repo-name
-                a(href=repo.html_url)= repo.name
-              - if (repo.points != 0)
-                .profile-repo-points
-                  | +
-                  = repo.points
-              .profile-repo-desc
-                = repo.description
+        .spacer
+      - if (currentUrl == '' || currentUrl == 'repos')
+        .profile-repos
+          .profile-header All public repositories
+          - if (cuser.repos == 0)
+            .profile-repo No personal repos.
+          - else
+            - each repo in cuser.repos
+              .profile-repo
+                - if (repo.fork)
+                  .profile-repo-icon-forked
+                - else
+                  .profile-repo-icon
+                .profile-repo-name
+                  a(href=repo.html_url)= repo.name
+                - if (repo.points != 0)
+                  .profile-repo-points
+                    | +
+                    = repo.points
+                .profile-repo-desc
+                  = repo.description
+            - if (currentUrl == '')
+              .profile-repo
+                a(href='/' + cuser.user_name + '/repos')
+                  b View all repos
