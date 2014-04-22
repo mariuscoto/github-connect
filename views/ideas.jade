@@ -64,7 +64,26 @@ block content
         h1 Ideas list
 
         .search
-          p Search options will go here.
+          form(method='POST', action='')
+            input.span4(type='text', id='search_box', placeholder='Project filter . . .')
+            select.selectpicker.span2.pull-right.ideas-search-fields(id='select-lang', name='lang')
+              option -Language-
+              option C/C++
+              option C#
+              option F#
+              option Java
+              option Javascript
+              option Objective-C
+              option PHP
+              option Python
+              option Ruby
+              option Other
+
+            select.selectpicker.span2.pull-right.ideas-search-fields(id='select-size', name='size')
+              option -Size-
+              option Small
+              option Medium
+              option Large
 
         #idea-table-header
           ul
@@ -97,6 +116,8 @@ block content
                   .idea-title-fav-selected(id='#{idea._id}')
 
               .idea-content
+                p(class='lang', hidden='hidden')= idea.lang
+                p(class='size', hidden='hidden')= idea.size
                 p= idea.description
               .idea-footer
                 .idea-footer-left
@@ -106,6 +127,7 @@ block content
                   | by
                   a(href='/' + idea.user_name)= " " + idea.user_name
                   | , #{idea.date_post_f}
+
       - else
         - if (currentUrl == "/ideas_fav")
           h3 You have no favorite ideas.

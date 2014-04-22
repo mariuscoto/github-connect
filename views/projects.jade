@@ -69,7 +69,18 @@ block content
         h1 Projects list
 
         .search
-          p Search options will go here.
+          form(method='POST', action='')
+            input.span4(type='text', id='search_box', placeholder='Ideas filter . . .')
+            select.selectpicker.span2.pull-right.projects-search-fields(id='select-size', name='size')
+              option -Size-
+              option Small
+              option Medium
+              option Large
+
+            select.selectpicker.span2.pull-right.projects-search-fields(id='select-type', name='type')
+              option -Type-
+              option Bug
+              option Feature
 
         #idea-table-header
           ul
@@ -103,6 +114,8 @@ block content
                     .project-title-fav-selected(id='#{p._id}')
 
                 .idea-content
+                  p(class='type', hidden='hidden')= p.type
+                  p(class='size', hidden='hidden')= p.size
                   p!= p.description
                 .idea-footer
                   .idea-footer-left
@@ -112,6 +125,7 @@ block content
                     | by
                     a(href='/' + p.user_name)= " " + p.user_name
                     | , #{p.date_post_f}
+
         - else
           - if (currentUrl == "/projects_fav")
             h3 No have no favorite projects.
