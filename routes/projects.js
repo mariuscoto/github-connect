@@ -142,6 +142,7 @@ exports.add = function(req, res) {
       uid :         req.session.auth.github.user.id,
       user_name :   req.session.auth.github.user.login,
       size:         req.body.size,
+      lang:         req.body.lang,
       title:        req.body.title,
       type:         req.body.type,
       description:  req.body.description,

@@ -26,7 +26,9 @@ block content
       .spacer
       #idea-description
         h5!= idea.description
-        h5= idea.lang
+
+      #idea-tags
+        p= "#" + idea.size + " #" + idea.lang
 
       .spacer
       #idea-desc-buttom

@@ -24,6 +24,7 @@ var Projects = new Schema({
   user_name:      String,
   repo:           String,
   title:          String,
+	lang: 					String,
   type:           String,
   description:    String,
   size:           String,
