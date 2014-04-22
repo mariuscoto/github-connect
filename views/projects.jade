@@ -72,8 +72,21 @@ block content
       .left
       
         .search
-          p Search options will go here.
-          
+          form(method='POST', action='')
+
+            input.span4(type='textarea', id='search_box', placeholder='Project filter . . .')
+
+            select.selectpicker.span2(class='projects-search-fields', id='select-size', name='size', type='text')
+              option -Size-
+              option Small
+              option Medium
+              option Large
+
+            select.selectpicker.span2(class='projects-search-fields', id='select-type', name='type', type='text')
+              option -Type-
+              option Bug
+              option Feature
+
         #idea-table-header
           ul
             li
@@ -99,22 +112,24 @@ block content
                 .idea-title
                   .idea-title-text
                     a(href='/project?id=' + p._id)= p.title
-                    
+
                   - if (!p.fav)
                     .project-title-fav(id='#{p._id}')
                   - else
                     .project-title-fav-selected(id='#{p._id}')
 
                 .idea-content
+                  p(class='type', hidden='hidden')= p.type
+                  p(class='size', hidden='hidden')= p.size
                   p!= p.description
                 .idea-footer
                   .idea-footer-left
                     .idea-footer-comments
                       = p.comments_num
                   .idea-footer-right
-                    | by 
+                    | by
                     a(href='/profile?id=' + p.uid)= p.user_name
-                    | , 
+                    | ,
                     = p.date_post
         - else
           - if (tab == "/favorites")

@@ -116,6 +116,31 @@ block content
     - if (ideas)
       - if (ideas.length != 0)
         h1 Ideas list
+
+        .search
+          form(method='POST', action='')
+
+            input.span4(type='textarea', id='search_box', placeholder='Project filter . . .')
+
+            select.selectpicker.span2(class='ideas-search-fields', id='select-lang', name='lang', type='text')
+              option -Language-
+              option C/C++
+              option C#
+              option F#
+              option Java
+              option Javascript
+              option Objective-C
+              option PHP
+              option Python
+              option Ruby
+              option Other
+
+            select.selectpicker.span2(class='ideas-search-fields', id='select-size', name='size', type='text')
+              option -Size-
+              option Small
+              option Medium
+              option Large
+
         #idea-table-header
           ul
             li
@@ -149,6 +174,8 @@ block content
                     .idea-title-fav-selected(id='#{idea._id}')
 
                 .idea-content
+                  p(class='lang', hidden='hidden')= idea.lang
+                  p(class='size', hidden='hidden')= idea.size
                   p= idea.description
                 .idea-footer
                   .idea-footer-left
