@@ -212,15 +212,14 @@ exports.comment = function(req, res) {
     .findOne({ '_id': req.query.id })
     .exec(function(err, idea) {
       new Notifications({
-        src: req.session.auth.github.user.login,
-        dest: idea.uid,
-        type: "comment",
-        seen: false,
-        date: new Date(),
-        link: "/idea?id=" + req.query.id
+        src:    req.session.auth.github.user.login,
+        dest:   idea.user_name,
+        type:   "comment",
+        seen:   false,
+        date:   Date.now(),
+        link:   "/idea?id=" + req.query.id
       }).save(function(err, comm, count) {
-        console.log("* " + req.session.auth.github.user.login +
-                    " commented on " + req.query.id);
+        console.log("* " + idea.user_name + " notified.");
       });
     });
   });
@@ -353,7 +352,7 @@ exports.notifications = function(req, res) {
   .findOne({ 'user_id': req.session.auth.github.user.id })
   .exec(function (err, user) {
     Notifications
-    .find({ 'dest': req.session.auth.github.user.id })
+    .find({ 'dest': req.session.auth.github.user.login })
     .sort({ date : -1 })
     .exec(function(err, notif) {
       res.render('notifications', {

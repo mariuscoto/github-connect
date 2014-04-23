@@ -84,7 +84,7 @@ var Repo = new Schema({
 
 var Notifications = new Schema({
 	src:  String,
-	dest: Number,
+	dest: String,
 	type: String,
 	seen: Boolean,
 	date: Date,
