@@ -91,6 +91,7 @@ app.get('/login_dev', ensureDev, other.login_dev);
 app.get('/faq', other.faq);
 app.get('/contact', other.contact);
 app.post('/contact', other.feedback);
+app.post('/profile/edit', ensureAuth, other.profile_edit);
 
 
 var projects = require('./routes/projects.js');

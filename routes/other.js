@@ -86,8 +86,23 @@ exports.login = function(req, res) {
   });
 };
 
-function profile_edit(res) {
-	res.render('404', {title: "404: File not found"});
+exports.profile_edit = function(req, res) {
+	var email = false, loc = false;
+	if (req.body.email_pub) email = true;
+	if (req.body.location_pub) loc = true;
+
+	var conditions = { user_id: req.session.auth.github.user.id };
+	var update = {$set: {
+		location: 			req.body.location,
+		location_pub: 	loc,
+		user_fullname:  req.body.fullname,
+		user_email: 		req.body.email,
+		email_pub: 		 email
+	}};
+	Users.update(conditions, update, function (err, num) {
+		console.log("* " + req.session.auth.github.user.login + " made profile changes.");
+		res.redirect('/' + req.session.auth.github.user.login);
+	});
 }
 
 exports.profile = function(req, res) {
@@ -138,6 +153,18 @@ exports.profile = function(req, res) {
 						ideas: 		'',
 						user: 		 user
 					});
+
+				else if (tab == 'edit')
+					if (!user || user.id != cuser.id)
+						res.redirect('/' + cuser.user_name);
+					else
+						res.render('profile', {
+							currentUrl:tab,
+							cuser: 	  cuser,
+							projects:  '',
+							ideas: 		'',
+							user: 		 user
+						});
 
 				else {
 					Ideas
