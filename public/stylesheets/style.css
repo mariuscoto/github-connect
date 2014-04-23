@@ -743,7 +743,7 @@ a:hover {
     float: left;
 }
 
-.profile-idea {
+.profile-item {
     padding: 10px;
     clear: both;
     border-bottom: 1px solid #E5E5E5;
@@ -760,14 +760,6 @@ a:hover {
     border-top-right-radius: 4px;
     font-weight: bold;
     font-size: 18px;
-}
-
-.profile-repo {
-    padding: 10px;
-    clear: both;
-    border-bottom: 1px solid #E5E5E5;
-    border-left: 1px solid #E5E5E5;
-    border-right: 1px solid #E5E5E5;
 }
 
 .profile-repo-icon {

@@ -34,13 +34,13 @@ block content
 
     .profile-right
       - if (currentUrl == '' || currentUrl == 'ideas')
-        .profile-ideas
+        .profile-list
           .profile-header Ideas
           - if (ideas.length == 0)
-            .profile-idea No ideas. Get started now!
+            .profile-item No ideas. Get started now!
           - else
             - each idea in ideas
-              .profile-idea
+              .profile-item
                 a(href='/idea?id=' + idea._id)= idea.title
                 - if (idea.points != 0)
                   .profile-repo-points
@@ -49,35 +49,35 @@ block content
                 .profile-repo-desc
                   = idea.description
             - if (currentUrl == '')
-              .profile-idea
+              .profile-item
                 a(href='/' + cuser.user_name + '/ideas')
                   b View all ideas
 
 
         .spacer
       - if (currentUrl == '' || currentUrl == 'projects')
-        .profile-ideas
+        .profile-list
           .profile-header Projects
           - if (projects.length == 0)
-            .profile-idea No projects. Get to work!
+            .profile-item No projects. Get to work!
           - else
             - each project in projects
-              .profile-idea
+              .profile-item
                 a(href='/project?id=' + project._id)= project.title
             - if (currentUrl == '')
-              .profile-idea
+              .profile-item
                 a(href='/' + cuser.user_name + '/projects')
                   b View all projects
 
         .spacer
       - if (currentUrl == '' || currentUrl == 'repos')
-        .profile-repos
+        .profile-list
           .profile-header All public repositories
           - if (cuser.repos == 0)
-            .profile-repo No personal repos.
+            .profile-item No personal repos.
           - else
             - each repo in cuser.repos
-              .profile-repo
+              .profile-item
                 - if (repo.fork)
                   .profile-repo-icon-forked
                 - else
@@ -91,6 +91,6 @@ block content
                 .profile-repo-desc
                   = repo.description
             - if (currentUrl == '')
-              .profile-repo
+              .profile-item
                 a(href='/' + cuser.user_name + '/repos')
                   b View all repos
