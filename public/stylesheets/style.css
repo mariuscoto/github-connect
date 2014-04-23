@@ -319,6 +319,39 @@ a:hover {
     background-image: url('/images/icon-fav-semi.png');
 }
 
+.note-title-text {
+    width: 725px;
+    height: 20px;
+    padding-left: 5px;
+    float: left;
+}
+
+.note-title-fav {
+    width: 20px;
+    height: 20px;
+    float: left;
+    background-repeat: no-repeat;
+    background-image: url('/images/icon-fav.png');
+}
+
+.note-title-fav:hover {
+    background-repeat: no-repeat;
+    background-image: url('/images/icon-fav-semi.png');
+}
+
+.note-title-fav-selected {
+    width: 20px;
+    height: 20px;
+    float: left;
+    background-repeat: no-repeat;
+    background-image: url('/images/icon-fav-selected.png');
+}
+
+.note-title-fav-selected:hover {
+    background-repeat: no-repeat;
+    background-image: url('/images/icon-fav-semi.png');
+}
+
 .project-title-fav {
     width: 20px;
     height: 20px;
@@ -376,6 +409,28 @@ a:hover {
 
 .idea-footer-right a:link,
 .idea-footer-right a:visited {
+    color: rgb(65, 131, 196);
+}
+
+.note-footer {
+    width: 738px;
+    height: 20px;
+    margin: 0px;
+    padding-right: 10px;
+    padding-left: 10px;
+    color: rgb(51, 51, 51);
+    font-size: 12px;
+    font-family: Helvetica,arial,freesans;
+}
+
+.note-footer-right {
+    width: 710px;
+    float:left;
+    text-align: right;
+}
+
+.note-footer-right a:link,
+.note-footer-right a:visited {
     color: rgb(65, 131, 196);
 }
 
@@ -463,6 +518,49 @@ a:hover {
     padding: 10px;
     color: rgb(51, 51, 51);
     font-size: 12px;
+    font-family: Helvetica,arial,freesans;
+}
+
+.note {
+    width: 760px;
+    margin: 0px;
+    border-color: rgb(216, 216, 216);
+    border-top-width: 3px;
+    border-top-style: double;
+}
+.note-title {
+    width: 750px;
+    height: 25px;
+    margin: 0px;
+    padding-top: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
+    border-color: rgb(216, 216, 216);
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+}
+
+.note-title a:link, 
+.note-title a:visited {
+    font-size: 15px;
+    font-weight: bold;
+    color: rgb(65, 131, 196);
+    font-family: Helvetica,arial,freesans;
+    text-decoration: none;
+}
+
+.note-title a:hover {
+    color: rgb(65, 131, 196);
+    text-decoration: underline;
+}
+
+.note-content {
+    width: 740px;
+    height: 5px;
+    margin: 0px;
+    padding: 10px;
+    color: rgb(51, 51, 51);
+    font-size: 14px;
     font-family: Helvetica,arial,freesans;
 }
 

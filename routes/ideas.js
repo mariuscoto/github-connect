@@ -187,9 +187,9 @@ exports.idea_comment = function(req, res) {
     .findOne({ '_id': req.query.id })
     .exec(function(err, idea) {
       new Notifications({
-        src: req.user.github.id,
+        src: req.user.github.login,
         dest: idea.uid,
-        type: "Comentariu",
+        type: "comment",
         seen: false,
         date: new Date(),
         link: "/idea?id=" + req.query.id
@@ -395,7 +395,7 @@ exports.notifications = function(req, res) {
   .sort({ date : -1 })
   .exec(function(err, notif) {
     res.render('notifications', {
-                  title: "TITLU",
+                  title: "You have notifications",
                   notif: notif
     });
   });

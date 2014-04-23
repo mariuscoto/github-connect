@@ -76,7 +76,7 @@ var Repo = new Schema({
 });
 
 var Notifications = new Schema({
-	src: Number,
+	src: String,
 	dest: Number,
 	type: String,
 	seen: Boolean,
