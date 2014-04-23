@@ -1,10 +1,39 @@
 extends layout
 
 block content
+  h2 Notifications
   p= title
-  - each u in notif
-    p= "type = " + u.type
-    p
-      a(href="#{u.link}") Link
-    p= "seen = " + u.seen
-    p= "date = " + u.date
+  - if (notif)
+    .left
+      - if (notif.length != 0)
+        .note-bubble
+          - each note in notif
+            .note
+              .note-title
+                .note-title-text
+                  - if (note.type == "comment")
+                    p
+                      a(href="#{note.link}") Comment
+                  - else
+                    p
+                      "unknown type of notification"
+                - if (!notif.seen)
+                  .note-title-fav-selected
+                - else
+                  .note-title-fav
+              .note-content
+                - if (note.type == "comment")
+                  p
+                    b
+                      =note.src + " "
+                    | commented to your
+                    a(href="#{note.link}") idea
+                - else
+                  p
+                    b
+                      =note.src + " "
+                    | did something
+                    a(href="#{note.link}") idea
+              .note-footer
+                .note-footer-right
+                  = note.date

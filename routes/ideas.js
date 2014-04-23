@@ -212,9 +212,9 @@ exports.comment = function(req, res) {
     .findOne({ '_id': req.query.id })
     .exec(function(err, idea) {
       new Notifications({
-        src: req.session.auth.github.user.id,
+        src: req.session.auth.github.user.login,
         dest: idea.uid,
-        type: "Comentariu",
+        type: "comment",
         seen: false,
         date: new Date(),
         link: "/idea?id=" + req.query.id
@@ -349,13 +349,18 @@ exports.remove = function(req, res) {
 
 
 exports.notifications = function(req, res) {
-  Notifications
-  .find({ 'dest': req.session.auth.github.user.id })
-  .sort({ date : -1 })
-  .exec(function(err, notif) {
-    res.render('notifications', {
-      title: "TITLU",
-      notif: notif
+  Users
+  .findOne({ 'user_id': req.session.auth.github.user.id })
+  .exec(function (err, user) {
+    Notifications
+    .find({ 'dest': req.session.auth.github.user.id })
+    .sort({ date : -1 })
+    .exec(function(err, notif) {
+      res.render('notifications', {
+        title:   "You have notifications",
+        user:     user,
+        notif:    notif
+      });
     });
   });
 }

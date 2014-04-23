@@ -83,12 +83,12 @@ var Repo = new Schema({
 });
 
 var Notifications = new Schema({
-	src:   Number,
-	dest:  Number,
-	type:  String,
-	seen:  Boolean,
-	date:  Date,
-	link:  String
+	src:  String,
+	dest: Number,
+	type: String,
+	seen: Boolean,
+	date: Date,
+	link: String
 });
 
 mongoose.model( 'Users', Users );
