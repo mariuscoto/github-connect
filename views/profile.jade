@@ -107,6 +107,9 @@ block content
               - if (n.type == 'idea_comm')
                 p= n.src + " commented on your "
                   a(href=n.link) idea
+              - if (n.type == 'proj_comm')
+                p= n.src + " commented on your "
+                  a(href=n.link) project
 
       - if (currentUrl == 'edit')
         .profile-edit

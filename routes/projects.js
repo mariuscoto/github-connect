@@ -4,6 +4,7 @@ var mongoose = require('mongoose');
 var Projects = mongoose.model('Projects');
 var Users = mongoose.model('Users');
 var ProjectComments = mongoose.model('ProjectComments');
+var Notifications = mongoose.model('Notifications');
 var markdown = require( "markdown" ).markdown;
 var core = require('../core.js')
 
@@ -134,7 +135,7 @@ exports.one = function(req, res) {
 
 
 exports.add = function(req, res) {
-  // add idea only if it has a title and description
+  // add project only if it has a title and description
   // TODO: check if type is known
   if (req.body.repo && req.body.title)
     new Projects({
@@ -172,6 +173,25 @@ exports.comment = function(req, res) {
 			console.log("* " + req.session.auth.github.user.login +
                   " commented on " + req.query.id);
 			res.redirect('/project?id=' + req.query.id);
+    });
+
+    Projects
+    .findOne({ '_id': req.query.id })
+    .exec(function(err, project) {
+      new Notifications({
+        src:    req.session.auth.github.user.login,
+        dest:   project.user_name,
+        type:   "proj_comm",
+        seen:   false,
+        date:   Date.now(),
+        link:   "/project?id=" + req.query.id
+      }).save(function(err, comm, count) {
+        console.log("* " + project.user_name + " notified.");
+      });
+
+      var conditions = {user_name: project.user_name};
+      var update = {$set: {unread: true}};
+      Users.update(conditions, update).exec();
     });
   });
 };
