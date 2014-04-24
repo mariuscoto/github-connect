@@ -28,7 +28,7 @@ block content
 
         - if (everyauth.loggedIn)
           - if (user.user_name == cuser.user_name)
-            a(href='/notifications') Notifications
+            a(href='/' + user.user_name + '/notifications') Notifications
             br
             a(href='#', onclick='shareOnFacebook()') Share score
             br
@@ -98,6 +98,15 @@ block content
               .profile-item
                 a(href='/' + cuser.user_name + '/repos')
                   b View all repos
+
+      - if (currentUrl == 'notifications')
+        .profile-notif
+          .profile-header Your notifications
+          - each n in notif
+            .profile-item
+              - if (n.type == 'idea_comm')
+                p= n.src + " commented on your "
+                  a(href=n.link) idea
 
       - if (currentUrl == 'edit')
         .profile-edit

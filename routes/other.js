@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var Users    = mongoose.model('Users');
 var Ideas    = mongoose.model('Ideas');
 var Projects = mongoose.model('Projects');
+var Notifications = mongoose.model('Notifications');
 var core 		= require('../core.js');
 
 
@@ -144,6 +145,22 @@ exports.profile = function(req, res) {
 							user: 		 user
 						});
 					});
+
+				else if (tab == 'notifications')
+					if (!user || user.id != cuser.id)
+						res.redirect('/' + cuser.user_name);
+					else
+						Notifications
+						.find({ 'dest': cuser.user_name })
+						.sort({ date : -1 })
+						.exec(function(err, notif) {
+							res.render('profile', {
+								currentUrl: tab,
+								cuser: 		 cuser,
+								notif: 		 notif,
+								user: 		  user
+							});
+						});
 
 				else if (tab == 'repos')
 					res.render('profile', {

@@ -214,7 +214,7 @@ exports.comment = function(req, res) {
       new Notifications({
         src:    req.session.auth.github.user.login,
         dest:   idea.user_name,
-        type:   "comment",
+        type:   "idea_comm",
         seen:   false,
         date:   Date.now(),
         link:   "/idea?id=" + req.query.id
@@ -345,21 +345,3 @@ exports.remove = function(req, res) {
     res.redirect('/ideas');
   });
 };
-
-
-exports.notifications = function(req, res) {
-  Users
-  .findOne({ 'user_id': req.session.auth.github.user.id })
-  .exec(function (err, user) {
-    Notifications
-    .find({ 'dest': req.session.auth.github.user.login })
-    .sort({ date : -1 })
-    .exec(function(err, notif) {
-      res.render('notifications', {
-        title:   "You have notifications",
-        user:     user,
-        notif:    notif
-      });
-    });
-  });
-}
