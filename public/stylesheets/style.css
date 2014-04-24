@@ -743,6 +743,21 @@ a:hover {
     float: left;
 }
 
+.profile-points {
+  padding: 15px 190px 5px 0px;
+  text-align: right;
+}
+
+.profile-points h1 {
+  margin: 10px 10px 0px 0px;
+  font-size: 50px;
+}
+
+.profile-points a {
+  font-size: 13px;
+  margin-right: 60px;
+}
+
 .profile-item {
     padding: 10px;
     clear: both;

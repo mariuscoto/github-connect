@@ -189,6 +189,15 @@ exports.profile = function(req, res) {
 							user: 		 user
 						});
 
+				else if (tab == 'cups')
+					res.render('profile', {
+						currentUrl:tab,
+						cuser: 	  cuser,
+						projects:  '',
+						ideas: 		'',
+						user: 		 user
+					});
+
 				else {
 					Ideas
 					.find({ 'uid': cuser.user_id })
@@ -202,7 +211,7 @@ exports.profile = function(req, res) {
 						.exec(function(err, projects) {
 
 							res.render('profile', {
-								currentUrl:tab,
+								currentUrl:'',
 								cuser: 	  cuser,
 								projects:  projects,
 								ideas: 		ideas,

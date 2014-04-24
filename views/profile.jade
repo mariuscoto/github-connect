@@ -23,7 +23,7 @@ block content
             = cuser.user_email
         - if (cuser.join_us)
           .profile-info.profile-info-date Joined on
-            = (cuser.join_us).toString().substring(4, 16)
+            = " " + (cuser.join_us).toString().substring(4, 16)
         .profile-numbers
 
         - if (everyauth.loggedIn)
@@ -37,6 +37,28 @@ block content
             a(href='/logout') Logout
 
     .profile-right
+      - if (currentUrl == '')
+        .profile-points
+          .ideas-desc-top-square= cuser.tentacles
+            h5 tentacles
+          h1= cuser.points_repos + cuser.points_ideas + " cups "
+          a(href='/' + cuser.user_name + '/cups')  View all points
+
+
+        .spacer
+      - if (currentUrl == 'cups')
+        .profile-list
+          .profile-header Cups
+          .profile-item
+            a(href='/' + cuser.user_name + '/ideas') Ideas
+            .profile-repo-points= cuser.points_ideas
+            .profile-repo-desc Cups received for user ideas.
+          .profile-item
+            a(href='/' + cuser.user_name + '/repos') Repos
+            .profile-repo-points= cuser.points_repos
+            .profile-repo-desc Cups received for user repos.
+
+
       - if (currentUrl == '' || currentUrl == 'ideas')
         .profile-list
           .profile-header Ideas
