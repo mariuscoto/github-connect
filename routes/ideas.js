@@ -1,5 +1,6 @@
 var CHAR_LIMIT = 330;
-var JOIN_POINTS = 10;
+var NEW_IDEA_POINTS = 10;
+var JOIN_IDEA_POINTS = 5;
 
 var express = require('express');
 var mongoose = require('mongoose');
@@ -157,7 +158,7 @@ exports.add = function(req, res) {
       size:         req.body.size,
       eta:          req.body.eta,
       date_post:    Date.now(),
-      points:       5
+      points:       NEW_IDEA_POINTS
     }).save( function( err, todo, count ) {
 
         // post to facebook
@@ -176,13 +177,10 @@ exports.add = function(req, res) {
         });
         request.end();
 
+        // update total score
         var conditions = {user_id: req.session.auth.github.user.id};
-        var update = {$inc: {points_ideas: 5}};
-        Users.update(conditions, update, callback);
-
-        function callback (err, num) {
-          console.log("* Added points " + num);
-        }
+        var update = {$inc: {points_ideas: NEW_IDEA_POINTS }};
+        Users.update(conditions, update).exec();
 
         console.log("* " + req.session.auth.github.user.login + " added idea.");
         res.redirect('/ideas');
@@ -275,14 +273,20 @@ exports.flag = function(req, res) {
 
 
 exports.join_team = function(req, res) {
+  Ideas
+  .findOne({ '_id': req.query.id })
+  .exec(function(err, idea) {
+    // update owner score
+    var conditions = {user_name: idea.user_name};
+    var update = {$inc: {points_ideas: JOIN_IDEA_POINTS}};
+    Users.update(conditions, update).exec();
+  });
+
+  // update idea score and team
   var conditions = {_id: req.query.id};
   var update = {$addToSet: {team: req.session.auth.github.user.id},
-                $inc: {points: JOIN_POINTS}};
+                $inc: {points: JOIN_IDEA_POINTS}};
   Ideas.update(conditions, update, function (err, num) {
-    var conditions = {user_id: req.session.auth.github.user.id};
-    var update = {$inc: {points_ideas: JOIN_POINTS}};
-    Users.update(conditions, update);
-
     res.redirect('/idea?id=' + req.query.id);
   });
 };
@@ -333,17 +337,19 @@ exports.remove = function(req, res) {
     // allow only edits by owner
     if (idea.uid != req.session.auth.github.user.id) res.redirect('/ideas');
 
-    Ideas
-    .remove({_id: req.query.id, uid: req.session.auth.github.user.id}, function (err, num) {
+    // update score
+    var conditions = {user_id: req.session.auth.github.user.id};
+    var update = {$inc: {points_ideas: -(idea.points)}};
+    Users.update(conditions, update).exec();
+
+    Ideas.remove({_id: req.query.id}, function (err, num) {
       console.log("* " + req.session.auth.github.user.login +
                   " removed an idea " + req.query.id);
+    });
 
-      IdeaComments.remove({idea: req.query.id}, function (err, num) {
-        console.log("* " + req.session.auth.github.user.login +
-                    " removed all comments from " + req.query.id);
-      });
-
-      //TODO: remove all associated points
+    IdeaComments.remove({idea: req.query.id}, function (err, num) {
+      console.log("* " + req.session.auth.github.user.login +
+                  " removed all comments from " + req.query.id);
     });
 
     res.redirect('/ideas');
