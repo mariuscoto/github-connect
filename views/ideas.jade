@@ -136,20 +136,22 @@ block content
 
     .right
       .submenu
-        a(href='/ideas')
-          - if (currentUrl == "/ideas")
-            .submenu-item-selected All
-          - else
+        - if (currentUrl == "/ideas")
+          .submenu-item-selected All
+        - else
+          a(href='/ideas')
             .submenu-item All
-        a(href='/ideas_fav')
-          - if (currentUrl == "/ideas_fav")
-            .submenu-item-selected Favorites
-          - else
+
+        - if (currentUrl == "/ideas_fav")
+          .submenu-item-selected Favorites
+        - else
+          a(href='/ideas_fav')
             .submenu-item Favorites
-        a(href='/ideas_user')
-          - if (currentUrl == "/ideas_user")
-            .submenu-item-selected Mine
-          - else
+
+        - if (currentUrl == "/ideas_user")
+          .submenu-item-selected Mine
+        - else
+          a(href='/ideas_user')
             .submenu-item Mine
 
     .spacer

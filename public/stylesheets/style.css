@@ -6,12 +6,12 @@ body {
 }
 
 a:link, a:visited, a:active {
-  color: rgb(65, 131, 196);
-  text-decoration: none;
+    color: rgb(65, 131, 196);
+    text-decoration: none;
 }
 
 a:hover {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 
 #container {
@@ -92,11 +92,11 @@ a:hover {
 }
 
 #logout {
-  width: 30px;
-  height: 30px;
-  float: right;
-  background-image: url('/images/icon-logout.png');
-  background-repeat: no-repeat;
+    width: 30px;
+    height: 30px;
+    float: right;
+    background-image: url('/images/icon-logout.png');
+    background-repeat: no-repeat;
 }
 
 #body {
@@ -222,40 +222,40 @@ a:hover {
 }
 
 #idea-description {
-  width: 720px;
-  min-height: 150px;
+    width: 720px;
+    min-height: 150px;
 }
 
 #idea-tags {
-  width: 720px;
+    width: 720px;
 }
 
 #idea-description-right {
-  width: 160px;
-  float: right;
-  padding-top: 10px;
-  padding-bottom: 10px;
+    width: 160px;
+    float: right;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 .description-item {
-  width: 120px;
-  position: relative;
-  padding: 5px 12px;
-  margin-bottom: 2px;
-  font-size: 13px;
-  font-weight: bold;
-  float: right;
-  text-shadow: 0px 1px 0px rgba(255, 255, 255, 0.9);
-  background-color: #EEE;
-  background-image: linear-gradient(#FCFCFC, #EEE);
-  background-repeat: repeat-x;
-  border-radius: 3px;
-  border: 1px solid #D5D5D5;
-  cursor: pointer;
+    width: 120px;
+    position: relative;
+    padding: 5px 12px;
+    margin-bottom: 2px;
+    font-size: 13px;
+    font-weight: bold;
+    float: right;
+    text-shadow: 0px 1px 0px rgba(255, 255, 255, 0.9);
+    background-color: #EEE;
+    background-image: linear-gradient(#FCFCFC, #EEE);
+    background-repeat: repeat-x;
+    border-radius: 3px;
+    border: 1px solid #D5D5D5;
+    cursor: pointer;
 }
 .description-item:hover {
-  background-image: linear-gradient(#eee, #ddd);
-  background-image: -webkit-linear-gradient(#eee, #ddd);
+    background-image: linear-gradient(#eee, #ddd);
+    background-image: -webkit-linear-gradient(#eee, #ddd);
 }
 
 #content {
@@ -379,7 +379,7 @@ a:hover {
 		padding-left: 20px;
     background-image: url('/images/icon-comments.png');
 		background-repeat: no-repeat;
-	 	background-position: left center;
+    background-position: left center;
 }
 
 .idea-footer-right {
@@ -435,7 +435,7 @@ a:hover {
 
 #menu-footer a:link,
 #menu-footer a:visited {
-  color: rgb(65, 131, 196);
+    color: rgb(65, 131, 196);
 }
 
 .idea {
@@ -504,72 +504,72 @@ a:hover {
 }
 
 .upvotes {
-  float: left;
-  color: black;
-  margin-right: 5px;
+    float: left;
+    color: black;
+    margin-right: 5px;
 }
 
 .upvote {
-  width: 20px;
-  height: 20px;
-  float: left;
-  background-image: url('/images/upvote.png');
-  background-repeat: no-repeat;
-  background-position: center;
+    width: 20px;
+    height: 20px;
+    float: left;
+    background-image: url('/images/upvote.png');
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 .upvote:hover {
-  background-image: url('/images/upvoted.png');
+    background-image: url('/images/upvoted.png');
 }
 
 .upvoted {
-  width: 20px;
-  height: 20px;
-  float: left;
-  background-image: url('/images/upvoted.png');
-  background-repeat: no-repeat;
-  background-position: center;
+    width: 20px;
+    height: 20px;
+    float: left;
+    background-image: url('/images/upvoted.png');
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 .flag {
-  width: 20px;
-  height: 20px;
-  float: left;
-  margin-right: 5px;
-  background-image: url('/images/flag.png');
-  background-repeat: no-repeat;
-  background-position: center;
+    width: 20px;
+    height: 20px;
+    float: left;
+    margin-right: 5px;
+    background-image: url('/images/flag.png');
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 .flag:hover {
-  background-image: url('/images/flagged.png');
+    background-image: url('/images/flagged.png');
 }
 
 .flagged {
-  width: 20px;
-  height: 20px;
-  float: left;
-  margin-right: 5px;
-  background-image: url('/images/flagged.png');
-  background-repeat: no-repeat;
-  background-position: center;
+    width: 20px;
+    height: 20px;
+    float: left;
+    margin-right: 5px;
+    background-image: url('/images/flagged.png');
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 .team-member {
-  width: 500px;
-  height: 80px;
-  padding: 5px;
-  margin-right: 240px;
-  margin-bottom: 2px;
-  vertical-align: middle;
-  background-color: #E6F1F6;
+    width: 500px;
+    height: 80px;
+    padding: 5px;
+    margin-right: 240px;
+    margin-bottom: 2px;
+    vertical-align: middle;
+    background-color: #E6F1F6;
 }
 
 .team-member-avatar {
-  width: 80px;
-  height: 80px;
-  padding-right: 5px;
-  float: left;
+    width: 80px;
+    height: 80px;
+    padding-right: 5px;
+    float: left;
 }
 
 .left {
@@ -583,25 +583,25 @@ a:hover {
 }
 
 .left-plan {
-  padding-right: 50px;
+    padding-right: 50px;
 }
 
 .plan-stat {
-  width: 570px;
-  font-weight: bold;
-  padding: 10px 0px 10px 50px;
-  margin-bottom: 5px;
-  background-color: rgba(58, 172, 58, 0.2);
-  border-radius: 8px;
+    width: 570px;
+    font-weight: bold;
+    padding: 10px 0px 10px 50px;
+    margin-bottom: 5px;
+    background-color: rgba(58, 172, 58, 0.2);
+    border-radius: 8px;
 }
 
 .plan-stat-done {
-  width: 570px;
-  font-weight: bold;
-  padding: 10px 0px 10px 50px;
-  margin-bottom: 5px;
-  background-color: rgba(58, 172, 58, 0.8);
-  border-radius: 8px;
+    width: 570px;
+    font-weight: bold;
+    padding: 10px 0px 10px 50px;
+    margin-bottom: 5px;
+    background-color: rgba(58, 172, 58, 0.8);
+    border-radius: 8px;
 }
 
 .right {
@@ -645,6 +645,8 @@ a:hover {
 
 .submenu {
     margin-left: 20px;
+    padding: 5px 0px 5px 0px;
+    background-image: linear-gradient(to right, #F6F6F6 0%, #FFF 8px);
 }
 
 .submenu a {
@@ -663,29 +665,28 @@ a:hover {
 
 .submenu-item {
     width: 100px;
-    height: 30px;
-    padding-left: 20px;
-    padding-top: 15px;
-    border-left: thin solid #000000;
-    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.05);
+    height: 25px;
+    padding: 10px 0px 0px 20px;
+    margin: 3px 0px 2px 0px;
+    border-left: thin solid rgba(0, 0, 0, 0.08);
+    background-image: linear-gradient(to right, #F6F6F6 0%, #FFF 8px);
     outline: none;
 }
 
 .submenu-item-selected {
     width: 100px;
-    height: 30px;
-    padding-left: 20px;
-    padding-top: 15px;
-    border-right: 2px solid red;
-    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.05);
-    outline: none;
+    height: 25px;
+    padding: 10px 0px 5px 20px;
+    margin: 3px 0px 2px 0px;
+    font-size: 15px;
+    font-weight: bold;
+    border-right: 3px solid #BA5D0F;
+    border-top: thin solid rgba(0, 0, 0, 0.08);
+    border-bottom: thin solid rgba(0, 0, 0, 0.08);
+    background-color: #FFF;
 }
 
 .submenu-item:hover {
-    width: 100px;
-    height: 30px;
-    padding-left: 20px;
-    padding-top: 15px;
     box-shadow: 3px 0px 0px rgba(0, 0, 0, 0.1) inset;
 }
 
@@ -744,18 +745,18 @@ a:hover {
 }
 
 .profile-points {
-  padding: 15px 190px 5px 0px;
-  text-align: right;
+    padding: 15px 190px 5px 0px;
+    text-align: right;
 }
 
 .profile-points h1 {
-  margin: 10px 10px 0px 0px;
-  font-size: 50px;
+    margin: 10px 10px 0px 0px;
+    font-size: 50px;
 }
 
 .profile-points a {
-  font-size: 13px;
-  margin-right: 60px;
+    font-size: 13px;
+    margin-right: 60px;
 }
 
 .profile-item {
@@ -945,6 +946,6 @@ a:hover {
 }
 
 .faq {
-  padding: 0px 50px 0px 50px;
-  font-size: 14px;
+    padding: 0px 50px 0px 50px;
+    font-size: 14px;
 }

@@ -134,20 +134,22 @@ block content
 
     .right
       .submenu
-        a(href='/projects')
-          - if (currentUrl == "/projects")
-            .submenu-item-selected All
-          - else
+        - if (currentUrl == "/projects")
+          .submenu-item-selected All
+        - else
+          a(href='/projects')
             .submenu-item All
-        a(href='/projects_fav')
-          - if (currentUrl == "/projects_fav")
-            .submenu-item-selected Followed
-          - else
+
+        - if (currentUrl == "/projects_fav")
+          .submenu-item-selected Followed
+        - else
+          a(href='/projects_fav')
             .submenu-item Followed
-        a(href='/projects_user')
-          - if (currentUrl == "/projects_user")
-            .submenu-item-selected Mine
-          - else
+
+        - if (currentUrl == "/projects_user")
+          .submenu-item-selected Mine
+        - else
+          a(href='/projects_user')
             .submenu-item Mine
 
     .spacer
