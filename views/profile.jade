@@ -54,6 +54,10 @@ block content
             .profile-repo-points= cuser.points_ideas
             .profile-repo-desc Cups received for user ideas.
           .profile-item
+            a(href='/' + cuser.user_name + '/projects') Projects
+            .profile-repo-points= cuser.points_projects
+            .profile-repo-desc Cups received for user projects.
+          .profile-item
             a(href='/' + cuser.user_name + '/repos') Repos
             .profile-repo-points= cuser.points_repos
             .profile-repo-desc Cups received for user repos.
@@ -69,9 +73,7 @@ block content
               .profile-item
                 a(href='/idea?id=' + idea._id)= idea.title
                 - if (idea.points != 0)
-                  .profile-repo-points
-                    | +
-                    = idea.points
+                  .profile-repo-points= "+" + idea.points
                 .profile-repo-desc
                   = idea.description
             - if (currentUrl == '')
@@ -90,6 +92,10 @@ block content
             - each project in projects
               .profile-item
                 a(href='/project?id=' + project._id)= project.title
+                - if (project.points != 0)
+                  .profile-repo-points= "+" + project.points
+                .profile-repo-desc
+                  = project.description
             - if (currentUrl == '')
               .profile-item
                 a(href='/' + cuser.user_name + '/projects')
@@ -111,9 +117,7 @@ block content
                 .profile-repo-name
                   a(href=repo.html_url)= repo.name
                 - if (repo.points != 0)
-                  .profile-repo-points
-                    | +
-                    = repo.points
+                  .profile-repo-points= "+" + repo.points
                 .profile-repo-desc
                   = repo.description
             - if (currentUrl == '')

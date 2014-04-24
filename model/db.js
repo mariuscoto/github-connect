@@ -19,6 +19,7 @@ var Users = new Schema({
 	unread: 				 {type: Boolean, default: false},
 	points_repos:    {type: Number, default: 0},
 	points_ideas:    {type: Number, default: 0},
+	points_projects: {type: Number, default: 0},
 	tentacles:			 {type: Number, default: 0}
 });
 
@@ -32,6 +33,7 @@ var Projects = new Schema({
   description:    String,
   size:           String,
 	date_post:      Date,
+	points:         {type: Number, default: 0},
   comments_num:   {type: Number, default: 0}
 });
 

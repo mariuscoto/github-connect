@@ -28,7 +28,7 @@ html
             a(href="/login") Login
           - else
             - if (user)
-              = user.points_ideas + user.points_repos + " "
+              = user.points_ideas + user.points_repos + user.points_projects + " "
               | cups for
               a(href="/" + user.user_name)= " " + user.user_name + " "
             a(href="/logout")

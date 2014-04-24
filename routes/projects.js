@@ -1,4 +1,5 @@
 var CHAR_LIMIT = 330;
+var NEW_PROJECT_POINTS = 10;
 
 var mongoose = require('mongoose');
 var Projects = mongoose.model('Projects');
@@ -147,9 +148,15 @@ exports.add = function(req, res) {
       title:        req.body.title,
       type:         req.body.type,
       description:  req.body.description,
-      date_post:    Date.now()
+      date_post:    Date.now(),
+      points:       NEW_PROJECT_POINTS
 
     }).save(function (err, todo, count) {
+      // update total score
+      var conditions = {user_id: req.session.auth.github.user.id};
+      var update = {$inc: {points_projects: NEW_PROJECT_POINTS }};
+      Users.update(conditions, update).exec();
+
       console.log("* " + req.session.auth.github.user.login + " added project.");
       res.redirect('/projects');
     });
