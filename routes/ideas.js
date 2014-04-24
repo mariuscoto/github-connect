@@ -221,6 +221,10 @@ exports.comment = function(req, res) {
       }).save(function(err, comm, count) {
         console.log("* " + idea.user_name + " notified.");
       });
+
+      var conditions = {user_name: idea.user_name};
+      var update = {$set: {unread: true}};
+      Users.update(conditions, update).exec();
     });
   });
 };

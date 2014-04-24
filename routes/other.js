@@ -147,9 +147,14 @@ exports.profile = function(req, res) {
 					});
 
 				else if (tab == 'notifications')
-					if (!user || user.id != cuser.id)
+					if (!user || user.id != cuser.id) {
 						res.redirect('/' + cuser.user_name);
-					else
+
+					} else {
+						var conditions = {user_name: cuser.user_name};
+						var update = {$set: {unread: false}};
+						Users.update(conditions, update).exec();
+
 						Notifications
 						.find({ 'dest': cuser.user_name })
 						.sort({ date : -1 })
@@ -161,6 +166,7 @@ exports.profile = function(req, res) {
 								user: 		  user
 							});
 						});
+					}
 
 				else if (tab == 'repos')
 					res.render('profile', {
