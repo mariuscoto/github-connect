@@ -943,3 +943,8 @@ a:hover {
     float: left;
     border-left: 2px dashed rgba(0, 0, 0, 0.1);
 }
+
+.faq {
+  padding: 0px 50px 0px 50px;
+  font-size: 14px;
+}
