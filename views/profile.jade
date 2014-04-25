@@ -138,6 +138,11 @@ block content
                   a(href=n.link) project
               - if (n.type == 'followers_no')
                 p= "You have " + n.link + " followers."
+              - if (n.type == 'watch_count')
+                p= "Repo " + n.src + " " + n.link + " watcher(s). "
+              - if (n.type == 'fork_count')
+                p= "Repo " + n.src + " " + n.link + " user fork(s). "
+
 
       - if (currentUrl == 'edit')
         .profile-edit

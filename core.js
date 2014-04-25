@@ -186,7 +186,7 @@ exports.get_followers = function (user, accessToken, notify) {
 							date:   Date.now(),
 							link:   msg
 						}).save(function(err, todo, count ) {
-							console.log("good");
+							console.log("* Notification sent.");
 						});
 
 						var conditions = {user_name: user.login};
@@ -205,7 +205,7 @@ exports.get_followers = function (user, accessToken, notify) {
 	request.end();
 }
 
-function get_repos (ghUser, accessToken) {
+function get_repos (ghUser, accessToken, notify) {
 	var options = {
 		host: "api.github.com",
 		path: "/users/" + ghUser.github.login + "/repos?access_token=" + accessToken,
@@ -216,55 +216,92 @@ function get_repos (ghUser, accessToken) {
 	var request = https.request(options, function(response){
 		var body = '';
 		response.on("data", function(chunk){ body+=chunk.toString("utf8"); });
-
 		response.on("end", function(){
 			var json = JSON.parse(body);
-			//console.log(json);
+			var repos = [], total = 0;
 
-			// prepaire repos
-			var repos = [];
-			var total = 0;
+			// get current info if available
+			Users.findOne({'user_name': ghUser.github.login}, function(err, user) {
 
-			for (var k in json) {
+				for (var k in json) {
+					var points = 0; // total points
+					if ({}.hasOwnProperty.call(json, k) && !json[k].private) {
 
-				var points = 0; // total points
-				if ({}.hasOwnProperty.call(json, k) && !json[k].private) {
+						// check forks_count, watchers_count and notify
+						if (notify) {
+							for (var y in user.repos) {
+								if (json[k].name == user.repos[y].name) {
+									// check fork_count
+									var msg, diff = json[k].forks_count - user.repos[y].forks_count;
+									if (diff > 0) msg = "got " + diff + " new";
+									else if (diff < 0) msg = "lost " + -(diff);
 
-					// get owner of forked repos
-					if (json[k].fork) {
-						update_repo_owner (json[k].name, ghUser.github.login, accessToken);
+									if (diff != 0) {
+										new Notifications({
+											src:    json[k].name,
+											dest:   user.user_name,
+											type:   "fork_count",
+											seen:   false,
+											date:   Date.now(),
+											link:   msg
+										}).save(function(err, todo, count) {
+											if (err) console.log("[ERR] Notification not sent.");
+										});
+									}
 
-					// compute points for own repos
-					} else {
-						points = POINTS_REPO + POINTS_FORK * json[k].forks_count +
-										POINTS_WATCH * json[k].watchers_count ;
-						total += points;
+									// check watchers_count
+									diff = json[k].watchers_count - user.repos[y].watchers_count;
+									if (diff > 0) msg = "got " + diff + " new";
+									else if (diff < 0) msg = "lost " + (-diff);
 
+									if (diff != 0) {
+										new Notifications({
+											src:    json[k].name,
+											dest:   user.user_name,
+											type:   "watch_count",
+											seen:   false,
+											date:   Date.now(),
+											link:   msg
+										}).save(function(err, todo, count) {
+											if (err) console.log("[ERR] Notification not sent.");
+										});
+									}
+
+									break;
+								}
+							}
+						}
+
+						if (json[k].fork) { // get owner of forked repos and pull req
+							update_repo_owner(json[k].name, ghUser.github.login, accessToken);
+
+						} else { // compute points for own repos
+							points += POINTS_REPO + POINTS_FORK * json[k].forks_count;
+							points += POINTS_WATCH * json[k].watchers_count ;
+							total  += points;
+						}
 					}
+
+					repos.push(new Repo({
+						name: 					json[k].name,
+						description: 	 json[k].description,
+						html_url: 			json[k].html_url,
+						fork: 					json[k].fork,
+						forks_count: 	 json[k].forks_count,
+						size: 					json[k].size,
+						watchers_count: json[k].watchers_count,
+						points: 				points,
+						owner: 				 null
+					}));
 				}
 
-				repos.push(new Repo({
-					name: json[k].name,
-					description: json[k].description,
-					html_url: json[k].html_url,
-					fork: json[k].fork,
-					forks_count: json[k].forks_count,
-					size: json[k].size,
-					watchers_count: json[k].watchers_count,
-					points: points,
-					owner: null
-				}));
-			}
-
-			// update repos and score
-			var conditions = {user_id: ghUser.github.id};
-			var update = {$set: {repos: repos, points_repos: total}};
-			Users.update(conditions, update, {upsert: true}, function (err, num) {
-				console.log("* Updated repos for " + ghUser.github.id);
+				// update repos and score
+				var conditions = {user_id: ghUser.github.id};
+				var update = {$set: {repos: repos, points_repos: total}};
+				Users.update(conditions, update, {upsert: true}, function (err, num) {
+					console.log("* Updated repos for " + ghUser.github.id);
+				});
 			});
-
-			// update followers number
-			module.exports.get_followers(ghUser.github, accessToken, false);
 		});
 	});
 
@@ -288,7 +325,8 @@ exports.login = function(sess, accessToken, accessTokenExtra, ghUser) {
 				Users.update(conditions, update, function (err, num) {
 					console.log("* User " + user.user_name + " logged in.");
 				});
-
+				// get repos info
+				get_repos(usersByGhId[ghUser.id], accessToken, true);
 				// update followers number and notify
 				module.exports.get_followers(usersByGhId[ghUser.id].github, accessToken, true);
 
@@ -309,8 +347,11 @@ exports.login = function(sess, accessToken, accessTokenExtra, ghUser) {
           last_seen: Date.now()
 				}).save (function (err, user, count) {
 					console.log("* User " + user.user_name + " added.");
-
-					get_repos(usersByGhId[ghUser.id], accessToken);
+					// get repos info
+					get_repos(usersByGhId[ghUser.id], accessToken, false);
+					// update followers number
+					module.exports.get_followers(ghUser.github, accessToken, false);
+					// send welcome email
 					module.exports.send_mail(user.user_email, 'welcome');
 				});
 	    }
