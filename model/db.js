@@ -12,6 +12,7 @@ var Users = new Schema({
 	location_pub: 	 {type: Boolean, default: true},
 	favorites:	     [String],
   followed:        [String],
+	followers_no: 	 {type: Number, default: 0},
 	join_github:     String,
 	join_us:	    	 Date,
   last_seen:       Date,

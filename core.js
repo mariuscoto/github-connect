@@ -4,6 +4,7 @@ var fs = require('fs');
 
 var Repo = mongoose.model('Repo');
 var Users = mongoose.model('Users');
+var Notifications = mongoose.model('Notifications');
 
 var nextUserId = 0;
 global.usersById = {};
@@ -155,6 +156,55 @@ function update_pull_req (repo, owner, user, accessToken) {
 	request.end();
 }
 
+exports.get_followers = function (user, accessToken, notify) {
+	var options = {
+		host: "api.github.com",
+		path: "/users/" + user.login + "/followers?access_token=" + accessToken,
+		method: "GET",
+		headers: { "User-Agent": "github-connect" }
+	};
+
+	var request = https.request(options, function(response){
+		var body = '';
+		response.on("data", function(chunk){ body+=chunk.toString("utf8"); });
+		response.on("end", function(){
+			var json = JSON.parse(body);
+
+			if (notify) { // check old value
+				Users.findOne({user_name: user.login}, function (err, u) {
+					var msg, diff = u.followers_no - json.length;
+					if (diff > 0) msg = "lost " + diff;
+					else if (diff < 0) msg = diff + " new";
+
+					// notify user only if we have some action going on
+					if (diff != 0) {
+						new Notifications({
+							src:    "",
+							dest:   user.login,
+							type:   "followers_no",
+							seen:   false,
+							date:   Date.now(),
+							link:   msg
+						}).save(function(err, todo, count ) {
+							console.log("good");
+						});
+
+						var conditions = {user_name: user.login};
+						var update = {$set: {unread: true}};
+						Users.update(conditions, update).exec();
+					}
+				});
+			}
+
+			// update user info
+			var conditions = {user_name: user.login};
+			var update = {$set: {followers_no: json.length}};
+			Users.update(conditions, update).exec();
+		});
+	});
+	request.end();
+}
+
 function get_repos (ghUser, accessToken) {
 	var options = {
 		host: "api.github.com",
@@ -213,6 +263,8 @@ function get_repos (ghUser, accessToken) {
 				console.log("* Updated repos for " + ghUser.github.id);
 			});
 
+			// update followers number
+			module.exports.get_followers(ghUser.github, accessToken, false);
 		});
 	});
 
@@ -237,8 +289,11 @@ exports.login = function(sess, accessToken, accessTokenExtra, ghUser) {
 					console.log("* User " + user.user_name + " logged in.");
 				});
 
+				// update followers number and notify
+				module.exports.get_followers(usersByGhId[ghUser.id].github, accessToken, true);
+
         // add user info to session
-        ghUser.user = user;
+        //ghUser.user = user;
 	    } else {
 
 				// Import data from github
