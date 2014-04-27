@@ -27,10 +27,15 @@ exports.index = function(req, res) {
 
     // set find conditions
     var conditions = null;
+    var page_title = "Projects"
     if (req.path == "/projects_user")
       conditions = { 'uid': user.user_id }
     else if (req.path == "/projects_fav")
       conditions = { _id: { $in: user.followed }}
+    if (req.query.repo) {
+      conditions = { repo: req.query.repo }
+      page_title = "Projects of " + req.query.repo
+    }
 
     Projects
     .find(conditions)
@@ -53,11 +58,12 @@ exports.index = function(req, res) {
       }
 
       res.render('projects', {
-        title:      "Projects",
+        title:      page_title,
         user:       user,
         projects:   projects,
         currentUrl: req.path,
         sort:       req.query.sort,
+        repo:       req.query.repo
       });
 
     });

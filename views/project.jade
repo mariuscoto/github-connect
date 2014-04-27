@@ -15,8 +15,6 @@ block content
       #idea-desc-top
         #idea-desc-top-title= project.title
         | Posted #{project.date_post_f}.
-
-
       .spacer
 
       #idea-description-right
@@ -32,7 +30,7 @@ block content
         .description-item
           div(style="float: right;")= project.comments_num
           = "Comments: "
-        a(href="#")
+        a(href="/projects?repo=" + project.repo)
           .description-item Other projects
 
       #idea-description

@@ -65,7 +65,10 @@ block content
   #content
     .left
       - if (projects.length != 0)
-        h1 Projects list
+        - if (repo)
+          h1= repo + " projects"
+        - else
+          h1 Projects list
 
         .search
           form(method='POST', action='')
