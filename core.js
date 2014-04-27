@@ -495,8 +495,17 @@ exports.login = function(sess, accessToken, accessTokenExtra, ghUser) {
 
         // add user info to session
         //ghUser.user = user;
-	    } else {
-
+	    } else {            
+                                new Notifications({
+					src:    null,
+					dest:   usersByGhId[ghUser.id].github.login,
+			                type:   "welcome",
+					seen:   false,
+					date:   Date.now(),
+			        	link:   "/faq"
+				}).save(function(err, todo, count) {
+				        if (err) console.log("[ERR] Notification not sent.");
+				});
 				// Import data from github
 				return new Users ({
 					user_id: usersByGhId[ghUser.id].github.id,

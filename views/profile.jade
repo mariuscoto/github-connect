@@ -128,6 +128,9 @@ block content
       - if (currentUrl == 'notifications')
         .profile-notif
           .profile-header Your notifications
+          - if (notif.length == 0)
+            .profile-item
+              = "You have no new notifications."
           - each n in notif
             .profile-item
               - if (n.type == 'idea_comm')
@@ -148,7 +151,11 @@ block content
                 = "Repo " + n.src + " " + n.link + " user fork(s). "
               - if (n.type == 'pull_accepted')
                 = "Repo " + n.src + " accepted your pull request."
-
+              - if (n.type == 'welcome')
+                = "Welcome to github-connect! Checkout our "  
+                  a(href=n.link) FAQ page
+                  = "."
+              
       - if (currentUrl == 'edit')
         .profile-edit
           h2 Edit your profile
