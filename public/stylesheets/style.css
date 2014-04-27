@@ -621,26 +621,32 @@ a:hover {
 
 .announcement {
     width: 980px;
-    height: 95px;
-    padding-top: 5px;
-    background-color: rgba(58, 172, 58, 0.8);
-    border-radius: 10px;
+    height: 70px;
+    border: 1px solid #97C1DA;
+    border-radius: 3px;
     vertical-align: middle;
+    background-color: #D0E3EF;
+    background-image: linear-gradient(#D8EBF8, #D0E3EF);
+    background-repeat: repeat-x;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.announcement:hover{
+    border: 1px solid #5f9fc6;;
 }
 
 .announcement-inner {
     width: 964px;
     height: 50px;
-    padding-top: 35px;
+    padding-top: 25px;
     margin-left: auto;
     margin-right: auto;
-    color: #FFFFFF;
-    font-size: 16px;
+    color: #264C72;
+    font-size: 15px;
     text-align: center;
     font-family: Helvetica,arial,freesans;
     text-decoration: none;
     vertical-align: middle;
-
 }
 
 .submenu {
