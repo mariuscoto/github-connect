@@ -136,6 +136,8 @@ block content
               - if (n.type == 'proj_comm')
                 p= n.src + " commented on your "
                   a(href=n.link) project
+              - if (n.type == 'following_no')
+                p= "You have " + n.link + " users following."
               - if (n.type == 'followers_no')
                 p= "You have " + n.link + " followers."
               - if (n.type == 'watch_count')
