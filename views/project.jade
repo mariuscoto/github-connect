@@ -24,14 +24,14 @@ block content
           .description-item
             = "#" + repo.name
         .description-item
-          = "Watchers: "
           div(style="float: right;")= repo.watchers_count
+          = "Watchers: "
         .description-item
-          = "Forks: "
           div(style="float: right;")= repo.forks_count
+          = "Forks: "
         .description-item
-          = "Comments: "
           div(style="float: right;")= project.comments_num
+          = "Comments: "
         a(href="#")
           .description-item Other projects
 
@@ -60,9 +60,6 @@ block content
           a(href="/projects/unfollow?id=" + project._id)
             input.btn.btn-success(type='submit', value='UnFollow', disabled).idea-desc-buttom-btn
 
-        - if (user && project.uid == user.user_id)
-          a(href="/idea/settings?id=" + project._id)
-            input.btn.btn-success(type='submit', value='Edit').idea-desc-buttom-btn
 
       .spacer
     .spacer
@@ -92,7 +89,7 @@ block content
         .comment-long
           form(method='post', action='/projects/comment?id=' + project._id)
             img(src=user.avatar_url, width="60px", height="60px")
-            textarea.span8(name='content')
+            textarea.span10(name='content', style="margin:10px 0px 10px 5px")
             input.btn.btn-success(type='submit', value='Comment')
 
   .spacer

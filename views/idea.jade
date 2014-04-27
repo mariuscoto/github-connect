@@ -67,6 +67,7 @@ block content
 
   #content
     - if (currentUrl == "/idea/team")
+      h2 The team
       .left
         - if (team && team.length != 0)
           - each u in team
@@ -74,7 +75,6 @@ block content
               .team-member-avatar
                 img(src=u.avatar_url)
               a(href='/' + u.user_name)= u.user_name
-              p= u.points_repos
               p Last seen #{u.last_seen_f}.
         - else
           h1 No members yet. Join in.
@@ -83,6 +83,7 @@ block content
       .left
         .left-plan
           - if (idea.plan.length != 0)
+            h2 The plan
             p!= idea.plan_md
           - else
             h1 Nothing planned at this moment.
@@ -173,29 +174,30 @@ block content
         - if (everyauth.loggedIn)
           .comment
             form(method='post', action='/ideas/comment?id=' + idea._id)
-              textarea.span5(name='content', type='text')
+              textarea.span6(name='content', type='text')
               input.btn.btn-success(type='submit', value='Comment')
 
     .right
-      a(href='/idea?id=' + idea._id)
+      .submenu
         - if (currentUrl == "/idea")
           .submenu-item-selected Comments
         - else
-          .submenu-item Comments
-      a(href='/idea/team?id=' + idea._id)
+          a(href='/idea?id=' + idea._id)
+            .submenu-item Comments
         - if (currentUrl == "/idea/team")
           .submenu-item-selected Team
         - else
-          .submenu-item Team
-      a(href='/idea/plan?id=' + idea._id)
+          a(href='/idea/team?id=' + idea._id)
+            .submenu-item Team
         - if (currentUrl == "/idea/plan" || currentUrl == "/idea/plan/edit")
           .submenu-item-selected Plan
         - else
-          .submenu-item Plan
-      - if (user && idea.uid == user.user_id)
-        a(href='/idea/settings?id=' + idea._id)
+          a(href='/idea/plan?id=' + idea._id)
+            .submenu-item Plan
+        - if (user && idea.uid == user.user_id)
           - if (currentUrl == "/idea/settings")
             .submenu-item-selected Settings
           - else
-            .submenu-item Settings
+            a(href='/idea/settings?id=' + idea._id)
+              .submenu-item Settings
   .spacer
