@@ -5,12 +5,12 @@ block content
     .announcement
       .announcement-inner
         - if (tab == "join_team")
-          p Please log in to join a team and start developing. You just need a
+          | Please log in to join a team and start developing. You just need a
           | GitHub account.
         - if (tab == "fav")
-          p To keep a list of your favorite ideas, log in. We'll do the rest.
+          | To keep a list of your favorite ideas, log in. We'll do the rest.
         - if (tab == "back")
-          p Thank you for your feedback. We will get back to you shortly.
+          | Thank you for your feedback. We will get back to you shortly.
           | Enjoy Github-connect.
     .spacer
     .spacer
@@ -20,18 +20,18 @@ block content
   - if (!everyauth.loggedIn)
     .card.css3-shadow
       .login-left
-        p You can do a lot of things on our site, but loging in will further
+        | You can do a lot of things on our site, but loging in will further
         | enchance your experience and give you access to many more options.
         br
-        p
-          a.btn(href="/auth/github") Login with github
+        br
+        a.btn(href="/auth/github") Login with github
 
       .login-right
-        p GitHub is a great tool. Create an account right now to get access to
+        | GitHub is a great tool. Create an account right now to get access to
         | all its features and also get in the game with us right away.
         br
-        p
-          a.btn(href="http://www.github.com") Create new account
+        br
+        a.btn(href="http://www.github.com") Create new account
 
     .spacer
 
