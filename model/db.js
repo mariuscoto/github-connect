@@ -82,8 +82,8 @@ var Repo = new Schema({
 	points:         {type: Number, default: 0},
 	size:					 Number,
 	watchers_count: Number,
-	owner:					String,
-	closed_pulls:	 Number
+	owner:					{type: String, default: null},
+	closed_pulls:	 {type: Number, default: 0}
 });
 
 var Notifications = new Schema({
