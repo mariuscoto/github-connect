@@ -3,14 +3,14 @@ var app = module.exports = express();
 global.config = [];
 
 app.configure('development', function(){
-	app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-	global.config.redis_secret = 'big secret'
+  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+  global.config.redis_secret = 'big secret'
   //global.config = require('./lib/config')
-	global.config.status = 'dev';
+  global.config.status = 'dev';
 });
 
 app.configure('production', function(){
-	app.use(express.errorHandler());
+  app.use(express.errorHandler());
   global.config.gh_clientId = process.env.clientId;
   global.config.gh_secret = process.env.secret;
   global.config.redis_secret = process.env.redis_secret;
@@ -18,9 +18,9 @@ app.configure('production', function(){
   global.config.db_pass = process.env.db_pass;
   global.config.facebook_id = process.env.fb_id;
   global.config.facebook_token = process.env.fb_token;
-	global.config.mail_user = process.env.mail_user;
-	global.config.mail_pass = process.env.mail_pass;
-	global.config.status = 'prod';
+  global.config.mail_user = process.env.mail_user;
+  global.config.mail_pass = process.env.mail_pass;
+  global.config.status = 'prod';
 });
 
 var db = require('./model/db')
@@ -35,7 +35,7 @@ var db = require('./model/db')
 everyauth
 .everymodule
 .findUserById( function (id, callback) {
-	callback(null, global.usersById[id]);
+  callback(null, global.usersById[id]);
 });
 
 everyauth
@@ -47,17 +47,17 @@ everyauth
 
 
 app.configure(function() {
-	//app.set('images', __dirname + '/public/images');
-	app.set('views', __dirname + '/views');
-	app.set('view engine', 'jade');
-	app.use(express.favicon("public/images/github-icon.ico"));
-	app.use(express.bodyParser());
-	app.use(express.cookieParser());
-	app.use(express.session({secret: global.config.redis_secret}));
-	app.use(everyauth.middleware());
-	app.use(express.methodOverride());
-	app.use(app.router);
-	app.use(express.static(__dirname + '/public'));
+  //app.set('images', __dirname + '/public/images');
+  app.set('views', __dirname + '/views');
+  app.set('view engine', 'jade');
+  app.use(express.favicon("public/images/github-icon.ico"));
+  app.use(express.bodyParser());
+  app.use(express.cookieParser());
+  app.use(express.session({secret: global.config.redis_secret}));
+  app.use(everyauth.middleware());
+  app.use(express.methodOverride());
+  app.use(app.router);
+  app.use(express.static(__dirname + '/public'));
 });
 
 
@@ -91,7 +91,6 @@ app.get('/contact', other.contact);
 app.post('/contact', other.feedback);
 app.post('/profile/edit', ensureAuth, other.profile_edit);
 
-
 var projects = require('./routes/projects.js');
 app.get('/projects', projects.index);
 app.get('/projects_fav', ensureAuth, projects.index);
@@ -109,13 +108,13 @@ app.use(other.profile);
 
 // Make sure user is authenticated middleware
 function ensureAuth(req, res, next) {
-	if (req.session.auth) return next();
-	res.redirect('/login');
+  if (req.session.auth) return next();
+  res.redirect('/login');
 }
 // Make sure offline login only available in dev mode
 function ensureDev(req, res, next) {
-	if (global.config.status == 'dev') return next();
-	res.redirect('/login');
+  if (global.config.status == 'dev') return next();
+  res.redirect('/login');
 }
 
 // Launch server

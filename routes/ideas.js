@@ -23,10 +23,10 @@ exports.index = function(req, res) {
     sort_type = '-comments_num';
   }
 
-	Users
+  Users
   .findOne({ 'user_id': uid })
   .exec(function (err, user) {
-		if (err) return handleError(err);
+    if (err) return handleError(err);
 
     // set find conditions
     var conditions = null;
@@ -35,32 +35,32 @@ exports.index = function(req, res) {
     else if (req.path == "/ideas_fav")
       conditions = { _id: { $in: user.favorites }}
 
-		Ideas
+    Ideas
     .find(conditions)
-		.sort(sort_type)
-		.exec(function(err, ideas) {
+    .sort(sort_type)
+    .exec(function(err, ideas) {
 
-			for (var i=0; i<ideas.length; i++) {
-				// mark favorites
-				if (user != null && user.favorites.indexOf(ideas[i]._id) > -1)
-					ideas[i].fav = true;
-				// format date
-				ideas[i].date_post_f = core.get_time_from(ideas[i].date_post);
-				// shorten description
-				if (ideas[i].description.length > CHAR_LIMIT)
-					ideas[i].description = (ideas[i].description).substring(0, CHAR_LIMIT) + " [...]";
-			}
+      for (var i=0; i<ideas.length; i++) {
+        // mark favorites
+        if (user != null && user.favorites.indexOf(ideas[i]._id) > -1)
+          ideas[i].fav = true;
+        // format date
+        ideas[i].date_post_f = core.get_time_from(ideas[i].date_post);
+        // shorten description
+        if (ideas[i].description.length > CHAR_LIMIT)
+          ideas[i].description = (ideas[i].description).substring(0, CHAR_LIMIT) + " [...]";
+      }
 
-			res.render('ideas', {
-				title:      "Ideas",
-				user:       user,
+      res.render('ideas', {
+        title:      "Ideas",
+        user:       user,
         ideas:      ideas,
         currentUrl: req.path,
-				sort:       req.query.sort
-			});
+        sort:       req.query.sort
+      });
 
-		});
-	});
+    });
+  });
 };
 
 
@@ -109,7 +109,7 @@ exports.one = function(req, res) {
                     team[j].comments_num++;
                 }
             }
-            
+
           }
 
           Users
@@ -210,8 +210,8 @@ exports.comment = function(req, res) {
       content:    req.body.content,
       date:       Date.now()
     }).save(function(err, comm, count) {
-			console.log("* " + req.session.auth.github.user.login + " commented on " + req.query.id);
-			res.redirect('/idea?id=' + req.query.id);
+      console.log("* " + req.session.auth.github.user.login + " commented on " + req.query.id);
+      res.redirect('/idea?id=' + req.query.id);
     });
 
     Ideas
@@ -240,7 +240,7 @@ exports.fav = function(req, res) {
   var conditions = {user_id: req.session.auth.github.user.id};
   var update = {$push: {favorites: req.query.id}};
   Users.update(conditions, update, function (err, num) {
-		if (num) res.json({success: true});
+    if (num) res.json({success: true});
   });
 };
 
@@ -249,7 +249,7 @@ exports.unfav = function(req, res) {
   var conditions = {user_id: req.session.auth.github.user.id};
   var update = {$pop: {favorites: req.query.id}};
   Users.update(conditions, update, function (err, num) {
-		if (num) res.json({success: true});
+    if (num) res.json({success: true});
   });
 };
 
@@ -302,8 +302,8 @@ exports.join_team = function(req, res) {
 
 exports.idea_edit = function(req, res) {
   Ideas
-	.findOne({ '_id': req.query.id })
-	.exec(function(err, idea) {
+  .findOne({ '_id': req.query.id })
+  .exec(function(err, idea) {
     // allow only edits by owner
     if (idea.uid != req.session.auth.github.user.id) res.redirect('/ideas');
 
@@ -321,8 +321,8 @@ exports.idea_edit = function(req, res) {
 
 exports.idea_plan_edit = function(req, res) {
   Ideas
-	.findOne({ '_id': req.query.id })
-	.exec(function(err, idea) {
+  .findOne({ '_id': req.query.id })
+  .exec(function(err, idea) {
     // allow only edits by owner
     if (idea.uid != req.session.auth.github.user.id) res.redirect('/ideas');
 

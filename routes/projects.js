@@ -177,9 +177,9 @@ exports.comment = function(req, res) {
       content:    req.body.content,
       date:       Date.now()
     }).save(function(err, comm, count) {
-			console.log("* " + req.session.auth.github.user.login +
+      console.log("* " + req.session.auth.github.user.login +
                   " commented on " + req.query.id);
-			res.redirect('/project?id=' + req.query.id);
+      res.redirect('/project?id=' + req.query.id);
     });
 
     Projects
@@ -208,7 +208,7 @@ exports.follow = function(req, res) {
   var conditions = {user_id: req.session.auth.github.user.id};
   var update = {$push: {followed: req.query.id}};
   Users.update(conditions, update, function (err, num) {
-		if (num) res.json({success: true});
+    if (num) res.json({success: true});
   });
 };
 
@@ -217,7 +217,7 @@ exports.unfollow = function(req, res) {
   var conditions = {user_id: req.session.auth.github.user.id};
   var update = {$pop: {followed: req.query.id}};
   Users.update(conditions, update, function (err, num) {
-		if (num) res.json({success: true});
+    if (num) res.json({success: true});
   });
 };
 
