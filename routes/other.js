@@ -151,6 +151,7 @@ exports.profile = function(req, res) {
 						res.redirect('/' + cuser.user_name);
 
 					} else {
+						// update general unread
 						var conditions = {user_name: cuser.user_name};
 						var update = {$set: {unread: false}};
 						Users.update(conditions, update).exec();
@@ -159,6 +160,12 @@ exports.profile = function(req, res) {
 						.find({ 'dest': cuser.user_name })
 						.sort({ date : -1 })
 						.exec(function(err, notif) {
+
+							for (var i in notif) {
+								// format date
+								notif[i].date_f = core.get_time_from(notif[i].date);
+							}
+
 							res.render('profile', {
 								currentUrl: tab,
 								cuser: 		 cuser,

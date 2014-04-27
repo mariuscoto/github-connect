@@ -91,9 +91,10 @@ var Notifications = new Schema({
 	src:  String,
 	dest: String,
 	type: String,
-	seen: Boolean,
+	seen: {type: Boolean, default: false},
 	date: Date,
-	link: String
+	link: {type: String, default: null},
+	msg:  {type: String, default: null}
 });
 
 mongoose.model( 'Users', Users );

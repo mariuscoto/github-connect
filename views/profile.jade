@@ -131,22 +131,23 @@ block content
           - each n in notif
             .profile-item
               - if (n.type == 'idea_comm')
-                p= n.src + " commented on your "
+                = n.src + " commented on your "
                   a(href=n.link) idea
+                  = ", " + n.date_f + "."
               - if (n.type == 'proj_comm')
-                p= n.src + " commented on your "
+                = n.src + " commented on your "
                   a(href=n.link) project
+                  = ", " + n.date_f + "."
               - if (n.type == 'following_no')
-                p= "You have " + n.link + " users following."
+                = "You have " + n.link + " users following."
               - if (n.type == 'followers_no')
-                p= "You have " + n.link + " followers."
+                = "You have " + n.link + " followers."
               - if (n.type == 'watch_count')
-                p= "Repo " + n.src + " " + n.link + " watcher(s). "
+                = "Repo " + n.src + " " + n.link + " watcher(s). "
               - if (n.type == 'fork_count')
-                p= "Repo " + n.src + " " + n.link + " user fork(s). "
+                = "Repo " + n.src + " " + n.link + " user fork(s). "
               - if (n.type == 'pull_accepted')
-                p= "Repo " + n.src + " accepted your pull request."
-
+                = "Repo " + n.src + " accepted your pull request."
 
       - if (currentUrl == 'edit')
         .profile-edit
