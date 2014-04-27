@@ -128,6 +128,9 @@ block content
       - if (currentUrl == 'notifications')
         .profile-notif
           .profile-header Your notifications
+          - if (notif.length == 0)
+            .profile-item
+              = "You have no new notifications."
           - each n in notif
             .profile-item
               - if (n.type == 'idea_comm')
