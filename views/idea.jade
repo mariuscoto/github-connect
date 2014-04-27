@@ -75,6 +75,10 @@ block content
               .team-member-avatar
                 img(src=u.avatar_url)
               a(href='/' + u.user_name)= u.user_name
+              - if (u.comments_num == 1)
+                p= u.comments_num + " comment"
+              - else                
+                p= u.comments_num + " comments"
               p Last seen #{u.last_seen_f}.
         - else
           h1 No members yet. Join in.

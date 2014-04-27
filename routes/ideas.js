@@ -85,6 +85,7 @@ exports.one = function(req, res) {
 
       for (i in team) {
         team[i].last_seen_f = core.get_time_from(team[i].last_seen);
+        team[i].comments_num = 0;
       }
 
       Users
@@ -102,6 +103,13 @@ exports.one = function(req, res) {
           for (i in comments) {
             // compute post date
             comments[i].date_f = core.get_time_from(comments[i].date);
+
+            for(j in team){
+                if(team[j].user_name == comments[i].user_name){
+                    team[j].comments_num++;
+                }
+            }
+            
           }
 
           Users

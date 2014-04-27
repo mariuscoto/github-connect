@@ -15,10 +15,10 @@ block content
           b= cuser.user_fullname
           br
           a(href='http://www.github.com/' + cuser.user_name)= cuser.user_name
-        - if (cuser.location)
+        - if (cuser.location && (cuser.location_pub || cuser.user_name == user.user_name))
           .profile-info.profile-info-location
             = cuser.location
-        - if (cuser.user_email)
+        - if (cuser.user_email && (cuser.email_pub || cuser.user_name == user.user_name))
           .profile-info.profile-info-email
             = cuser.user_email
         - if (cuser.join_us)
@@ -170,7 +170,7 @@ block content
               input(name='location_pub', type='checkbox', checked)
             - else
               input(name='location_pub', type='checkbox')
-            = " Make my location public." + cuser.location_pub
+            = " Make my location public."
             br
             br
             label Email
