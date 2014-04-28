@@ -53,9 +53,12 @@ app.configure(function() {
   app.use(express.favicon("public/images/github-icon.ico"));
   app.use(express.bodyParser());
   app.use(express.cookieParser());
-  app.use(express.session({secret: global.config.redis_secret}));
   app.use(everyauth.middleware());
   app.use(express.methodOverride());
+  app.use(express.session({
+    secret: global.config.redis_secret,
+    cookie: { maxAge: 900000 }
+  }));
   app.use(app.router);
   app.use(express.static(__dirname + '/public'));
 });
@@ -124,4 +127,6 @@ function ensureDev(req, res, next) {
 }
 
 // Launch server
-app.listen(process.env.PORT || 3000);
+app.listen(process.env.PORT || 3000, function() {
+  console.log('Server listening on port 3000.');
+});
