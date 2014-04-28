@@ -65,7 +65,7 @@ exports.index = function(req, res) {
 
 
 exports.one = function(req, res) {
-  if (!req.query.id) res.redirect('/ideas');
+  if (!req.query.id) return res.redirect('/ideas');
   var uid = ((req.session.auth) ? req.session.auth.github.user.id : null);
 
   Ideas

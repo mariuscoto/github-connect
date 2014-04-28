@@ -78,8 +78,8 @@ exports.login_dev = function(req, res) {
 }
 
 exports.login = function(req, res) {
-  if (global.config.status == 'dev') res.redirect('/login_dev');
-  if (req.session.auth) res.redirect('/' + req.session.auth.github.user.login);
+  if (global.config.status == 'dev') return res.redirect('/login_dev');
+  if (req.session.auth) return res.redirect('/' + req.session.auth.github.user.login);
 
   res.render('login', {
     title: "Log in",
