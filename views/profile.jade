@@ -24,17 +24,25 @@ block content
         - if (cuser.join_us)
           .profile-info.profile-info-date Joined on
             = " " + (cuser.join_us).toString().substring(4, 16)
-        .profile-numbers
 
-        - if (everyauth.loggedIn)
-          - if (user.user_name == cuser.user_name)
-            a(href='/' + user.user_name + '/notifications') Notifications
-            br
-            a(href='#', onclick='shareOnFacebook()') Share score
-            br
-            a(href='/' + user.user_name + '/edit') Edit profile
-            br
-            a(href='/logout') Logout
+        .profile-numbers
+          .profile-num
+            p= cuser.followers_no
+            h5 followers
+          .profile-num
+            p= cuser.following_no
+            h5 following
+
+        .profile-links
+          - if (everyauth.loggedIn)
+            - if (user.user_name == cuser.user_name)
+              a(href='/' + user.user_name + '/notifications') Notifications
+              br
+              a(href='#', onclick='shareOnFacebook()') Share score
+              br
+              a(href='/' + user.user_name + '/edit') Edit profile
+              br
+              a(href='/logout') Logout
 
     .profile-right
       - if (currentUrl == '')
@@ -152,10 +160,10 @@ block content
               - if (n.type == 'pull_accepted')
                 = "Repo " + n.src + " accepted your pull request."
               - if (n.type == 'welcome')
-                = "Welcome to github-connect! Checkout our "  
+                = "Welcome to github-connect! Checkout our "
                   a(href=n.link) FAQ page
                   = "."
-              
+
       - if (currentUrl == 'edit')
         .profile-edit
           h2 Edit your profile

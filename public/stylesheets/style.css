@@ -715,8 +715,9 @@ a:hover {
 }
 
 .profile-name {
-    padding: 5px;
+    padding: 5px 5px 10px 5px;
     border-bottom: 2px solid #EEE;
+    margin-bottom: 10px;
 }
 
 .profile-info {
@@ -743,7 +744,34 @@ a:hover {
 }
 
 .profile-numbers {
+    height: 70px;
     padding: 5px;
+    border-top: 2px solid #EEE;
+    border-bottom: 2px solid #EEE;
+    margin-top: 10px;
+}
+
+.profile-num {
+    width: 60px;
+    height: 50px;
+    float: left;
+    margin-left: 20px;
+    padding: 5px;
+    padding-top: 15px;
+    color: black;
+    font-size: 40px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.profile-num h5{
+    font-size: 12px;
+    font-weight: normal;
+}
+
+.profile-links {
+    padding: 5px;
+    margin-top: 1px;
     border-top: 2px solid #EEE;
 }
 
