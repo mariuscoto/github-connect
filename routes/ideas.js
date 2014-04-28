@@ -169,21 +169,27 @@ exports.add = function(req, res) {
       points:       NEW_IDEA_POINTS
     }).save( function( err, todo, count ) {
 
-        // post to facebook
-      	var options = {
-          host: "graph.facebook.com",
-          path: "/" + global.config.facebook_id + "/feed?message=" + req.body.description + "&access_token=" + global.config.facebook_token,
-          method: "POST",
-        };
-        var https = require('https');
-        var request = https.request(options, function(response){
-          var body = '';
-          response.on("data", function(chunk){ body+=chunk.toString("utf8"); });
-          response.on("end", function(){
-            console.log("* Idea posted to facebook page.");
+        /*
+        Post idea to facebook page if in production.
+        This uses a never expiring token.
+        Page at: https://www.facebook.com/GitHubConnect
+        */
+        if (global.config.status == 'prod') {
+        	var options = {
+            host: "graph.facebook.com",
+            path: "/" + global.config.facebook_id + "/feed?message=" + req.body.description + "&access_token=" + global.config.facebook_token,
+            method: "POST",
+          };
+          var https = require('https');
+          var request = https.request(options, function(response){
+            var body = '';
+            response.on("data", function(chunk){ body+=chunk.toString("utf8"); });
+            response.on("end", function(){
+              console.log("* Idea posted to facebook page.");
+            });
           });
-        });
-        request.end();
+          request.end();
+        }
 
         // update total score
         var conditions = {user_id: req.session.auth.github.user.id};
