@@ -57,6 +57,10 @@ block content
         - if (user && user.faved)
           a(href="/projects/unfollow?id=" + project._id)
             input.btn.btn-success(type='submit', value='UnFollow', disabled).idea-desc-buttom-btn
+        - if (user && cuser && user.user_name == cuser.user_name)
+          br
+          form(method='post', action='/projects/remove?id=' + project._id)
+            input.btn.btn-danger(id='rmv', type='submit', value='Remove project', onclick="return ideaDelete(this.rmv)")
 
 
       .spacer

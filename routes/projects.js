@@ -252,3 +252,31 @@ exports.flag = function(req, res) {
     }
   });
 };
+
+
+exports.remove = function(req, res) {
+  Projects
+  .findOne({ '_id': req.query.id })
+  .exec(function(err, project) {
+    // allow only edits by owner
+    if (project.uid != req.session.auth.github.user.id) res.redirect('/projects');
+    else {
+      // update score
+      var conditions = {user_id: req.session.auth.github.user.id};
+      var update = {$inc: {points_projects: -(project.points)}};
+      Users.update(conditions, update).exec();
+
+      Projects.remove({_id: req.query.id}, function (err, num) {
+        console.log("* " + req.session.auth.github.user.login +
+                    " removed project " + req.query.id);
+      });
+
+      ProjectComments.remove({idea: req.query.id}, function (err, num) {
+        console.log("* " + req.session.auth.github.user.login +
+                    " removed all comments from " + req.query.id);
+      });
+
+      res.redirect('/projects');
+    }
+  });
+};

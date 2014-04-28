@@ -102,7 +102,13 @@ app.post('/projects/unfollow', ensureAuth, projects.unfollow);
 app.post('/projects/comment', ensureAuth, projects.comment);
 app.post('/projects/upvote', ensureAuth, projects.upvote);
 app.post('/projects/flag', ensureAuth, projects.flag);
+app.post('/projects/remove', ensureAuth, projects.remove);
 
+/*
+This handles all other URLs.
+It's main porpose is to serve /user pages and all subpages
+but also send 404 response if user does not exist.
+*/
 app.use(other.profile);
 
 

@@ -350,22 +350,23 @@ exports.remove = function(req, res) {
   .exec(function(err, idea) {
     // allow only edits by owner
     if (idea.uid != req.session.auth.github.user.id) res.redirect('/ideas');
+    else {
+      // update score
+      var conditions = {user_id: req.session.auth.github.user.id};
+      var update = {$inc: {points_ideas: -(idea.points)}};
+      Users.update(conditions, update).exec();
 
-    // update score
-    var conditions = {user_id: req.session.auth.github.user.id};
-    var update = {$inc: {points_ideas: -(idea.points)}};
-    Users.update(conditions, update).exec();
+      Ideas.remove({_id: req.query.id}, function (err, num) {
+        console.log("* " + req.session.auth.github.user.login +
+                    " removed an idea " + req.query.id);
+      });
 
-    Ideas.remove({_id: req.query.id}, function (err, num) {
-      console.log("* " + req.session.auth.github.user.login +
-                  " removed an idea " + req.query.id);
-    });
+      IdeaComments.remove({idea: req.query.id}, function (err, num) {
+        console.log("* " + req.session.auth.github.user.login +
+                    " removed all comments from " + req.query.id);
+      });
 
-    IdeaComments.remove({idea: req.query.id}, function (err, num) {
-      console.log("* " + req.session.auth.github.user.login +
-                  " removed all comments from " + req.query.id);
-    });
-
-    res.redirect('/ideas');
+      res.redirect('/ideas');
+    }
   });
 };
