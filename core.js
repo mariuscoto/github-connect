@@ -119,6 +119,7 @@ function update_pull_req (repo, owner, user_name, accessToken) {
         for (var i in pulls) {
           // consider just merged pulls of current user
           if (pulls[i].state == 'closed' &&
+              pulls[i].user &&
               pulls[i].user.login == user_name &&
               pulls[i].merged_at) {
 
