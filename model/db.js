@@ -10,14 +10,14 @@ var Users = new Schema({
   avatar_url:      String,
   location:        String,
   location_pub:    {type: Boolean, default: true},
-  favorites:       [String],
-  followed:        [String],
+  favorites:       {type: [String], default: []},
+  followed:        {type: [String], default: []},
   followers_no:    {type: Number, default: 0},
   following_no:    {type: Number, default: 0},
-  join_github:     String,
-  join_us:         Date,
-  last_seen:       Date,
-  repos:           [Repo],
+  join_github:     {type: String, default: Date.now},
+  join_us:         {type: Date, default: Date.now},
+  last_seen:       {type: Date, default: Date.now},
+  repos:           {type: [Repo], default: []},
   unread:          {type: Boolean, default: false},
   points_repos:    {type: Number, default: 0},
   points_ideas:    {type: Number, default: 0},
@@ -34,7 +34,7 @@ var Projects = new Schema({
   type:           String,
   description:    String,
   size:           String,
-  date_post:      Date,
+  date_post:      {type: Date, default: Date.now},
   points:         {type: Number, default: 0},
   comments_num:   {type: Number, default: 0}
 });
@@ -48,7 +48,7 @@ var Ideas = new Schema({
   plan:           String,
   size:           String,
   eta:            String,
-  date_post:      Date,
+  date_post:      {type: Date, default: Date.now},
   team:           [Number],
   points:         {type: Number, default: 0},
   comments_num:   {type: Number, default: 0}
@@ -59,7 +59,7 @@ var IdeaComments = new Schema({
   user_name:  String,
   idea:       String,
   content:    String,
-  date:       Date,
+  date:       {type: Date, default: Date.now},
   upvotes:    [Number],
   flags:      [Number]
 });
@@ -69,7 +69,7 @@ var ProjectComments = new Schema({
   user_name:  String,
   project:    String,
   content:    String,
-  date:       Date,
+  date:       {type: Date, default: Date.now},
   upvotes:    [Number],
   flags:      [Number]
 });
@@ -92,7 +92,7 @@ var Notifications = new Schema({
   dest: String,
   type: String,
   seen: {type: Boolean, default: false},
-  date: Date,
+  date: {type: Date, default: Date.now},
   link: {type: String, default: null},
   msg:  {type: String, default: null}
 });

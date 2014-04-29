@@ -53,12 +53,13 @@ app.configure(function() {
   app.use(express.favicon("public/images/github-icon.ico"));
   app.use(express.bodyParser());
   app.use(express.cookieParser());
-  app.use(everyauth.middleware());
-  app.use(express.methodOverride());
   app.use(express.session({
     secret: global.config.redis_secret,
     cookie: { maxAge: 900000 }
   }));
+  app.use(everyauth.middleware());
+  app.use(express.methodOverride());
+
   app.use(app.router);
   app.use(express.static(__dirname + '/public'));
 });
@@ -88,11 +89,13 @@ app.post('/idea/plan/edit', ensureAuth, ideas.idea_plan_edit);
 var other = require('./routes/other.js');
 app.get('/', other.index);
 app.get('/login', other.login);
-app.get('/login_dev', ensureDev, other.login_dev);
+app.get('/login/:user', other.login);
 app.get('/faq', other.faq);
 app.get('/contact', other.contact);
 app.post('/contact', other.feedback);
-app.post('/profile/edit', ensureAuth, other.profile_edit);
+
+var profile = require('./routes/profile.js');
+app.post('/profile/edit', ensureAuth, profile.edit);
 
 var projects = require('./routes/projects.js');
 app.get('/projects', projects.index);
@@ -112,17 +115,12 @@ This handles all other URLs.
 It's main porpose is to serve /user pages and all subpages
 but also send 404 response if user does not exist.
 */
-app.use(other.profile);
+app.use(profile.index);
 
 
 // Make sure user is authenticated middleware
 function ensureAuth(req, res, next) {
   if (req.session.auth) return next();
-  res.redirect('/login');
-}
-// Make sure offline login only available in dev mode
-function ensureDev(req, res, next) {
-  if (global.config.status == 'dev') return next();
   res.redirect('/login');
 }
 
