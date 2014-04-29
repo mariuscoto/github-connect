@@ -43,6 +43,7 @@ exports.index = function(req, res) {
           .sort('-date_post')
           .exec(function(err, ideas) {
             res.render('profile', {
+              title:     cuser.user_fullname,
               currentUrl:tab,
               cuser: 	  cuser,
               projects:  '',
@@ -57,6 +58,7 @@ exports.index = function(req, res) {
           .sort('-date_post')
           .exec(function(err, projects) {
             res.render('profile', {
+              title:     cuser.user_fullname,
               currentUrl:tab,
               cuser: 	  cuser,
               projects:  projects,
@@ -86,6 +88,7 @@ exports.index = function(req, res) {
               }
 
               res.render('profile', {
+                title:     cuser.user_fullname,
                 currentUrl: tab,
                 cuser: 		 cuser,
                 notif: 		 notif,
@@ -96,6 +99,7 @@ exports.index = function(req, res) {
 
         else if (tab == 'repos')
           res.render('profile', {
+            title:     cuser.user_fullname,
             currentUrl:tab,
             cuser: 	  cuser,
             projects:  '',
@@ -108,6 +112,7 @@ exports.index = function(req, res) {
             res.redirect('/' + cuser.user_name);
           else
             res.render('profile', {
+              title:     cuser.user_fullname,
               currentUrl:tab,
               cuser: 	  cuser,
               projects:  '',
@@ -117,6 +122,7 @@ exports.index = function(req, res) {
 
         else if (tab == 'cups')
           res.render('profile', {
+            title:     cuser.user_fullname,
             currentUrl:tab,
             cuser: 	  cuser,
             projects:  '',
@@ -136,7 +142,11 @@ exports.index = function(req, res) {
             .limit(3)
             .exec(function(err, projects) {
 
+              // List just first 3 repos
+              cuser.repos = cuser.repos.slice(0, 3);
+
               res.render('profile', {
+                title:     cuser.user_fullname,
                 currentUrl:'',
                 cuser: 	  cuser,
                 projects:  projects,
