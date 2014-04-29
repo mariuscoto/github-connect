@@ -64,7 +64,7 @@ html
   include ../public/javascripts/analytics.js
 
   - if (everyauth.loggedIn)
-    script var userid = "#{user.user_id}"; var cups = "#{user.points_repos}";
+    script var userid = "#{user.user_id}"; var cups = "#{user.points_repos+user.points_ideas+user.points_projects}";
 
 
   include ../public/javascripts/animations.js
