@@ -17,6 +17,15 @@ html
 
         a(href="/")
           #logo
+
+        - if (everyauth.loggedIn)
+          a(href="/" + user.user_name + "/notifications")
+            .notif-box
+              - if (user.unread)
+                .notif-unread
+              - else
+                .notif-read
+
         #nav
           ul
             li

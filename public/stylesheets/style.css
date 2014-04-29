@@ -35,8 +35,39 @@ a:hover {
     background-size: 100% 100%;
 }
 
+.notif-box {
+    width: 40px;
+    height: 40px;
+    float: left;
+    margin-left: 5px;
+    border-left: 1px solid #E5E5E5;
+    border-right: 1px solid #E5E5E5;
+}
+
+.notif-read {
+    width: 8px;
+    height: 8px;
+    margin: 15px auto 0px auto;
+    border-radius: 100px;
+    background-color: #CCC;
+    background-image: linear-gradient(#AAA, #CCC);
+    background-repeat: repeat-x;
+    box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.1) inset, 0px 1px 0px #FFF;
+}
+
+.notif-unread {
+    width: 8px;
+    height: 8px;
+    margin: 15px auto 0px auto;
+    border-radius: 100px;
+    background-color: #3269A0;
+    background-image: linear-gradient(#4183C4, #3269A0);
+    background-repeat: repeat-x;
+    box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px rgba(0, 0, 0, 0.1), 0px 0px 10px #4183C4;
+}
+
 #nav {
-    width: 640px;
+    min-width: 600px;
     height: 20px;
     float: left;
     padding: 10px 0px 0px 10px;
