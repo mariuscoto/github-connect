@@ -102,37 +102,37 @@ block content
               - else
                 a(href=currentUrl + '?sort=most_commented') Most commented
 
-        - if (projects.length != 0)
-          .ideas-bubble
-            - each p in projects
-              .idea
-                .idea-title
-                  .idea-title-text
-                    a(href='/project?id=' + p._id)= p.title
+      - if (projects.length != 0)
+        .ideas-bubble
+          - each p in projects
+            .idea
+              .idea-title
+                .idea-title-text
+                  a(href='/project?id=' + p._id)= p.title
 
-                  - if (!p.fav)
-                    .project-title-fav(id='#{p._id}')
-                  - else
-                    .project-title-fav-selected(id='#{p._id}')
+                - if (!p.fav)
+                  .project-title-fav(id='#{p._id}')
+                - else
+                  .project-title-fav-selected(id='#{p._id}')
 
-                .idea-content
-                  p(class='type', hidden='hidden')= p.type
-                  p(class='size', hidden='hidden')= p.size
-                  p!= p.description
-                .idea-footer
-                  .idea-footer-left
-                    .idea-footer-comments
-                      = p.comments_num
-                  .idea-footer-right
-                    | by
-                    a(href='/' + p.user_name)= " " + p.user_name
-                    | , #{p.date_post_f}
+              .idea-content
+                p(class='type', hidden='hidden')= p.type
+                p(class='size', hidden='hidden')= p.size
+                p!= p.description
+              .idea-footer
+                .idea-footer-left
+                  .idea-footer-comments
+                    = p.comments_num
+                .idea-footer-right
+                  | by
+                  a(href='/' + p.user_name)= " " + p.user_name
+                  | , #{p.date_post_f}
 
-        - else
-          - if (currentUrl == "/projects_fav")
-            h3 You have no favorite projects.
-          - if (currentUrl == "/projects_user")
-            h3 You have not added any projects.
+      - else
+        - if (currentUrl == "/projects_fav")
+          h3 You have no favorite projects.
+        - if (currentUrl == "/projects_user")
+          h3 You have not added any projects.
 
     .right
       .submenu

@@ -8,6 +8,7 @@ body {
 a:link, a:visited, a:active {
     color: rgb(65, 131, 196);
     text-decoration: none;
+    outline: none;
 }
 
 a:hover {
@@ -833,6 +834,10 @@ a:hover {
     border-bottom: 1px solid #E5E5E5;
     border-left: 1px solid #E5E5E5;
     border-right: 1px solid #E5E5E5;
+}
+
+.profile-item:hover {
+    background-color: #F5F9FC;
 }
 
 .profile-header {
