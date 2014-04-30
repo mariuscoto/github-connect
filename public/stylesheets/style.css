@@ -757,6 +757,9 @@ a:hover {
     padding-left: 20px;
     margin-left: 5px;
     background-position: left center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .profile-info-location {
