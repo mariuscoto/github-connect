@@ -55,7 +55,7 @@ app.configure(function() {
   app.use(express.cookieParser());
   app.use(express.session({
     secret: global.config.redis_secret,
-    cookie: { maxAge: 900000 }
+    cookie: { maxAge: 1800000 } //30 min
   }));
   app.use(everyauth.middleware());
   app.use(express.methodOverride());
