@@ -39,7 +39,7 @@ exports.index = function(req, res) {
 
         if (tab == 'ideas')
           Ideas
-          .find({ 'uid': cuser.user_id })
+          .find({ 'user_name': cuser.user_name })
           .sort('-date_post')
           .exec(function(err, ideas) {
             res.render('profile', {
@@ -54,7 +54,7 @@ exports.index = function(req, res) {
 
         else if (tab == 'projects')
           Projects
-          .find({ 'uid': cuser.user_id })
+          .find({ 'user_name': cuser.user_name })
           .sort('-date_post')
           .exec(function(err, projects) {
             res.render('profile', {
@@ -132,12 +132,12 @@ exports.index = function(req, res) {
 
         else {
           Ideas
-          .find({ 'uid': cuser.user_id })
+          .find({ 'user_name': cuser.user_name })
           .sort('-date_post')
           .limit(3)
           .exec(function(err, ideas) {
             Projects
-            .find({ 'uid': cuser.user_id })
+            .find({ 'user_name': cuser.user_name })
             .sort('-date_post')
             .limit(3)
             .exec(function(err, projects) {
