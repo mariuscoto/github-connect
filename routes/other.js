@@ -13,7 +13,24 @@ exports.index = function(req, res) {
   var uid = ((req.session.auth) ? req.session.auth.github.user.id : null);
   var _self = {};
 
-  var gotUser = function(err, user) {
+  Users.count().exec(gotUsers);
+
+  function gotUsers(err, users) {
+    _self.users = users;
+    Ideas.count().exec(gotIdeas);
+  };
+
+  function gotIdeas(err, ideas) {
+    _self.ideas = ideas;
+    Projects.count().exec(gotProjects);
+  };
+
+  function gotProjects(err, projects) {
+    _self.projects = projects;
+    Users.findOne({'user_id': uid}).exec(gotUser);
+  };
+
+  function gotUser(err, user) {
     res.render('index', {
       title:    "Github-connect",
       user:     user,
@@ -22,23 +39,6 @@ exports.index = function(req, res) {
       projects: _self.projects
     });
   }
-
-  var gotProjects = function(err, projects) {
-    _self.projects = projects;
-    Users.findOne({'user_id': uid}).exec(gotUser);
-  };
-
-  var gotIdeas = function(err, ideas) {
-    _self.ideas = ideas;
-    Projects.count().exec(gotProjects);
-  };
-
-  var gotUsers = function(err, users) {
-    _self.users = users;
-    Ideas.count().exec(gotIdeas);
-  };
-
-  Users.count().exec(gotUsers);
 };
 
 
