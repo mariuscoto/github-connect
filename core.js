@@ -130,9 +130,9 @@ function update_pull_req (repo, owner, user_name, accessToken) {
         // check if anything has changed
         for (var r in user.repos) {
           if (user.repos[r].name == repo) {
-            // new pulls accepted, notify user
+            // new pulls accepted, but no first login, notify user
             diff = count - user.repos[r].closed_pulls;
-            if (diff > 0) {
+            if (diff > 0 && user.repos[r].closed_pulls != 0) {
               new Notifications({
                 src:    repo,
                 dest:   user_name,
