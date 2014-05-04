@@ -91,6 +91,7 @@ app.get('/', other.index);
 app.get('/login', other.login);
 app.get('/login/:user', other.login);
 app.get('/faq', other.faq);
+app.get('/contributors', other.contributors);
 app.get('/contact', other.contact);
 app.post('/contact', other.feedback);
 

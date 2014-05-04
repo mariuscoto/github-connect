@@ -1,20 +1,31 @@
 extends layout
 
 block content
-  h1= title
-  br
-  h3 Our app is still in beta, so we need your help to get it running. We
-    | appreciate feedback of any kind. Thank you!
-  br
-  br
+  #content
+    h1= title
+    .spacer
 
-  form(method='post', action='/contact')
-    label Email
-    - if (!everyauth.loggedIn || !user.user_email)
-      input.span5(name='email', type='text', required)
-    - else
-      input.span5(name='email', type='text', required, value='#{user.user_email}')
-    label Message
-    textarea.span7(name='msg', rows="10", required)
-    br
-    input.btn.btn-success(type='submit', value='Send')
+    .left
+      h4 Our application is still in beta, so we need your help to get it running.
+        | We appreciate feedback of any kind. Thank you!
+      br
+      br
+
+      form(method='post', action='/contact')
+        label Email
+        - if (!everyauth.loggedIn || !user.user_email)
+          input.span5(name='email', type='text', required)
+        - else
+          input.span5(name='email', type='text', required, value='#{user.user_email}')
+        label Message
+        textarea.span7(name='msg', rows="10", required)
+        br
+        input.btn.btn-success(type='submit', value='Send')
+
+    .right
+      .submenu
+        a(href='/faq')
+          .submenu-item FAQ
+        a(href='/contributors')
+          .submenu-item Contributors
+        .submenu-item-selected Contact

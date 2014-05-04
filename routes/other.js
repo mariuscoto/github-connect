@@ -150,3 +150,36 @@ exports.faq = function(req, res) {
     });
   });
 };
+
+
+/*
+Contributors page.
+Contributors must be manually inserted.
+*/
+exports.contributors = function(req, res) {
+  var uid = ((req.session.auth) ? req.session.auth.github.user.id : null);
+  var contrib = ['cmarius02', 'andreiVaduva', '17thFox', 'ancadiana23',
+                'AndraSimionov', 'mateioprea', 'MihaelaGaman', 'romeeo',
+                'denu23', 'fullvlad', 'bogdanpetcu'];
+
+  Users.findOne({ user_id: uid }, function(err, user) {
+    if (err) return handleError(err);
+
+    Users.find({ 'user_name': {$in: contrib} }, function(err, helpers) {
+
+      for (var i in helpers) {
+        // compute last seen date
+        helpers[i].last_seen_f = core.get_time_from(helpers[i].last_seen);
+        // compute cups
+        helpers[i].total = helpers[i].points_ideas + helpers[i].points_repos;
+        helpers[i].total += helpers[i].points_projects;
+      }
+
+      res.render('contributors', {
+        title:   "The Crew",
+        user:    user,
+        helpers: helpers
+      });
+    });
+  });
+};

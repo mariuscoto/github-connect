@@ -1,0 +1,33 @@
+extends layout
+
+block content
+  #content
+    h1= title
+    .spacer
+
+    .left
+      h4 Github-connect is an open-source project, developed and maintained with
+        | the help of people who care for and open world.
+      br
+      h4 These are all the people that made it happen:
+      br
+      - each h in helpers
+        .team-member
+          .team-member-avatar
+            img(src=h.avatar_url)
+          a(href='/' + h.user_name)= h.user_name
+          br
+          b= h.total + " cups"
+          br
+          br
+          p Last seen #{h.last_seen_f}.
+      p ** If you are missing, just log in.
+
+
+    .right
+      .submenu
+        a(href='/faq')
+          .submenu-item FAQ
+        .submenu-item-selected Contributors
+        a(href='/contact')
+          .submenu-item Contact
