@@ -71,7 +71,7 @@ exports.one = function(req, res) {
   Ideas
   .findOne({ '_id': req.query.id })
   .exec(function(err, idea) {
-    if (!idea) res.redirect('/ideas');
+    if (!idea) return res.redirect('/ideas');
 
     // Markdown idea plan
     idea.plan_md = markdown.toHTML(idea.plan);

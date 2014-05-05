@@ -78,7 +78,7 @@ exports.one = function(req, res) {
   Projects
   .findOne({ '_id': req.query.id })
   .exec(function(err, project) {
-    if (!project) res.redirect('/projects');
+    if (!project) return res.redirect('/projects');
 
     // Markdown project description
     project.description = markdown.toHTML(project.description);
