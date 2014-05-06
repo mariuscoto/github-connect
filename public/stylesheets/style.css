@@ -1025,3 +1025,7 @@ a:hover {
     padding: 0px 50px 0px 50px;
     font-size: 14px;
 }
+
+.hidden_comment {
+        display:none;
+}
