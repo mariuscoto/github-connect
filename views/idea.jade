@@ -158,7 +158,7 @@ block content
       .left
         - if (comments && comments.length != 0)
           - each c in comments
-            if (c.flags.length < 1)
+            if (c.flags.length < 10)
               .comment
                 a(href='/' + c.user_name)= c.user_name + ": "
                 = c.content
