@@ -81,6 +81,15 @@ $('.flag').click(function () {
 </script>
 
 <script>
+$('.show_comment').click(function () {
+    var id = $(this).attr("id");
+    $('#' + id + '_com').attr("class", "hidden_comment");
+    $('#' + id + '_comm').attr("class", "comment");
+    return false;
+});
+</script>
+
+<script>
 $('.idea-title-fav').click(function () {
   // click just once
   if (this.className == "idea-title-fav") {

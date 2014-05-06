@@ -158,20 +158,42 @@ block content
       .left
         - if (comments && comments.length != 0)
           - each c in comments
-            .comment
-              a(href='/' + c.user_name)= c.user_name + ": "
-              = c.content
-              .comment-bottom
-                .upvotes(id="#{c._id}#")= c.upvotes.length
-                - if (c.upvote)
-                  .upvoted(id="#{c._id}")
-                - else
-                  .upvote(id="#{c._id}")
-                - if (c.flag)
-                  .flagged(id="#{c._id}f")
-                - else
-                  .flag(id="#{c._id}f")
-                | Posted #{c.date_f}.
+            if (c.flags.length < 1)
+              .comment
+                a(href='/' + c.user_name)= c.user_name + ": "
+                = c.content
+                .comment-bottom
+                  .upvotes(id="#{c._id}#")= c.upvotes.length
+                  - if (c.upvote)
+                    .upvoted(id="#{c._id}")
+                  - else
+                    .upvote(id="#{c._id}")
+                  - if (c.flag)
+                    .flagged(id="#{c._id}f")
+                  - else
+                    .flag(id="#{c._id}f")
+                  | Posted #{c.date_f}.
+            - else
+              .comment(id="#{c._id}_com")
+                a(href='/' + c.user_name)= c.user_name + ": "
+                = "This comment received too many flags. Click "
+                  a(href='#', class='show_comment', id='#{c.id}') here
+                  = ' to see comment.'
+              .hidden_comment(id="#{c._id}_comm")
+                a(href='/' + c.user_name)= c.user_name + ": "
+                = c.content
+                .comment-bottom
+                  .upvotes(id="#{c._id}#")= c.upvotes.length
+                  - if (c.upvote)
+                    .upvoted(id="#{c._id}")
+                  - else
+                    .upvote(id="#{c._id}")
+                  - if (c.flag)
+                    .flagged(id="#{c._id}f")
+                  - else
+                    .flag(id="#{c._id}f")
+                  | Posted #{c.date_f}.
+
         - else
           h1 Be the first one to comment.
 
