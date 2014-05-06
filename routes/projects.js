@@ -95,6 +95,7 @@ exports.one = function(req, res) {
 
       ProjectComments
       .find({ 'project': req.query.id })
+      .sort('date')
       .exec(function(err, comments) {
 
         // get project repo

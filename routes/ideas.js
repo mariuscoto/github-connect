@@ -98,6 +98,7 @@ exports.one = function(req, res) {
 
         IdeaComments
         .find({ 'idea': req.query.id })
+        .sort('date')
         .exec(function(err, comments) {
 
           for (i in comments) {

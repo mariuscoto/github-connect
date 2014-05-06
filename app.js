@@ -107,8 +107,8 @@ app.post('/projects', projects.add);
 app.post('/projects/follow', ensureAuth, projects.follow);
 app.post('/projects/unfollow', ensureAuth, projects.unfollow);
 app.post('/projects/comment', ensureAuth, projects.comment);
-app.post('/projects/upvote', ensureAuth, projects.upvote);
-app.post('/projects/flag', ensureAuth, projects.flag);
+app.post('/project/upvote', ensureAuth, projects.upvote);
+app.post('/project/flag', ensureAuth, projects.flag);
 app.post('/projects/remove', ensureAuth, projects.remove);
 
 /*
