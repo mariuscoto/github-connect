@@ -1,13 +1,11 @@
-var CHAR_LIMIT = 330;
-var NEW_PROJECT_POINTS = 10;
-
+var POINTS = require('../model/points.js')
+var core = require('../core.js')
 var mongoose = require('mongoose');
 var Projects = mongoose.model('Projects');
 var Users = mongoose.model('Users');
 var ProjectComments = mongoose.model('ProjectComments');
 var Notifications = mongoose.model('Notifications');
 var markdown = require( "markdown" ).markdown;
-var core = require('../core.js')
 
 
 exports.index = function(req, res) {
@@ -53,8 +51,8 @@ exports.index = function(req, res) {
         // remove new lines
         projects[i].description = projects[i].description.replace(/(\r\n|\n|\r)/gm,"");
         // shorten description
-        if (projects[i].description.length > CHAR_LIMIT)
-          projects[i].description = (projects[i].description).substring(0, CHAR_LIMIT) + " [...]";
+        if (projects[i].description.length > POINTS.PROJECT.DESC)
+          projects[i].description = (projects[i].description).substring(0, POINTS.PROJECT.DESC) + " [...]";
       }
 
       res.render('projects', {
@@ -155,12 +153,12 @@ exports.add = function(req, res) {
       type:         req.body.type,
       description:  req.body.description,
       date_post:    Date.now(),
-      points:       NEW_PROJECT_POINTS
+      points:       POINTS.PROJECT.NEW
 
     }).save(function (err, todo, count) {
       // update total score
       var conditions = {user_id: req.session.auth.github.user.id};
-      var update = {$inc: {points_projects: NEW_PROJECT_POINTS }};
+      var update = {$inc: {points_projects: POINTS.PROJECT.NEW }};
       Users.update(conditions, update).exec();
 
       console.log("* " + req.session.auth.github.user.login + " added project.");

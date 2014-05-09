@@ -1,7 +1,5 @@
-var CHAR_LIMIT = 330;
-var NEW_IDEA_POINTS = 10;
-var JOIN_IDEA_POINTS = 5;
-
+var POINTS = require('../model/points.js')
+var core = require('../core.js')
 var express = require('express');
 var mongoose = require('mongoose');
 var Users = mongoose.model('Users');
@@ -10,7 +8,7 @@ var Projects = mongoose.model('Projects');
 var IdeaComments = mongoose.model('IdeaComments');
 var Notifications = mongoose.model('Notifications');
 var markdown = require( "markdown" ).markdown;
-var core = require('../core.js')
+
 
 /*
 Get the list of all ideas, favorites or personal,
@@ -19,6 +17,7 @@ based on URL and sort them by GET argument.
 exports.index = function(req, res) {
   var uid = ((req.session.auth) ? req.session.auth.github.user.id : null);
 
+  var _self = {};
   var sort_type = null;
   if (req.query.sort == 'most_recent') {
     sort_type = '-date_post';
@@ -28,7 +27,9 @@ exports.index = function(req, res) {
 
   Users.findOne({'user_id': uid}).exec(gotUser);
 
-  function getUser(err, user) {
+  function gotUser(err, user) {
+    _self.user = user;
+
     // set find conditions
     var conditions = null;
     if (req.path == '/ideas_user')
@@ -39,25 +40,28 @@ exports.index = function(req, res) {
     Ideas.find(conditions).sort(sort_type).exec(gotIdea);
   }
 
-  function getIdea(err, ideas) {
+  function gotIdea(err, ideas) {
+    _self.ideas = ideas;
+
     for (var i=0; i<ideas.length; i++) {
       // mark favorites
-      if (user != null && user.favorites.indexOf(ideas[i]._id) > -1)
+      if (_self.user != null && _self.user.favorites.indexOf(ideas[i]._id) > -1)
         ideas[i].fav = true;
       // format date
       ideas[i].date_post_f = core.get_time_from(ideas[i].date_post);
       // shorten description
-      if (ideas[i].description.length > CHAR_LIMIT)
-        ideas[i].description = (ideas[i].description).substring(0, CHAR_LIMIT) + ' [...]';
+      if (ideas[i].description.length > POINTS.IDEA.DESC)
+        ideas[i].description = (ideas[i].description).substring(0, POINTS.IDEA.DESC) + ' [...]';
     }
 
     res.render('ideas', {
       title:      'Ideas',
-      user:       user,
-      ideas:      ideas,
+      user:       _self.user,
+      ideas:      _self.ideas,
       currentUrl: req.path,
       sort:       req.query.sort
     });
+  }
 };
 
 
@@ -167,7 +171,7 @@ exports.add = function(req, res) {
       size:         req.body.size,
       eta:          req.body.eta,
       date_post:    Date.now(),
-      points:       NEW_IDEA_POINTS
+      points:       POINTS.IDEA.NEW
     }).save( function( err, todo, count ) {
 
         /*
@@ -194,7 +198,7 @@ exports.add = function(req, res) {
 
         // update total score
         var conditions = {user_id: req.session.auth.github.user.id};
-        var update = {$inc: {points_ideas: NEW_IDEA_POINTS }};
+        var update = {$inc: {points_ideas: POINTS.IDEA.NEW }};
         Users.update(conditions, update).exec();
 
         console.log("* " + req.session.auth.github.user.login + " added idea.");
@@ -293,7 +297,7 @@ exports.join_team = function(req, res) {
   .exec(function(err, idea) {
     // update owner score
     var conditions = {user_name: idea.user_name};
-    var update = {$inc: {points_ideas: JOIN_IDEA_POINTS}};
+    var update = {$inc: {points_ideas: POINTS.IDEA.JOIN}};
     Users.update(conditions, update).exec();
   });
 
@@ -301,7 +305,7 @@ exports.join_team = function(req, res) {
   var conditions = {_id: req.query.id};
   var update = {
     $addToSet: {team: req.session.auth.github.user.login},
-    $inc: {points: JOIN_IDEA_POINTS}
+    $inc: {points: POINTS.IDEA.JOIN}
   };
   Ideas.update(conditions, update, function (err, num) {
     res.redirect('/idea?id=' + req.query.id);
