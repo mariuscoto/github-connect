@@ -12,55 +12,52 @@ var Notifications = mongoose.model('Notifications');
 var markdown = require( "markdown" ).markdown;
 var core = require('../core.js')
 
-
+/*
+Get the list of all ideas, favorites or personal,
+based on URL and sort them by GET argument.
+*/
 exports.index = function(req, res) {
   var uid = ((req.session.auth) ? req.session.auth.github.user.id : null);
 
   var sort_type = null;
-  if (req.query.sort == "most_recent") {
+  if (req.query.sort == 'most_recent') {
     sort_type = '-date_post';
-  } else if (req.query.sort == "most_commented") {
+  } else if (req.query.sort == 'most_commented') {
     sort_type = '-comments_num';
   }
 
-  Users
-  .findOne({ 'user_id': uid })
-  .exec(function (err, user) {
-    if (err) return handleError(err);
+  Users.findOne({'user_id': uid}).exec(gotUser);
 
+  function getUser(err, user) {
     // set find conditions
     var conditions = null;
-    if (req.path == "/ideas_user")
-      conditions = { 'uid': user.user_id }
+    if (req.path == '/ideas_user')
+      conditions = {'uid': user.user_id}
     else if (req.path == "/ideas_fav")
-      conditions = { _id: { $in: user.favorites }}
+      conditions = {'_id': {$in: user.favorites}}
 
-    Ideas
-    .find(conditions)
-    .sort(sort_type)
-    .exec(function(err, ideas) {
+    Ideas.find(conditions).sort(sort_type).exec(gotIdea);
+  }
 
-      for (var i=0; i<ideas.length; i++) {
-        // mark favorites
-        if (user != null && user.favorites.indexOf(ideas[i]._id) > -1)
-          ideas[i].fav = true;
-        // format date
-        ideas[i].date_post_f = core.get_time_from(ideas[i].date_post);
-        // shorten description
-        if (ideas[i].description.length > CHAR_LIMIT)
-          ideas[i].description = (ideas[i].description).substring(0, CHAR_LIMIT) + " [...]";
-      }
+  function getIdea(err, ideas) {
+    for (var i=0; i<ideas.length; i++) {
+      // mark favorites
+      if (user != null && user.favorites.indexOf(ideas[i]._id) > -1)
+        ideas[i].fav = true;
+      // format date
+      ideas[i].date_post_f = core.get_time_from(ideas[i].date_post);
+      // shorten description
+      if (ideas[i].description.length > CHAR_LIMIT)
+        ideas[i].description = (ideas[i].description).substring(0, CHAR_LIMIT) + ' [...]';
+    }
 
-      res.render('ideas', {
-        title:      "Ideas",
-        user:       user,
-        ideas:      ideas,
-        currentUrl: req.path,
-        sort:       req.query.sort
-      });
-
+    res.render('ideas', {
+      title:      'Ideas',
+      user:       user,
+      ideas:      ideas,
+      currentUrl: req.path,
+      sort:       req.query.sort
     });
-  });
 };
 
 
