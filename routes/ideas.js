@@ -30,7 +30,7 @@ exports.index = function(req, res) {
   function gotUser(err, user) {
     _self.user = user;
 
-    // set find conditions
+    // Set find conditions given by URL
     var conditions = null;
     if (req.path == '/ideas_user')
       conditions = {'uid': user.user_id}
@@ -44,12 +44,12 @@ exports.index = function(req, res) {
     _self.ideas = ideas;
 
     for (var i=0; i<ideas.length; i++) {
-      // mark favorites
+      // Mark favorite ideas
       if (_self.user != null && _self.user.favorites.indexOf(ideas[i]._id) > -1)
         ideas[i].fav = true;
-      // format date
+      // Format date
       ideas[i].date_post_f = core.get_time_from(ideas[i].date_post);
-      // shorten description
+      // Shorten description
       if (ideas[i].description.length > POINTS.IDEA.DESC)
         ideas[i].description = (ideas[i].description).substring(0, POINTS.IDEA.DESC) + ' [...]';
     }
@@ -65,188 +65,206 @@ exports.index = function(req, res) {
 };
 
 
+/*
+List all info of selected idea.
+*/
 exports.one = function(req, res) {
   if (!req.query.id) return res.redirect('/ideas');
   var uid = ((req.session.auth) ? req.session.auth.github.user.id : null);
 
-  Ideas
-  .findOne({ '_id': req.query.id })
-  .exec(function(err, idea) {
-    if (!idea) return res.redirect('/ideas');
+  var _self = {};
+
+  Ideas.findOne({'_id': req.query.id }).exec(gotIdea);
+
+  function gotIdea(err, idea) {
+    _self.idea = idea;
 
     // Markdown idea plan
     idea.plan_md = markdown.toHTML(idea.plan);
-    // compute post date
+    // Format idea post date
     idea.date_post_f = core.get_time_from(idea.date_post);
 
-    Users
-    .find({ 'user_name': idea.team })
-    .exec(function(err, team) {
-      if (err) return handleError(err);
+    Users.find({'user_name': idea.team}).exec(gotTeam);
+  }
 
-      for (i in team) {
-        team[i].last_seen_f = core.get_time_from(team[i].last_seen);
-        team[i].comments_num = 0;
+  function gotTeam(err, team) {
+    _self.team = team;
+
+    for (i in team) {
+      // Format user last seen date
+      team[i].last_seen_f = core.get_time_from(team[i].last_seen);
+      // Init user comments number
+      team[i].comments_num = 0;
+    }
+
+    Users.findOne({'user_name': _self.idea.user_name}).exec(gotOwner);
+  }
+
+  function gotOwner(err, cuser) {
+    _self.cuser = cuser;
+
+    // Format owner last seen date
+    cuser.last_seen_f = core.get_time_from(cuser.last_seen);
+
+    IdeaComments.find({'idea': req.query.id}).sort('date').exec(gotComments);
+  }
+
+  function gotComments(err, comments) {
+    _self.comments = comments;
+
+    for (i in comments) {
+      // Format comments post date
+      comments[i].date_f = core.get_time_from(comments[i].date);
+
+      // Get comments number for each member
+      for(j in _self.team)
+          if(_self.team[j].user_name == comments[i].user_name)
+              _self.team[j].comments_num++;
+    }
+
+    Users.findOne({'user_id': uid}).exec(gotUser);
+  }
+
+  function gotUser(err, user) {
+    _self.user = user;
+
+    // Allow only the owner to view settings tab
+    if ((!user || _self.idea.user_name != _self.user.user_name) &&
+         req.path == '/idea/settings')
+      return res.redirect('/idea?id=' + req.query.id);
+
+    if (user) {
+      // Check if user joined team
+      if (_self.idea.team.indexOf(_self.user.user_id) > -1)
+        user.joined = true;
+      // Check if user faved idea
+      if (user.favorites.indexOf(_self.idea._id) > -1)
+        user.faved = true;
+
+      for (i in _self.comments) {
+        // Check for already voted comments
+        if (_self.comments[i].upvotes.indexOf(_self.user.user_id) > -1)
+          _self.comments[i].upvote = true;
+        // Check for flagged comments
+        if (_self.comments[i].flags.indexOf(_self.user.user_id) > -1)
+          _self.comments[i].flag = true;
       }
+    }
 
-      Users
-      .findOne({ 'user_name': idea.user_name})
-      .exec(function(err, cuser) {
-        if (err) return handleError(err);
+    res.render('idea', {
+      title:      _self.idea.title,
+      user:       _self.user,
+      cuser:      _self.cuser,
+      idea:       _self.idea,
+      comments:   _self.comments,
+      team:       _self.team,
+      currentUrl: req.path,
+      sort:       req.query.sort
+    });
+  }
+};
 
-        // compute last seen date
-        cuser.last_seen_f = core.get_time_from(cuser.last_seen);
 
-        IdeaComments
-        .find({ 'idea': req.query.id })
-        .sort('date')
-        .exec(function(err, comments) {
+/*
+Add idea to db, update scores and post to fb page.
+*/
+exports.add = function(req, res) {
+  // Accept idea only if it has a title and description
+  if (!req.body.title || !req.body.description)
+    return res.redirect('/ideas');
 
-          for (i in comments) {
-            // compute post date
-            comments[i].date_f = core.get_time_from(comments[i].date);
+  new Ideas({
+    user_name:    req.session.auth.github.user.login,
+    title:        req.body.title,
+    description:  req.body.description,
+    lang:         req.body.lang,
+    plan:         req.body.plan,
+    size:         req.body.size,
+    eta:          req.body.eta,
+    points:       POINTS.IDEA.NEW
+  }).save(savedIdea);
 
-            for(j in team){
-                if(team[j].user_name == comments[i].user_name){
-                    team[j].comments_num++;
-                }
-            }
+  function savedIdea(err, todo, count) {
+    if (err) console.log("[ERR] Idea not saved.");
 
-          }
+    // Update user ideas points
+    var conditions = {user_id: req.session.auth.github.user.id};
+    var update = {$inc: {points_ideas: POINTS.IDEA.NEW }};
+    Users.update(conditions, update).exec();
 
-          Users
-          .findOne({ 'user_id': uid })
-          .exec(function (err, user) {
+    console.log("* " + req.session.auth.github.user.login + " added idea.");
+    res.redirect('/ideas');
 
-          // allow only owner to view settings
-          if ((!user || idea.user_name != user.user_name) && req.path == '/idea/settings')
-            return res.redirect('/idea?id=' + req.query.id);
-
-            if (user) {
-              // see if user joined team
-              if (user && idea.team.indexOf(user.user_id) > -1)
-                user.joined = true;
-              // see if user faved idea
-              if (user && user.favorites.indexOf(idea._id) > -1)
-                user.faved = true;
-
-              for (i in comments) {
-                // check for already voted comments
-                if (comments[i].upvotes.indexOf(user.user_id) > -1)
-                  comments[i].upvote = true;
-                // check for flagged comments
-                if (comments[i].flags.indexOf(user.user_id) > -1)
-                  comments[i].flag = true;
-              }
-            }
-
-            res.render('idea', {
-              title:      idea.title,
-              user:       user,
-              cuser:      cuser,
-              idea:       idea,
-              team:       team,
-              currentUrl: req.path,
-              sort:       req.query.sort,
-              comments:   comments
-            });
-
-          });
+    /*
+    Post idea to facebook page if in production.
+    This uses a never expiring token.
+    Page at: https://www.facebook.com/GitHubConnect
+    */
+    if (global.config.status == 'prod') {
+    	var options = {
+        host: "graph.facebook.com",
+        path: "/" + global.config.facebook_id + "/feed?message="
+          + req.body.description + "&access_token="
+          + global.config.facebook_token,
+        method: "POST",
+      };
+      var https = require('https');
+      var request = https.request(options, function(response){
+        var body = '';
+        response.on("data", function(chunk){ body+=chunk.toString("utf8"); });
+        response.on("end", function(){
+          console.log("* Idea posted on facebook page.");
         });
       });
-    });
-  });
+      request.end();
+    }
+  }
 };
 
 
-exports.add = function(req, res) {
-  // add idea only if it has a title and description
-  if (req.body.title && req.body.description)
-    new Ideas({
-      user_name :   req.session.auth.github.user.login,
-      title :       req.body.title,
-      description : req.body.description,
-      lang :        req.body.lang,
-      plan:         req.body.plan,
-      size:         req.body.size,
-      eta:          req.body.eta,
-      date_post:    Date.now(),
-      points:       POINTS.IDEA.NEW
-    }).save( function( err, todo, count ) {
-
-        /*
-        Post idea to facebook page if in production.
-        This uses a never expiring token.
-        Page at: https://www.facebook.com/GitHubConnect
-        */
-        if (global.config.status == 'prod') {
-        	var options = {
-            host: "graph.facebook.com",
-            path: "/" + global.config.facebook_id + "/feed?message=" + req.body.description + "&access_token=" + global.config.facebook_token,
-            method: "POST",
-          };
-          var https = require('https');
-          var request = https.request(options, function(response){
-            var body = '';
-            response.on("data", function(chunk){ body+=chunk.toString("utf8"); });
-            response.on("end", function(){
-              console.log("* Idea posted to facebook page.");
-            });
-          });
-          request.end();
-        }
-
-        // update total score
-        var conditions = {user_id: req.session.auth.github.user.id};
-        var update = {$inc: {points_ideas: POINTS.IDEA.NEW }};
-        Users.update(conditions, update).exec();
-
-        console.log("* " + req.session.auth.github.user.login + " added idea.");
-        res.redirect('/ideas');
-    });
-  else
-    res.redirect('/ideas');
-};
-
-
+/*
+Add idea comment. Send notification.
+*/
 exports.comment = function(req, res) {
-  // increment comments number
+  // Increment idea comments number
   var conditions = { _id: req.query.id };
   var update = {$inc: {comments_num: 1}};
-  Ideas.update(conditions, update, function (err, num) {
+  Ideas.update(conditions, update).exec(updatedIdea);
+
+  function updatedIdea(err, num) {
     new IdeaComments({
-      uid:        req.session.auth.github.user.id,
       user_name:  req.session.auth.github.user.login,
       idea:       req.query.id,
       content:    req.body.content,
-      date:       Date.now()
     }).save(function(err, comm, count) {
       console.log("* " + req.session.auth.github.user.login + " commented on " + req.query.id);
       res.redirect('/idea?id=' + req.query.id);
     });
 
-    Ideas
-    .findOne({ '_id': req.query.id })
-    .exec(function(err, idea) {
-      new Notifications({
-        src:    req.session.auth.github.user.login,
-        dest:   idea.user_name,
-        type:   "idea_comm",
-        seen:   false,
-        date:   Date.now(),
-        link:   "/idea?id=" + req.query.id
-      }).save(function(err, comm, count) {
-        console.log("* " + idea.user_name + " notified.");
-      });
+    // Notify user in parallel
+    Ideas.findOne({'_id': req.query.id}).exec(notify);
+  }
 
-      var conditions = {user_name: idea.user_name};
-      var update = {$set: {unread: true}};
-      Users.update(conditions, update).exec();
+  function notify(err, idea) {
+    new Notifications({
+      src:    req.session.auth.github.user.login,
+      dest:   idea.user_name,
+      type:   "idea_comm",
+      link:   "/idea?id=" + req.query.id
+    }).save(function(err, comm, count) {
+      if (err) console.log("[ERR] idea comm notif not sent");
     });
-  });
+
+    var conditions = {'user_name': idea.user_name};
+    var update = {$set: {'unread': true}};
+    Users.update(conditions, update).exec();
+  }
 };
 
 
+/*
+Add idea to favorites list. Used in AJAX calls.
+*/
 exports.fav = function(req, res) {
   var conditions = {user_id: req.session.auth.github.user.id};
   var update = {$push: {favorites: req.query.id}};
@@ -256,6 +274,9 @@ exports.fav = function(req, res) {
 };
 
 
+/*
+Remove idea from favorites list. Used in AJAX calls.
+*/
 exports.unfav = function(req, res) {
   var conditions = {user_id: req.session.auth.github.user.id};
   var update = {$pop: {favorites: req.query.id}};
@@ -265,47 +286,49 @@ exports.unfav = function(req, res) {
 };
 
 
+/*
+Upvote idea comment. Used in AJAX calls.
+*/
 exports.upvote = function(req, res) {
   var conditions = {_id: req.query.id};
   var update = {$addToSet: {upvotes: req.session.auth.github.user.id}};
   IdeaComments.update(conditions, update, function (err, num) {
-    if (num) {
-      console.log("* " + req.session.auth.github.user.login +
-                  " upvoted " + req.query.id);
-      res.json({success: true});
-    }
+    if (num) res.json({success: true});
   });
 };
 
 
+/*
+Flag idea comment. Used in AJAX calls.
+*/
 exports.flag = function(req, res) {
   var conditions = {_id: req.query.id};
   var update = {$addToSet: {flags: req.session.auth.github.user.id}};
   IdeaComments.update(conditions, update, function (err, num) {
-    if (num) {
-      console.log("* " + req.session.auth.github.user.login +
-                  " flagged " + req.query.id);
-      res.json({success: true});
-    }
+    if (num) res.json({success: true});
   });
 };
 
 
-exports.join_team = function(req, res) {
-  Ideas
-  .findOne({ '_id': req.query.id })
-  .exec(function(err, idea) {
-    // update owner score
-    var conditions = {user_name: idea.user_name};
-    var update = {$inc: {points_ideas: POINTS.IDEA.JOIN}};
-    Users.update(conditions, update).exec();
-  });
+/*
+User joins an idea's team.
+*/
+exports.join = function(req, res) {
 
-  // update idea score and team
-  var conditions = {_id: req.query.id};
+  Ideas.findOne({'_id': req.query.id}).exec(gotIdea);
+
+  // Update user ideas points
+  function gotIdea(err, idea) {
+    var conditions = {'user_name': idea.user_name};
+    var update = {$inc: {'points_ideas': POINTS.IDEA.JOIN}};
+    Users.update(conditions, update).exec();
+  }
+
+  // Update idea points and team
+  var conditions = {'_id': req.query.id};
   var update = {
-    $addToSet: {team: req.session.auth.github.user.login},
-    $inc: {points: POINTS.IDEA.JOIN}
+    $addToSet: {'team': req.session.auth.github.user.login},
+    $inc: {'points': POINTS.IDEA.JOIN}
   };
   Ideas.update(conditions, update, function (err, num) {
     res.redirect('/idea?id=' + req.query.id);
@@ -313,54 +336,66 @@ exports.join_team = function(req, res) {
 };
 
 
-exports.idea_edit = function(req, res) {
-  Ideas
-  .findOne({ '_id': req.query.id })
-  .exec(function(err, idea) {
-    // allow only edits by owner
-    if (idea.user_name != req.session.auth.github.user.login)
-      return res.redirect('/ideas');
+/*
+Edit idea info.
+*/
+exports.edit = function(req, res) {
 
-    // apply changes
-    var conditions = {_id: req.query.id};
-    var update = {$set: {description: req.body.description, lang : req.body.lang}};
-    Ideas.update(conditions, update, function (err, num) {
-      console.log("* " + req.session.auth.github.user.login +
-                  " made changes to " + req.query.id);
-      res.redirect('/idea?id=' + req.query.id);
-    });
-  });
-};
+  Ideas.findOne({'_id': req.query.id}).exec(gotIdea);
 
-
-exports.idea_plan_edit = function(req, res) {
-  Ideas
-  .findOne({ '_id': req.query.id })
-  .exec(function(err, idea) {
-    // allow only edits by owner
-    if (idea.user_name != req.session.auth.github.user.login)
-      return res.redirect('/ideas');
-
-    // apply changes
-    var conditions = {_id: req.query.id};
-    var update = {$set: {plan: req.body.plan}};
-    Ideas.update(conditions, update, function (err, num) {
-      console.log("* " + req.session.auth.github.user.login +
-                  " made changes to plan " + req.query.id);
-      res.redirect('/idea/plan?id=' + req.query.id);
-    });
-  });
-};
-
-
-exports.own = function(req, res) {
-  Ideas
-  .findOne({ '_id': req.query.id })
-  .exec(function(err, idea) {
+  function gotIdea(err, idea) {
     // Allow only edits by owner
     if (idea.user_name != req.session.auth.github.user.login)
       return res.redirect('/ideas');
 
+    // Update idea info
+    var conditions = {'_id': req.query.id};
+    var update = {$set: {
+      'description': req.body.description,
+      'lang':        req.body.lang
+    }};
+    Ideas.update(conditions, update, function (err, num) {
+      console.log("* Owner made changes to " + req.query.id);
+      res.redirect('/idea?id=' + req.query.id);
+    });
+  }
+};
+
+
+/*
+Edit idea plan.
+*/
+exports.plan_edit = function(req, res) {
+
+  Ideas.findOne({'_id': req.query.id}).exec(gotIdea);
+
+  // Allow only edits by owner
+  function gotIdea(err, idea) {
+    if (idea.user_name != req.session.auth.github.user.login)
+      return res.redirect('/ideas');
+
+    // Update idea plan
+    var conditions = {'_id': req.query.id};
+    var update = {$set: {'plan': req.body.plan}};
+    Ideas.update(conditions, update, function (err, num) {
+      console.log("* Owner updated plan of " + req.query.id);
+      res.redirect('/idea/plan?id=' + req.query.id);
+    });
+  }
+};
+
+
+/*
+Change idea owner. You can chose one of your teammates.
+*/
+exports.own = function(req, res) {
+
+  Ideas.findOne({'_id': req.query.id}).exec(gotIdea);
+
+  function gotIdea(err, idea) {
+    // Allow only edits by owner
+    if (idea.user_name != req.session.auth.github.user.login)
+      return res.redirect('/ideas');
 
     // Check if selected option is a team member
     if (idea.team.indexOf(req.body.new_own) > -1) {
@@ -375,33 +410,36 @@ exports.own = function(req, res) {
     }
 
     res.redirect('/idea?id=' + req.query.id);
-  });
-}
+  }
+};
 
 
+/*
+Totally remove idea, associated comments and update
+user score.
+*/
 exports.remove = function(req, res) {
-  Ideas
-  .findOne({ '_id': req.query.id })
-  .exec(function(err, idea) {
-    // allow only edits by owner
+
+  Ideas.findOne({'_id': req.query.id}).exec(gotIdea);
+
+  // Allow only edits by owner
+  function gotIdea(err, idea) {
     if (idea.user_name != req.session.auth.github.user.login)
       return res.redirect('/ideas');
 
-    // update score
-    var conditions = {user_id: req.session.auth.github.user.id};
-    var update = {$inc: {points_ideas: -(idea.points)}};
+    // Update owner score
+    var conditions = {'user_id': req.session.auth.github.user.id};
+    var update = {$inc: {'points_ideas': -(idea.points)}};
     Users.update(conditions, update).exec();
 
-    Ideas.remove({_id: req.query.id}, function (err, num) {
-      console.log("* " + req.session.auth.github.user.login +
-                  " removed an idea " + req.query.id);
+    Ideas.remove({'_id': req.query.id}, function (err, num) {
+      if (err) console.log("[ERR] Could not remove idea.");
     });
 
-    IdeaComments.remove({idea: req.query.id}, function (err, num) {
-      console.log("* " + req.session.auth.github.user.login +
-                  " removed all comments from " + req.query.id);
+    IdeaComments.remove({'idea': req.query.id}, function (err, num) {
+      if (err) console.log("[ERR] Could not remove idea comments.");
     });
 
     res.redirect('/ideas');
-  });
+  }
 };

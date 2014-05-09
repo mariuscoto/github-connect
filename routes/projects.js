@@ -175,7 +175,6 @@ exports.comment = function(req, res) {
   var update = {$inc: {comments_num: 1}};
   Projects.update(conditions, update, function (err, num) {
     new ProjectComments({
-      uid:        req.session.auth.github.user.id,
       user_name:  req.session.auth.github.user.login,
       project:    req.query.id,
       content:    req.body.content,

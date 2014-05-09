@@ -53,7 +53,6 @@ var Ideas = new Schema({
 });
 
 var IdeaComments = new Schema({
-  uid:        Number,
   user_name:  String,
   idea:       String,
   content:    String,
@@ -63,7 +62,6 @@ var IdeaComments = new Schema({
 });
 
 var ProjectComments = new Schema({
-  uid:        Number,
   user_name:  String,
   project:    String,
   content:    String,
