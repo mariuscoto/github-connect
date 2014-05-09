@@ -76,6 +76,7 @@ app.get('/idea/team/join', ensureAuth, ideas.join_team);
 app.get('/idea/plan', ideas.one);
 app.get('/idea/plan/edit', ideas.one);
 app.get('/idea/settings', ideas.one);
+app.post('/idea/owner', ensureAuth, ideas.own);
 app.post('/idea/remove', ensureAuth, ideas.remove);
 app.post('/ideas', ideas.add);
 app.post('/idea/fav', ensureAuth, ideas.fav);

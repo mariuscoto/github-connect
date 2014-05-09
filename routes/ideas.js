@@ -79,7 +79,7 @@ exports.one = function(req, res) {
     idea.date_post_f = core.get_time_from(idea.date_post);
 
     Users
-    .find({ 'user_id': idea.team })
+    .find({ 'user_name': idea.team })
     .exec(function(err, team) {
       if (err) return handleError(err);
 
@@ -116,6 +116,10 @@ exports.one = function(req, res) {
           Users
           .findOne({ 'user_id': uid })
           .exec(function (err, user) {
+
+          // allow only owner to view settings
+          if ((!user || idea.user_name != user.user_name) && req.path == '/idea/settings')
+            return res.redirect('/idea?id=' + req.query.id);
 
             if (user) {
               // see if user joined team
@@ -158,7 +162,6 @@ exports.add = function(req, res) {
   // add idea only if it has a title and description
   if (req.body.title && req.body.description)
     new Ideas({
-      uid :         req.session.auth.github.user.id,
       user_name :   req.session.auth.github.user.login,
       title :       req.body.title,
       description : req.body.description,
@@ -299,8 +302,10 @@ exports.join_team = function(req, res) {
 
   // update idea score and team
   var conditions = {_id: req.query.id};
-  var update = {$addToSet: {team: req.session.auth.github.user.id},
-                $inc: {points: JOIN_IDEA_POINTS}};
+  var update = {
+    $addToSet: {team: req.session.auth.github.user.login},
+    $inc: {points: JOIN_IDEA_POINTS}
+  };
   Ideas.update(conditions, update, function (err, num) {
     res.redirect('/idea?id=' + req.query.id);
   });
@@ -312,7 +317,8 @@ exports.idea_edit = function(req, res) {
   .findOne({ '_id': req.query.id })
   .exec(function(err, idea) {
     // allow only edits by owner
-    if (idea.uid != req.session.auth.github.user.id) res.redirect('/ideas');
+    if (idea.user_name != req.session.auth.github.user.login)
+      return res.redirect('/ideas');
 
     // apply changes
     var conditions = {_id: req.query.id};
@@ -331,7 +337,8 @@ exports.idea_plan_edit = function(req, res) {
   .findOne({ '_id': req.query.id })
   .exec(function(err, idea) {
     // allow only edits by owner
-    if (idea.uid != req.session.auth.github.user.id) res.redirect('/ideas');
+    if (idea.user_name != req.session.auth.github.user.login)
+      return res.redirect('/ideas');
 
     // apply changes
     var conditions = {_id: req.query.id};
@@ -345,29 +352,55 @@ exports.idea_plan_edit = function(req, res) {
 };
 
 
+exports.own = function(req, res) {
+  Ideas
+  .findOne({ '_id': req.query.id })
+  .exec(function(err, idea) {
+    // Allow only edits by owner
+    if (idea.user_name != req.session.auth.github.user.login)
+      return res.redirect('/ideas');
+
+
+    // Check if selected option is a team member
+    if (idea.team.indexOf(req.body.new_own) > -1) {
+      var conditions = {'_id': req.query.id};
+      var update = {
+        $set: {'user_name': req.body.new_own},
+        $pull: {'team': req.body.new_own}
+      };
+      Ideas.update(conditions, update, function (err, num) {
+        console.log("* New owner for idea " + req.query.id);
+      });
+    }
+
+    res.redirect('/idea?id=' + req.query.id);
+  });
+}
+
+
 exports.remove = function(req, res) {
   Ideas
   .findOne({ '_id': req.query.id })
   .exec(function(err, idea) {
     // allow only edits by owner
-    if (idea.uid != req.session.auth.github.user.id) res.redirect('/ideas');
-    else {
-      // update score
-      var conditions = {user_id: req.session.auth.github.user.id};
-      var update = {$inc: {points_ideas: -(idea.points)}};
-      Users.update(conditions, update).exec();
+    if (idea.user_name != req.session.auth.github.user.login)
+      return res.redirect('/ideas');
 
-      Ideas.remove({_id: req.query.id}, function (err, num) {
-        console.log("* " + req.session.auth.github.user.login +
-                    " removed an idea " + req.query.id);
-      });
+    // update score
+    var conditions = {user_id: req.session.auth.github.user.id};
+    var update = {$inc: {points_ideas: -(idea.points)}};
+    Users.update(conditions, update).exec();
 
-      IdeaComments.remove({idea: req.query.id}, function (err, num) {
-        console.log("* " + req.session.auth.github.user.login +
-                    " removed all comments from " + req.query.id);
-      });
+    Ideas.remove({_id: req.query.id}, function (err, num) {
+      console.log("* " + req.session.auth.github.user.login +
+                  " removed an idea " + req.query.id);
+    });
 
-      res.redirect('/ideas');
-    }
+    IdeaComments.remove({idea: req.query.id}, function (err, num) {
+      console.log("* " + req.session.auth.github.user.login +
+                  " removed all comments from " + req.query.id);
+    });
+
+    res.redirect('/ideas');
   });
 };

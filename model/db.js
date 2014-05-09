@@ -40,7 +40,6 @@ var Projects = new Schema({
 });
 
 var Ideas = new Schema({
-  uid:            Number,
   user_name:      String,
   title:          String,
   description:    String,
@@ -49,7 +48,7 @@ var Ideas = new Schema({
   size:           String,
   eta:            String,
   date_post:      {type: Date, default: Date.now},
-  team:           [Number],
+  team:           [String],
   points:         {type: Number, default: 0},
   comments_num:   {type: Number, default: 0}
 });

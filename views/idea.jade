@@ -48,7 +48,7 @@ block content
           a(href="/idea/unfav?id=" + idea._id)
             input.btn.btn-success(type='submit', value='UnFav', disabled).idea-desc-buttom-btn
 
-        - if (user && idea.uid == user.user_id)
+        - if (user && idea.user_name == user.user_name)
           a(href="/idea/settings?id=" + idea._id)
             input.btn.btn-success(type='submit', value='Edit').idea-desc-buttom-btn
 
@@ -92,7 +92,7 @@ block content
           - else
             h1 Nothing planned at this moment.
 
-          - if (user && idea.uid == user.user_id)
+          - if (user && idea.user_name == user.user_name)
             a(href="/idea/plan/edit?id=" + idea._id)
               input.btn.btn-success(type='submit', value='Edit')
 
@@ -111,7 +111,7 @@ block content
           .plan-stat-done You have a purpose, you have a
             a(href='/idea/plan?id=' + idea._id)  plan.
         - else
-          .plan-stat Make a plan. You can't go anywhere without a map.
+          .plan-stat Make a plan. You can't go anywhere without a good map.
         - if (idea.size == 'Small' && idea.team.length == 3 || idea.size == 'Medium' && idea.team.length == 5 || idea.size == 'Large' && idea.team.length == 10)
           .plan-stat-done Go team go! All
             a(href='/idea/team?id=' + idea._id)= " " + idea.team.length + " teammates "
@@ -149,6 +149,16 @@ block content
             input.btn.btn-success(id='sub', type='submit', value='Update')
 
         br
+        h3 Change owner
+        form(method='post', action='/idea/owner?id=' + idea._id)
+          select.selectpicker(name='new_own', type='text')
+            option Someone
+            - for u in team
+              option= u.user_name
+          = " will own your idea from now on."
+          br
+          input.btn.btn-danger(id='own', type='submit', value='Change owner')
+
         h3 Remove your idea
         form(method='post', action='/idea/remove?id=' + idea._id)
           input.btn.btn-danger(id='rmv', type='submit', value='Remove this idea', onclick="return ideaDelete(this.rmv)")
@@ -220,7 +230,7 @@ block content
         - else
           a(href='/idea/plan?id=' + idea._id)
             .submenu-item Plan
-        - if (user && idea.uid == user.user_id)
+        - if (user && idea.user_name == user.user_name)
           - if (currentUrl == "/idea/settings")
             .submenu-item-selected Settings
           - else
