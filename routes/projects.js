@@ -148,7 +148,6 @@ exports.add = function(req, res) {
   if (req.body.repo && req.body.title)
     new Projects({
       repo:         req.body.repo,
-      uid :         req.session.auth.github.user.id,
       user_name :   req.session.auth.github.user.login,
       size:         req.body.size,
       lang:         req.body.lang,
@@ -260,24 +259,24 @@ exports.remove = function(req, res) {
   .findOne({ '_id': req.query.id })
   .exec(function(err, project) {
     // allow only edits by owner
-    if (project.uid != req.session.auth.github.user.id) res.redirect('/projects');
-    else {
-      // update score
-      var conditions = {user_id: req.session.auth.github.user.id};
-      var update = {$inc: {points_projects: -(project.points)}};
-      Users.update(conditions, update).exec();
+    if (project.user_name != req.session.auth.github.user.login)
+      return res.redirect('/projects');
 
-      Projects.remove({_id: req.query.id}, function (err, num) {
-        console.log("* " + req.session.auth.github.user.login +
-                    " removed project " + req.query.id);
-      });
+    // update score
+    var conditions = {user_id: req.session.auth.github.user.id};
+    var update = {$inc: {points_projects: -(project.points)}};
+    Users.update(conditions, update).exec();
 
-      ProjectComments.remove({idea: req.query.id}, function (err, num) {
-        console.log("* " + req.session.auth.github.user.login +
-                    " removed all comments from " + req.query.id);
-      });
+    Projects.remove({_id: req.query.id}, function (err, num) {
+      console.log("* " + req.session.auth.github.user.login +
+                  " removed project " + req.query.id);
+    });
 
-      res.redirect('/projects');
-    }
+    ProjectComments.remove({idea: req.query.id}, function (err, num) {
+      console.log("* " + req.session.auth.github.user.login +
+                  " removed all comments from " + req.query.id);
+    });
+
+    res.redirect('/projects');
   });
 };

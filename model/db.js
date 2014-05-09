@@ -26,7 +26,6 @@ var Users = new Schema({
 });
 
 var Projects = new Schema({
-  uid:            Number,
   user_name:      String,
   repo:           String,
   title:          String,
