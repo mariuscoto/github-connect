@@ -79,7 +79,7 @@ exports.one = function(req, res) {
     if (!project) return res.redirect('/projects');
 
     // Markdown project description
-    project.description = markdown.toHTML(project.description);
+    project.description_md = markdown.toHTML(project.description);
     // compute post date
     project.date_post_f = core.get_time_from(project.date_post);
 
@@ -137,6 +137,77 @@ exports.one = function(req, res) {
       });
     });
   });
+};
+
+exports.settings = function(req, res) {
+  if (!req.query.id) return res.redirect('/projects');
+  var uid = ((req.session.auth) ? req.session.auth.github.user.id : null);
+
+  Projects
+  .findOne({ '_id': req.query.id })
+  .exec(function(err, project) {
+    if (!project) return res.redirect('/projects');
+
+    // Markdown project description
+    project.description_md = markdown.toHTML(project.description);
+    // compute post date
+    project.date_post_f = core.get_time_from(project.date_post);
+
+    Users
+    .findOne({ 'user_name': project.user_name})
+    .exec(function(err, cuser) {
+      if (err) return handleError(err);
+
+      // compute last seen date
+      cuser.last_seen_f = core.get_time_from(cuser.last_seen);
+
+      // get project repo
+      var repo;
+      for (var i=0; i<cuser.repos.length; i++)
+        if (cuser.repos[i].name == project.repo)
+          repo = cuser.repos[i]
+
+      Users
+      .findOne({ 'user_id': uid })
+      .exec(function (err, user) {
+
+        res.render('project', {
+          title:      project.title,
+          user:       user,
+          cuser:      cuser,
+          repo:       repo,
+          project:    project,
+          currentUrl: req.path,
+        });
+
+      });
+    });
+  });
+};
+
+
+exports.edit = function(req, res) {
+  if (!req.query.id) return res.redirect('/projects');
+
+  Projects.findOne({'_id': req.query.id}).exec(gotProject);
+
+  function gotProject(err, project) {
+    // Allow only edits by owner
+    if (project.user_name != req.session.auth.github.user.login)
+      return res.redirect('/projects');
+
+    // Update project info
+    var conditions = {'_id': req.query.id};
+    var update = {$set: {
+      'description': req.body.description,
+      'size':        req.body.size,
+      'lang':        req.body.lang
+    }};
+    Projects.update(conditions, update, function (err, num) {
+      console.log("* Owner made changes to " + req.query.id);
+      res.redirect('/project?id=' + req.query.id);
+    });
+  }
 };
 
 

@@ -57,10 +57,9 @@ block content
         - if (user && user.faved)
           a(href="/projects/unfollow?id=" + project._id)
             input.btn.btn-success(type='submit', value='UnFollow', disabled).idea-desc-buttom-btn
-        - if (user && cuser && user.user_name == cuser.user_name)
-          br
-          form(method='post', action='/projects/remove?id=' + project._id)
-            input.btn.btn-danger(id='rmv', type='submit', value='Remove project', onclick="return ideaDelete(this.rmv)")
+        - if (user && project.user_name == user.user_name && currentUrl == '/project')
+          a(href="/project/settings?id=" + project._id)
+            input.btn.btn-success(type='submit', value='Edit').idea-desc-buttom-btn
 
 
       .spacer
@@ -68,53 +67,86 @@ block content
 
   #content
     .left
-      - if (comments && comments.length != 0)
-        - each c in comments
-          if (c.flags.length < 10)
-            .comment-long
-              a(href='/' + c.user_name)= c.user_name + ": "
-              = c.content
-              .comment-bottom
-                .upvotes(id="#{c._id}#")= c.upvotes.length
-                - if (c.upvote)
-                  .upvoted(id="#{c._id}")
-                - else
-                  .upvote(id="#{c._id}")
-                - if (c.flag)
-                  .flagged(id="#{c._id}f")
-                - else
-                  .flag(id="#{c._id}f")
-                | Posted #{c.date_f}
-          - else
-            .comment-long(id="#{c._id}_com")
-              a(href='/' + c.user_name)= c.user_name + ": "
-              = "This comment received too many flags. Click "
-                a(href='#', class='show_comment', id='#{c.id}') here
-                = ' to see comment.'
-            .hidden_comment(id="#{c._id}_comm")
-              a(href='/' + c.user_name)= c.user_name + ": "
-              = c.content
-              .comment-bottom
-                .upvotes(id="#{c._id}#")= c.upvotes.length
-                - if (c.upvote)
-                  .upvoted(id="#{c._id}")
-                - else
-                  .upvote(id="#{c._id}")
-                - if (c.flag)
-                  .flagged(id="#{c._id}f")
-                - else
-                  .flag(id="#{c._id}f")
-                | Posted #{c.date_f}.
 
-      - else
-        h1 Be the first one to comment.
+      - if (currentUrl == '/project/settings')
+        h3 Edit your project
+        form(method='post', action='/projects/edit?id=' + project._id)
+          label Project Size
+          select.selectpicker.span5(name='size')
+            option Small
+            option Medium
+            option Large
 
-      - if (everyauth.loggedIn)
-        .comment-long
-          form(method='post', action='/projects/comment?id=' + project._id)
-            img(src=user.avatar_url, width="60px", height="60px")
-            textarea.span10(name='content', style="margin:10px 0px 10px 5px")
-            input.btn.btn-success(type='submit', value='Comment')
+          label Used language
+          select.selectpicker.span5(name='lang')
+            option C/C++
+            option C#
+            option F#
+            option Java
+            option Javascript
+            option Objective-C
+            option PHP
+            option Python
+            option Ruby
+            option Other
 
-  .spacer
+          label Description
+          textarea.span8(name='description', id='no_resize_textarea', rows="4")= project.description
+          br
+          input.btn.btn-success(id='plan', type='submit', value='Update')
+
+        br
+        h3 Remove your project
+        form(method='post', action='/projects/remove?id=' + project._id)
+          input.btn.btn-danger(id='rmv', type='submit', value='Remove project', onclick="return ideaDelete(this.rmv)")
+
+      - else if (currentUrl == '/project')
+        - if (comments && comments.length != 0)
+          - each c in comments
+            if (c.flags.length < 10)
+              .comment-long
+                a(href='/' + c.user_name)= c.user_name + ": "
+                = c.content
+                .comment-bottom
+                  .upvotes(id="#{c._id}#")= c.upvotes.length
+                  - if (c.upvote)
+                    .upvoted(id="#{c._id}")
+                  - else
+                    .upvote(id="#{c._id}")
+                  - if (c.flag)
+                    .flagged(id="#{c._id}f")
+                  - else
+                    .flag(id="#{c._id}f")
+                  | Posted #{c.date_f}
+            - else
+              .comment-long(id="#{c._id}_com")
+                a(href='/' + c.user_name)= c.user_name + ": "
+                = "This comment received too many flags. Click "
+                  a(href='#', class='show_comment', id='#{c.id}') here
+                  = ' to see comment.'
+              .hidden_comment(id="#{c._id}_comm")
+                a(href='/' + c.user_name)= c.user_name + ": "
+                = c.content
+                .comment-bottom
+                  .upvotes(id="#{c._id}#")= c.upvotes.length
+                  - if (c.upvote)
+                    .upvoted(id="#{c._id}")
+                  - else
+                    .upvote(id="#{c._id}")
+                  - if (c.flag)
+                    .flagged(id="#{c._id}f")
+                  - else
+                    .flag(id="#{c._id}f")
+                  | Posted #{c.date_f}.
+
+        - else
+          h1 Be the first one to comment.
+
+        - if (everyauth.loggedIn)
+          .comment-long
+            form(method='post', action='/projects/comment?id=' + project._id)
+              img(src=user.avatar_url, width="60px", height="60px")
+              textarea.span10(name='content', style="margin:10px 0px 10px 5px")
+              input.btn.btn-success(type='submit', value='Comment')
+
   .spacer

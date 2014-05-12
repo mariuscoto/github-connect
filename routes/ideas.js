@@ -340,6 +340,7 @@ exports.join = function(req, res) {
 Edit idea info.
 */
 exports.edit = function(req, res) {
+  if (!req.query.id) return res.redirect('/ideas');
 
   Ideas.findOne({'_id': req.query.id}).exec(gotIdea);
 
