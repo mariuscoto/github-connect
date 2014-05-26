@@ -12,6 +12,10 @@ block content
       #idea-description
         h5!= challenge.description
 
+      p= "Start date: " + challenge.start_f
+      p= "End date: " + challenge.end_f
+      p= challenge.interval
+
       #idea-tags
         - each a in challenge.admins
           p= a
@@ -21,10 +25,27 @@ block content
       .spacer
 
   #content
-    - if (currentUrl == "/challenges/" + challenge.link)
-      .left
+    .left
+      - if (currentUrl == '/challenges/' + challenge.link)
         h2 Info
         p Info about challenge goes here.
+
+      - if (currentUrl == '/challenges/' + challenge.link + '/admin')
+        h2 Settings
+        form(method='post', action='/challenges/' + challenge.link + '/edit')
+          label Name
+          input.span5(name='name', type='text', value='#{challenge.name}', required)
+
+          label Description
+          textarea.span7(name='description', id='no_resize_textarea', rows='4')= challenge.description
+
+          label= "Start / End date (DD/MM/YYYY): "
+          input.span2.datepicker(name='start', type='text', value='#{challenge.start_f}')
+          = " / "
+          input.span2.datepicker(name='end', type='text', value='#{challenge.end_f}')
+
+          br
+          input.btn.btn-success(type='submit', value='Save')
 
     .right
       .submenu

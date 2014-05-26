@@ -119,6 +119,8 @@ app.get('/challenges', challenge.index);
 app.get('/challenges/add', ensureAuth, challenge.admin);
 app.post('/challenges/add', ensureAuth, challenge.add);
 app.get('/challenges/:ch', challenge.one);
+app.get('/challenges/:ch/admin', challenge.one);
+app.post('/challenges/:ch/edit', challenge.edit);
 
 /*
 This handles all other URLs.

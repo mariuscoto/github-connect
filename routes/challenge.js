@@ -45,6 +45,10 @@ exports.one = function(req, res) {
   }
 
   function gotChallenge(err, ch) {
+    // Formate dates
+    ch.start_f = "" + ch.start.getUTCDate() + "/" + (ch.start.getUTCMonth()+1) + "/" + ch.start.getUTCFullYear();
+    ch.end_f = "" + ch.end.getUTCDate() + "/" + (ch.end.getUTCMonth()+1) + "/" + ch.end.getUTCFullYear();
+
     res.render('challenge', {
       user:       _self.user,
       currentUrl: req.path,
@@ -94,4 +98,27 @@ exports.add = function(req, res) {
     console.log("* Challenge " + req.body.name + " saved.");
     res.redirect('/challenges');
   }
+};
+
+/*
+Edit challenge info and redirect to new link.
+*/
+exports.edit = function(req, res) {
+  // Redirect if user not in admin list
+
+
+  // Update challenge info
+  var pattern = /(\d{2})\/(\d{2})\/(\d{4})/;
+  var conditions = {'link': req.params.ch};
+  var update = {$set: {
+    'name':        req.body.name,
+    'link':        req.body.name.replace(/\s+/g, ''),
+    'description': req.body.description,
+    'start':       new Date(req.body.start.replace(pattern, '$3-$2-$1')),
+    'end':         new Date(req.body.end.replace(pattern, '$3-$2-$1'))
+  }};
+  Challenges.update(conditions, update, function (err, num) {
+    console.log("* Owner made changes to challenge " + req.body.name);
+    res.redirect('/challenges/' + req.body.name.replace(/\s+/g, '') + '/admin');
+  });
 };
