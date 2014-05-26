@@ -107,7 +107,10 @@ var Challenges = new Schema({
 var Pulls = new Schema({
   challenge:    String,
   auth:         String,
-  created:      {type: Date, default: null}
+  url:          {type: String, default: null},
+  title:        {type: String, default: null},
+  created:      {type: Date, default: null},
+  merged:       {type: Date, default: null}
 });
 
 mongoose.model( 'Users', Users );

@@ -15,6 +15,7 @@ block content
       p= "Start date: " + challenge.start_f
       p= "End date: " + challenge.end_f
       p= challenge.interval
+      p= "Users count: " + challenge.users.length
 
       #idea-tags
         - each a in challenge.admins
@@ -31,7 +32,10 @@ block content
       - if (currentUrl == '/challenges/' + challenge.link)
         h2 Info
         - each p in pulls
+          p= p.auth
+          a(href='#{p.url}')= p.title
           p= p.created
+          p= p.merged
 
       - if (currentUrl == '/challenges/' + challenge.link + '/admin')
         h2 Settings
@@ -77,7 +81,7 @@ block content
         - else
           a(href='/challenges/' + challenge.link + '/users')
             .submenu-item Participants
-        - if (user.admin)
+        - if (user && user.admin)
           - if (currentUrl == '/challenges/' + challenge.link + '/admin')
             .submenu-item-selected Admin
           - else

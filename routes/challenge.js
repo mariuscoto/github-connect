@@ -35,9 +35,6 @@ Single challenge page.
 */
 exports.one = function(req, res) {
   var uid = ((req.session.auth) ? req.session.auth.github.user.id : null);
-  // Do not allow regular users to acces admin tab
-  if (req.path.substring(req.path.lastIndexOf('/')) == '/admin')
-    return res.redirect('/challenges/' + req.params.ch);
 
   var _self = {};
   var preq = [];
@@ -57,7 +54,10 @@ exports.one = function(req, res) {
       ch.end_f = "" + ch.end.getUTCDate() + "/" + (ch.end.getUTCMonth()+1) + "/" + ch.end.getUTCFullYear();
 
     // Check if current user is admin
-    if (ch.admins.indexOf(req.session.auth.github.user.login) > -1) _self.user.admin = 1;
+    if (uid && ch.admins.indexOf(req.session.auth.github.user.login) > -1)
+      _self.user.admin = 1;
+    else if (req.path.substring(req.path.lastIndexOf('/')) == '/admin')
+      return res.redirect('/challenges/' + req.params.ch);
 
     res.render('challenge', {
       user:       _self.user,
@@ -232,7 +232,10 @@ exports.refresh = function(req, res) {
 
             var update = {$addToSet: { 'pulls': {
               auth:      pulls[p].user.login,
-              created:   new Date(pulls[p].created_at)
+              url:       pulls[p].html_url,
+              title:     pulls[p].title,
+              created:   new Date(pulls[p].created_at),
+              merged:    new Date(pulls[p].merged_at)
             }}};
 
             Challenges.update({'link': req.params.ch}, update).exec();
