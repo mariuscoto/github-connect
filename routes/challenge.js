@@ -129,6 +129,22 @@ exports.edit = function(req, res) {
 };
 
 /*
+Join challenge.
+*/
+exports.join = function(req, res) {
+
+  Challenges.findOne({'link': req.params.ch}).exec(gotChallenge);
+
+  function gotChallenge(err, ch) {
+    var conditions = {'link': req.params.ch};
+    var update = {$addToSet: {'users': req.session.auth.github.user.login}};
+    Challenges.update(conditions, update, function (err, num) {
+      res.redirect('/challenges/' + req.params.ch);
+    });
+  }
+};
+
+/*
 Add new admin to list.
 Only admins can add other admins.
 */
@@ -180,7 +196,7 @@ exports.refresh = function(req, res) {
   Challenges.findOne({'link': req.params.ch}).exec(gotChallenge);
 
   function gotChallenge(err, ch) {
-    if (!ch) return res.redirect('/challenges');
+    if (!ch || !ch.start) return res.redirect('/challenges');
 
     var options = {
       host: "api.github.com",
@@ -196,8 +212,11 @@ exports.refresh = function(req, res) {
         var pulls = JSON.parse(body);
 
         for (var p in pulls) {
-          // accept only pulls created after challenge start date
-          if (new Date(pulls[p].created_at).getTime() > ch.start.getTime()) {
+          // Accept only pulls created after challenge start date and only
+          // from registered users
+          if (new Date(pulls[p].created_at).getTime() > ch.start.getTime() &&
+              ch.users.indexOf(pulls[p].user.login) > -1) {
+
             var update = {$addToSet: { 'pulls': {
               auth:      pulls[p].user.login,
               created:   new Date(pulls[p].created_at)

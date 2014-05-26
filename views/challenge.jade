@@ -23,6 +23,7 @@ block content
       .spacer
       #idea-desc-buttom
         a(href='/challenges/' + challenge.link + '/refresh') Refresh
+      a(href='/challenges/' + challenge.link + '/join') Join
       .spacer
 
   #content
@@ -58,6 +59,12 @@ block content
           br
           input.btn.btn-success(type='submit', value='Add admin')
 
+      - if (currentUrl == '/challenges/' + challenge.link + '/users')
+        h2 Participants
+        - each u in challenge.users
+          p= u
+
+
     .right
       .submenu
         - if (currentUrl == "/challenges/" + challenge.link)
@@ -65,6 +72,11 @@ block content
         - else
           a(href='/challenges/' + challenge.link)
             .submenu-item Info
+        - if (currentUrl == "/challenges/" + challenge.link + '/users')
+          .submenu-item-selected Participants
+        - else
+          a(href='/challenges/' + challenge.link + '/users')
+            .submenu-item Participants
         - if (currentUrl == '/challenges/' + challenge.link + '/admin')
           .submenu-item-selected Admin
         - else

@@ -99,8 +99,9 @@ var Challenges = new Schema({
   description:  {type: String, default: null},
   start:        {type: Date, default: null},
   end:          {type: Date, default: null},
+  users:        {type:[String], default: []},
   admins:       [String],
-  pulls:        [Pulls]
+  pulls:        [Pulls],
 });
 
 var Pulls = new Schema({
