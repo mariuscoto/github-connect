@@ -35,6 +35,10 @@ Single challenge page.
 */
 exports.one = function(req, res) {
   var uid = ((req.session.auth) ? req.session.auth.github.user.id : null);
+  // Do not allow regular users to acces admin tab
+  if (req.path.substring(req.path.lastIndexOf('/')) == '/admin')
+    return res.redirect('/challenges/' + req.params.ch);
+
   var _self = {};
   var preq = [];
 
@@ -42,7 +46,6 @@ exports.one = function(req, res) {
 
   function gotUser(err, user) {
     _self.user = user;
-
     Challenges.findOne({'link': req.params.ch}).exec(gotChallenge);
   }
 
@@ -52,6 +55,9 @@ exports.one = function(req, res) {
       ch.start_f = "" + ch.start.getUTCDate() + "/" + (ch.start.getUTCMonth()+1) + "/" + ch.start.getUTCFullYear();
     if (ch.end)
       ch.end_f = "" + ch.end.getUTCDate() + "/" + (ch.end.getUTCMonth()+1) + "/" + ch.end.getUTCFullYear();
+
+    // Check if current user is admin
+    if (ch.admins.indexOf(req.session.auth.github.user.login) > -1) _self.user.admin = 1;
 
     res.render('challenge', {
       user:       _self.user,
@@ -107,25 +113,32 @@ exports.add = function(req, res) {
 
 /*
 Edit challenge info and redirect to new link.
+Redirect if user not in admin list
 */
 exports.edit = function(req, res) {
-  // Redirect if user not in admin list
 
+  Challenges.findOne({'link': req.params.ch}).exec(gotChallenge);
 
-  // Update challenge info
-  var pattern = /(\d{2})\/(\d{2})\/(\d{4})/;
-  var conditions = {'link': req.params.ch};
-  var update = {$set: {
-    'name':        req.body.name,
-    'link':        req.body.name.replace(/\s+/g, ''),
-    'description': req.body.description,
-    'start':       new Date(req.body.start.replace(pattern, '$3-$2-$1')),
-    'end':         new Date(req.body.end.replace(pattern, '$3-$2-$1'))
-  }};
-  Challenges.update(conditions, update, function (err, num) {
-    console.log("* Owner made changes to challenge " + req.body.name);
-    res.redirect('/challenges/' + req.body.name.replace(/\s+/g, '') + '/admin');
-  });
+  function gotChallenge(err, ch) {
+    // Check if user is admin
+    if (ch.admins.indexOf(req.session.auth.github.user.login) < 0)
+      return res.redirect('/challenges/' + req.params.ch);
+
+    // Update challenge info
+    var pattern = /(\d{2})\/(\d{2})\/(\d{4})/;
+    var conditions = {'link': req.params.ch};
+    var update = {$set: {
+      'name':        req.body.name,
+      'link':        req.body.name.replace(/\s+/g, ''),
+      'description': req.body.description,
+      'start':       new Date(req.body.start.replace(pattern, '$3-$2-$1')),
+      'end':         new Date(req.body.end.replace(pattern, '$3-$2-$1'))
+    }};
+    Challenges.update(conditions, update, function (err, num) {
+      console.log("* Owner made changes to challenge " + req.body.name);
+      res.redirect('/challenges/' + req.body.name.replace(/\s+/g, '') + '/admin');
+    });
+  }
 };
 
 /*

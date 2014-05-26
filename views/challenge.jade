@@ -77,10 +77,11 @@ block content
         - else
           a(href='/challenges/' + challenge.link + '/users')
             .submenu-item Participants
-        - if (currentUrl == '/challenges/' + challenge.link + '/admin')
-          .submenu-item-selected Admin
-        - else
-          a(href='/challenges/' + challenge.link + '/admin')
-            .submenu-item Admin
+        - if (user.admin)
+          - if (currentUrl == '/challenges/' + challenge.link + '/admin')
+            .submenu-item-selected Admin
+          - else
+            a(href='/challenges/' + challenge.link + '/admin')
+              .submenu-item Admin
 
   .spacer
