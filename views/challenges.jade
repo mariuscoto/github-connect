@@ -1,0 +1,11 @@
+extends layout
+
+block content
+  h1= title
+
+  - each c in challenges
+    a(href='/challenges/' + c.link)= c.name
+    p= c.description
+    ul
+      - each a in c.admins
+        li= a

@@ -1,0 +1,42 @@
+extends layout
+
+block content
+
+  #menu
+    #idea-desc
+      #idea-desc-top
+        #idea-desc-top-title= challenge.name
+
+
+      .spacer
+      #idea-description
+        h5!= challenge.description
+
+      #idea-tags
+        - each a in challenge.admins
+          p= a
+
+      .spacer
+      #idea-desc-buttom
+      .spacer
+
+  #content
+    - if (currentUrl == "/challenges/" + challenge.link)
+      .left
+        h2 Info
+        p Info about challenge goes here.
+
+    .right
+      .submenu
+        - if (currentUrl == "/challenges/" + challenge.link)
+          .submenu-item-selected Info
+        - else
+          a(href='/challenges/' + challenge.link)
+            .submenu-item Info
+        - if (currentUrl == '/challenges/' + challenge.link + '/admin')
+          .submenu-item-selected Admin
+        - else
+          a(href='/challenges/' + challenge.link + '/admin')
+            .submenu-item Admin
+
+  .spacer

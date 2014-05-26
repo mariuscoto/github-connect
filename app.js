@@ -114,6 +114,12 @@ app.post('/project/upvote', ensureAuth, projects.upvote);
 app.post('/project/flag', ensureAuth, projects.flag);
 app.post('/projects/remove', ensureAuth, projects.remove);
 
+var challenge = require('./routes/challenge.js');
+app.get('/challenges', challenge.index);
+app.get('/challenges/add', ensureAuth, challenge.admin);
+app.post('/challenges/add', ensureAuth, challenge.add);
+app.get('/challenges/:ch', challenge.one);
+
 /*
 This handles all other URLs.
 It's main porpose is to serve /user pages and all subpages

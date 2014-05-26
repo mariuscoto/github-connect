@@ -93,6 +93,13 @@ var Notifications = new Schema({
   msg:  {type: String, default: null}
 });
 
+var Challenges = new Schema({
+  name:         String,
+  link:         {type: String, default: null},
+  description:  {type: String, default: null},
+  admins:       [String]
+});
+
 mongoose.model( 'Users', Users );
 mongoose.model( 'Projects', Projects );
 mongoose.model( 'Ideas', Ideas );
@@ -100,6 +107,7 @@ mongoose.model( 'IdeaComments', IdeaComments );
 mongoose.model( 'ProjectComments', ProjectComments );
 mongoose.model( 'Repo', Repo );
 mongoose.model( 'Notifications', Notifications );
+mongoose.model( 'Challenges', Challenges );
 
 
 if (global.config.status == 'dev')
