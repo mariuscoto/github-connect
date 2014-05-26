@@ -123,6 +123,7 @@ app.get('/challenges/:ch/admin', challenge.one);
 app.post('/challenges/:ch/edit', challenge.edit);
 app.post('/challenges/:ch/admin_add', ensureAuth, challenge.admin_add);
 app.get('/challenges/:ch/admin_remove', ensureAuth, challenge.admin_remove);
+app.get('/challenges/:ch/refresh', challenge.refresh);
 
 /*
 This handles all other URLs.

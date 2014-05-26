@@ -99,7 +99,14 @@ var Challenges = new Schema({
   description:  {type: String, default: null},
   start:        {type: Date, default: null},
   end:          {type: Date, default: null},
-  admins:       [String]
+  admins:       [String],
+  pulls:        [Pulls]
+});
+
+var Pulls = new Schema({
+  challenge:    String,
+  auth:         String,
+  created:      {type: Date, default: null}
 });
 
 mongoose.model( 'Users', Users );
@@ -110,6 +117,7 @@ mongoose.model( 'ProjectComments', ProjectComments );
 mongoose.model( 'Repo', Repo );
 mongoose.model( 'Notifications', Notifications );
 mongoose.model( 'Challenges', Challenges );
+mongoose.model( 'Pulls', Pulls );
 
 
 if (global.config.status == 'dev')

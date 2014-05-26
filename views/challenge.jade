@@ -22,13 +22,15 @@ block content
 
       .spacer
       #idea-desc-buttom
+        a(href='/challenges/' + challenge.link + '/refresh') Refresh
       .spacer
 
   #content
     .left
       - if (currentUrl == '/challenges/' + challenge.link)
         h2 Info
-        p Info about challenge goes here.
+        - each p in pulls
+          p= p.created
 
       - if (currentUrl == '/challenges/' + challenge.link + '/admin')
         h2 Settings

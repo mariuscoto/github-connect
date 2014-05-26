@@ -3,7 +3,8 @@ var core = require('../core.js');
 var mongoose = require('mongoose');
 var Users = mongoose.model('Users');
 var Challenges = mongoose.model('Challenges');
-
+var Pulls = mongoose.model('Pulls');
+var https = require('https');
 
 /*
 View all challenges.
@@ -35,6 +36,7 @@ Single challenge page.
 exports.one = function(req, res) {
   var uid = ((req.session.auth) ? req.session.auth.github.user.id : null);
   var _self = {};
+  var preq = [];
 
   Users.findOne({'user_id': uid}).exec(gotUser);
 
@@ -46,14 +48,17 @@ exports.one = function(req, res) {
 
   function gotChallenge(err, ch) {
     // Formate dates
-    ch.start_f = "" + ch.start.getUTCDate() + "/" + (ch.start.getUTCMonth()+1) + "/" + ch.start.getUTCFullYear();
-    ch.end_f = "" + ch.end.getUTCDate() + "/" + (ch.end.getUTCMonth()+1) + "/" + ch.end.getUTCFullYear();
+    if (ch.start)
+      ch.start_f = "" + ch.start.getUTCDate() + "/" + (ch.start.getUTCMonth()+1) + "/" + ch.start.getUTCFullYear();
+    if (ch.end)
+      ch.end_f = "" + ch.end.getUTCDate() + "/" + (ch.end.getUTCMonth()+1) + "/" + ch.end.getUTCFullYear();
 
     res.render('challenge', {
       user:       _self.user,
       currentUrl: req.path,
-      challenge:  ch
-    })
+      challenge:  ch,
+      pulls:      ch.pulls
+    });
   }
 };
 
@@ -164,5 +169,48 @@ exports.admin_remove = function(req, res) {
       console.log("* Admin removed from " + req.body.name);
       res.redirect('/challenges/' + req.params.ch + '/admin');
     });
+  }
+};
+
+/*
+Refresh pull requests for certain repo.
+*/
+exports.refresh = function(req, res) {
+
+  Challenges.findOne({'link': req.params.ch}).exec(gotChallenge);
+
+  function gotChallenge(err, ch) {
+    if (!ch) return res.redirect('/challenges');
+
+    var options = {
+      host: "api.github.com",
+      path: "/repos/cmarius02/github-connect/pulls?state=closed",
+      method: "GET",
+      headers: { "User-Agent": "github-connect" }
+    };
+
+    var request = https.request(options, function(response){
+      var body = '';
+      response.on("data", function(chunk){ body+=chunk.toString("utf8"); });
+      response.on("end", function(){
+        var pulls = JSON.parse(body);
+
+        for (var p in pulls) {
+          // accept only pulls created after challenge start date
+          if (new Date(pulls[p].created_at).getTime() > ch.start.getTime()) {
+            var update = {$addToSet: { 'pulls': {
+              auth:      pulls[p].user.login,
+              created:   new Date(pulls[p].created_at)
+            }}};
+
+            Challenges.update({'link': req.params.ch}, update).exec();
+          }
+        }
+        //console.log(pulls);
+
+      });
+    });
+    request.end();
+    res.redirect('/challenges/' + ch.link);
   }
 };
