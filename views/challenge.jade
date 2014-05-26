@@ -47,6 +47,15 @@ block content
           br
           input.btn.btn-success(type='submit', value='Save')
 
+        h2 Admins
+        - each a in challenge.admins
+          p= a + " "
+            a(href='/challenges/' + challenge.link + '/admin_remove?name=' + a) Remove
+        form(method='post', action='/challenges/' + challenge.link + '/admin_add')
+          input.span5(name='admin', type='text', required)
+          br
+          input.btn.btn-success(type='submit', value='Add admin')
+
     .right
       .submenu
         - if (currentUrl == "/challenges/" + challenge.link)

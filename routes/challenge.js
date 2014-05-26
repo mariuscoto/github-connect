@@ -41,7 +41,7 @@ exports.one = function(req, res) {
   function gotUser(err, user) {
     _self.user = user;
 
-    Challenges.findOne({'link': req.params.ch}).exec(gotChallenge);;
+    Challenges.findOne({'link': req.params.ch}).exec(gotChallenge);
   }
 
   function gotChallenge(err, ch) {
@@ -121,4 +121,48 @@ exports.edit = function(req, res) {
     console.log("* Owner made changes to challenge " + req.body.name);
     res.redirect('/challenges/' + req.body.name.replace(/\s+/g, '') + '/admin');
   });
+};
+
+/*
+Add new admin to list.
+Only admins can add other admins.
+*/
+exports.admin_add = function(req, res) {
+
+  Challenges.findOne({'link': req.params.ch}).exec(gotChallenge);
+
+  function gotChallenge(err, ch) {
+    // Check if user is admin
+    if (ch.admins.indexOf(req.session.auth.github.user.login) < 0)
+      return res.redirect('/challenges/' + req.params.ch);
+
+    var conditions = {'link': req.params.ch};
+    var update = {$addToSet: {'admins': req.body.admin}};
+    Challenges.update(conditions, update, function (err, num) {
+      console.log("* New admin added to " + req.body.name);
+      res.redirect('/challenges/' + req.params.ch + '/admin');
+    });
+  }
+};
+
+/*
+Remove admin. Only admins can remove other admins.
+An admin can remove himself.
+*/
+exports.admin_remove = function(req, res) {
+
+  Challenges.findOne({'link': req.params.ch}).exec(gotChallenge);
+
+  function gotChallenge(err, ch) {
+    // Check if user is admin
+    if (ch.admins.indexOf(req.session.auth.github.user.login) < 0)
+      return res.redirect('/challenges/' + req.params.ch);
+
+    var conditions = {'link': req.params.ch};
+    var update = {$pull: {'admins': req.query.name}};
+    Challenges.update(conditions, update, function (err, num) {
+      console.log("* Admin removed from " + req.body.name);
+      res.redirect('/challenges/' + req.params.ch + '/admin');
+    });
+  }
 };
