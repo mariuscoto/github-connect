@@ -59,6 +59,16 @@ exports.one = function(req, res) {
     else if (req.path.substring(req.path.lastIndexOf('/')) == '/admin')
       return res.redirect('/challenges/' + req.params.ch);
 
+    // Get number on merged pull req
+    ch.merged = 0, ch.created = 0;
+    for (var i in ch.pulls) {
+      if (ch.pulls[i].merged && ch.pulls[i].auth) {
+        ch.merged++;
+      } else if (ch.pulls[i].created && ch.pulls[i].auth) {
+        ch.created++;
+      }
+    }
+
     res.render('challenge', {
       user:       _self.user,
       currentUrl: req.path,
@@ -216,7 +226,7 @@ exports.refresh = function(req, res) {
 
     var options = {
       host: "api.github.com",
-      path: "/repos/cmarius02/github-connect/pulls?state=closed",
+      path: "/repos/" + ch.repos[1] + "/pulls?state=all",
       method: "GET",
       headers: { "User-Agent": "github-connect" }
     };
@@ -228,17 +238,24 @@ exports.refresh = function(req, res) {
         var pulls = JSON.parse(body);
 
         for (var p in pulls) {
-          // Accept only pulls created after challenge start date and only
-          // from registered users
+          // Accept only pulls created after challenge start date, before end
+          // date and only from registered users
           if (new Date(pulls[p].created_at).getTime() > ch.start.getTime() &&
+              new Date(pulls[p].created_at).getTime() < ch.end.getTime() &&
               ch.users.indexOf(pulls[p].user.login) > -1) {
+
+            // Check if merge date exists
+            var merge_date;
+
+            if (!pulls[p].merged_at) merge_date = null;
+            else merge_date = new Date(pulls[p].merged_at);
 
             var update = {$addToSet: { 'pulls': {
               auth:      pulls[p].user.login,
               url:       pulls[p].html_url,
               title:     pulls[p].title,
               created:   new Date(pulls[p].created_at),
-              merged:    new Date(pulls[p].merged_at)
+              merged:    merge_date
             }}};
 
             Challenges.update({'link': req.params.ch}, update).exec();
