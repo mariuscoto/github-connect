@@ -48,10 +48,11 @@ exports.one = function(req, res) {
 
   function gotChallenge(err, ch) {
     // Formate dates
+    ch.end_f = "", ch.start_f = "";
     if (ch.start)
-      ch.start_f = "" + ch.start.getUTCDate() + "/" + (ch.start.getUTCMonth()+1) + "/" + ch.start.getUTCFullYear();
+      ch.start_f += ch.start.getUTCDate() + "/" + (ch.start.getUTCMonth()+1) + "/" + ch.start.getUTCFullYear();
     if (ch.end)
-      ch.end_f = "" + ch.end.getUTCDate() + "/" + (ch.end.getUTCMonth()+1) + "/" + ch.end.getUTCFullYear();
+      ch.end_f += ch.end.getUTCDate() + "/" + (ch.end.getUTCMonth()+1) + "/" + ch.end.getUTCFullYear();
 
     // Check if current user is admin
     if (uid && ch.admins.indexOf(req.session.auth.github.user.login) > -1)
@@ -138,11 +139,13 @@ exports.edit = function(req, res) {
     var pattern = /(\d{2})\/(\d{2})\/(\d{4})/;
     var conditions = {'link': req.params.ch};
     var update = {
-      $addToSet: {repos: req.body.repos},
+      $addToSet: {'repos': {$each: req.body.repos.split(' ')}},
       $set: {
         'name':        req.body.name,
+        'status':      req.body.status,
         'link':        req.body.name.replace(/\s+/g, ''),
         'email':       req.body.email,
+        'logo':        req.body.logo,
         'description': req.body.description,
         'start':       new Date(req.body.start.replace(pattern, '$3-$2-$1')),
         'end':         new Date(req.body.end.replace(pattern, '$3-$2-$1'))

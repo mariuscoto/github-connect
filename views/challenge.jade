@@ -17,6 +17,7 @@ block content
         p= r
       p= "Start date: " + challenge.start_f
       p= "End date: " + challenge.end_f
+      p= "Logo: " + challenge.logo
       p= challenge.email
       p= challenge.interval
       p= "Users count: " + challenge.users.length
@@ -45,16 +46,40 @@ block content
           p= p.merged
 
       - if (currentUrl == '/challenges/' + challenge.link + '/admin')
+        h2 Challenge status
+        - if (challenge.status == 'tease')
+          h5 Challenge is currently teasing. Add more info and start it.
+        - if (challenge.status == 'live')
+          h5 Challenge is currently live.
+        - if (challenge.status == 'closed')
+          h5 Challenge is closed.
+
+        .spacer
+        h2 Repository
+        - each r in challenge.repos
+          p= r
+
+        .spacer
         h2 Settings
         form(method='post', action='/challenges/' + challenge.link + '/edit')
-          label Name
+          label Challenge name
           input.span5(name='name', type='text', value='#{challenge.name}', required)
 
-          label Repository
-          input.span5(name='repos', type='text', required)
+          label Challenge status
+          select.selectpicker.span5(name='status', type='text')
+            option tease
+            option live
+            option closed
+
+          label Add repo (user/repo)
+          input.span5(name='repos', type='text')
+          p To add more, space separe items.
 
           label Contact email
-          input.span5(name='email', type='text', value='#{challenge.email}', required)
+          input.span5(name='email', type='text', value='#{challenge.email}')
+
+          label Logo
+          input.span5(name='logo', type='text', value='#{challenge.logo}')
 
           label Description
           textarea.span7(name='description', id='no_resize_textarea', rows='4')= challenge.description
@@ -67,7 +92,8 @@ block content
           br
           input.btn.btn-success(type='submit', value='Save')
 
-        h2 Admins
+        .spacer
+        h2 Manage admins
         - each a in challenge.admins
           p= a + " "
             a(href='/challenges/' + challenge.link + '/admin_remove?name=' + a) Remove
