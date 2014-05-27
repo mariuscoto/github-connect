@@ -127,12 +127,15 @@ exports.edit = function(req, res) {
     // Update challenge info
     var pattern = /(\d{2})\/(\d{2})\/(\d{4})/;
     var conditions = {'link': req.params.ch};
-    var update = {$set: {
-      'name':        req.body.name,
-      'link':        req.body.name.replace(/\s+/g, ''),
-      'description': req.body.description,
-      'start':       new Date(req.body.start.replace(pattern, '$3-$2-$1')),
-      'end':         new Date(req.body.end.replace(pattern, '$3-$2-$1'))
+    var update = {
+      $addToSet: {repos: req.body.repos},
+      $set: {
+        'name':        req.body.name,
+        'link':        req.body.name.replace(/\s+/g, ''),
+        'email':       req.body.email,
+        'description': req.body.description,
+        'start':       new Date(req.body.start.replace(pattern, '$3-$2-$1')),
+        'end':         new Date(req.body.end.replace(pattern, '$3-$2-$1'))
     }};
     Challenges.update(conditions, update, function (err, num) {
       console.log("* Owner made changes to challenge " + req.body.name);

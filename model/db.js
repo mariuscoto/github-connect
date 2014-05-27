@@ -96,6 +96,8 @@ var Notifications = new Schema({
 var Challenges = new Schema({
   name:         String,
   link:         {type: String, default: null},
+  email:        {type: String, default: null},
+  repos:        {type: [String], default: null},
   description:  {type: String, default: null},
   start:        {type: Date, default: null},
   end:          {type: Date, default: null},

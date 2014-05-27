@@ -12,10 +12,15 @@ block content
       #idea-description
         h5!= challenge.description
 
+
+      - each r in challenge.repos
+        p= r
       p= "Start date: " + challenge.start_f
       p= "End date: " + challenge.end_f
+      p= challenge.email
       p= challenge.interval
       p= "Users count: " + challenge.users.length
+
 
       #idea-tags
         - each a in challenge.admins
@@ -42,6 +47,12 @@ block content
         form(method='post', action='/challenges/' + challenge.link + '/edit')
           label Name
           input.span5(name='name', type='text', value='#{challenge.name}', required)
+
+          label Repository
+          input.span5(name='repos', type='text', required)
+
+          label Contact email
+          input.span5(name='email', type='text', value='#{challenge.email}', required)
 
           label Description
           textarea.span7(name='description', id='no_resize_textarea', rows='4')= challenge.description
