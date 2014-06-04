@@ -125,6 +125,7 @@ app.post('/challenges/:ch/admin_add', ensureAuth, challenge.admin_add);
 app.get('/challenges/:ch/admin_remove', ensureAuth, challenge.admin_remove);
 app.get('/challenges/:ch/refresh', challenge.refresh);
 app.get('/challenges/:ch/users', challenge.one);
+app.get('/challenges/:ch/pulls', challenge.one);
 app.get('/challenges/:ch/join', ensureAuth, challenge.join);
 
 /*

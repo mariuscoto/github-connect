@@ -13,18 +13,6 @@ block content
         h5!= challenge.description
 
 
-      - each r in challenge.repos
-        p= r
-      p= "Start date: " + challenge.start_f
-      p= "End date: " + challenge.end_f
-      p= "Logo: " + challenge.logo
-      p= challenge.email
-      p= challenge.interval
-      p= "Users count: " + challenge.users.length
-      p= "Created pulls: " + challenge.created
-      p= "Merged pulls: " + challenge.merged
-
-
       #idea-tags
         - each a in challenge.admins
           p= a
@@ -38,7 +26,19 @@ block content
   #content
     .left
       - if (currentUrl == '/challenges/' + challenge.link)
-        h2 Info
+        - each r in challenge.repos
+          p= r
+        p= "Start date: " + challenge.start_f
+        p= "End date: " + challenge.end_f
+        p= "Logo: " + challenge.logo
+        p= challenge.email
+        p= challenge.interval
+        p= "Users count: " + challenge.users.length
+        p= "Created pulls: " + challenge.created
+        p= "Merged pulls: " + challenge.merged
+
+      - if (currentUrl == '/challenges/' + challenge.link + '/pulls')
+        h2 List of pull requests
         - each p in pulls
           p= p.auth
           a(href='#{p.url}')= p.title
@@ -111,10 +111,15 @@ block content
     .right
       .submenu
         - if (currentUrl == "/challenges/" + challenge.link)
-          .submenu-item-selected Info
+          .submenu-item-selected About
         - else
           a(href='/challenges/' + challenge.link)
-            .submenu-item Info
+            .submenu-item About
+        - if (currentUrl == "/challenges/" + challenge.link + '/pulls')
+          .submenu-item-selected Commits
+        - else
+          a(href='/challenges/' + challenge.link + '/pulls')
+            .submenu-item Commits
         - if (currentUrl == "/challenges/" + challenge.link + '/users')
           .submenu-item-selected Participants
         - else
