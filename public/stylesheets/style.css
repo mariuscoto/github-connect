@@ -906,7 +906,7 @@ a:hover {
 
 .card {
     width: 920px;
-    height: 190px;
+    min-height: 190px;
     padding: 20px;
     background: #f3f3f3;
     margin: 20px auto 10px;
@@ -1027,4 +1027,15 @@ a:hover {
 
 .hidden_comment {
         display:none;
+}
+
+
+/* Challenges styles */
+.card-ch-right {
+    float: right;
+}
+
+.card-ch-bottom {
+    clear: both;
+    color: #999;
 }
