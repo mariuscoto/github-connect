@@ -49,10 +49,16 @@ exports.one = function(req, res) {
   function gotChallenge(err, ch) {
     // Formate dates
     ch.end_f = "", ch.start_f = "";
-    if (ch.start)
-      ch.start_f += ch.start.getUTCDate() + "/" + (ch.start.getUTCMonth()+1) + "/" + ch.start.getUTCFullYear();
-    if (ch.end)
-      ch.end_f += ch.end.getUTCDate() + "/" + (ch.end.getUTCMonth()+1) + "/" + ch.end.getUTCFullYear();
+    if (ch.start) {
+      ch.start_f += ("0" + ch.start.getUTCDate()).slice(-2) + "/";
+      ch.start_f += ("0" + (ch.start.getUTCMonth()+1)).slice(-2) + "/";
+      ch.start_f += ch.start.getUTCFullYear();
+    }
+    if (ch.end) {
+      ch.end_f += ("0" + ch.end.getUTCDate()).slice(-2) + "/";
+      ch.end_f += ("0" + (ch.end.getUTCMonth()+1)).slice(-2) + "/";
+      ch.end_f += ch.end.getUTCFullYear();
+    }
 
     // Check if current user is admin
     if (uid && ch.admins.indexOf(req.session.auth.github.user.login) > -1)
