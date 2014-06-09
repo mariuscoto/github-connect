@@ -5,6 +5,7 @@ var Users = mongoose.model('Users');
 var Challenges = mongoose.model('Challenges');
 var Pulls = mongoose.model('Pulls');
 var https = require('https');
+var markdown = require( "markdown" ).markdown;
 
 /*
 View all challenges.
@@ -47,6 +48,8 @@ exports.one = function(req, res) {
   }
 
   function gotChallenge(err, ch) {
+    if (!ch) return res.render('404', {title: "404: File not found"});
+
     // Formate dates
     ch.end_f = "", ch.start_f = "";
     if (ch.start) {
@@ -59,6 +62,10 @@ exports.one = function(req, res) {
       ch.end_f += ("0" + (ch.end.getUTCMonth()+1)).slice(-2) + "/";
       ch.end_f += ch.end.getUTCFullYear();
     }
+
+    // Markdown description and about section
+    ch.description_mk = markdown.toHTML(ch.description);
+    ch.about_mk = markdown.toHTML(ch.about);
 
     // Check if current user is admin
     if (uid && ch.admins.indexOf(req.session.auth.github.user.login) > -1)
@@ -183,11 +190,16 @@ exports.edit = function(req, res) {
     if (ch.admins.indexOf(req.session.auth.github.user.login) < 0)
       return res.redirect('/challenges/' + req.params.ch);
 
+    // Check if no repos specified (remove empty string)
+    var split = [];
+    if (req.body.repos == "") req.body.repos = null;
+    else split = req.body.repos.split(' ');
+
     // Update challenge info
     var pattern = /(\d{2})\/(\d{2})\/(\d{4})/;
     var conditions = {'link': req.params.ch};
     var update = {
-      $addToSet: {'repos': {$each: req.body.repos.split(' ')}},
+      $addToSet: {'repos': {$each: split}},
       $set: {
         'name':        req.body.name,
         'status':      req.body.status,

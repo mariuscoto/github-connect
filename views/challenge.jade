@@ -23,7 +23,7 @@ block content
           img(src='#{challenge.logo}', width='150px', max-height='300px')
 
       #idea-description
-        h5!= challenge.description
+        p!= challenge.description_mk
 
       #idea-tags
         - each a in challenge.admins
@@ -70,7 +70,7 @@ block content
 
         h2 About
         - if (challenge.about)
-          p= challenge.about
+          p!= challenge.about_mk
         - else
           | No other information about this repo or organisation.
         .spacer
@@ -132,6 +132,7 @@ block content
 
           label About project/repo
           textarea.span7(name='about', rows='4')= challenge.about
+          p *Use markdown to style content.
 
           label Contact email
           input.span5(name='email', type='text', value='#{challenge.email}')
@@ -141,6 +142,7 @@ block content
 
           label Description
           textarea.span9(name='description', rows='6')= challenge.description
+          p *Use markdown to style content.
 
           label= "Start / End date (DD/MM/YYYY): "
           input.span2.datepicker(name='start', type='text', value='#{challenge.start_f}')
