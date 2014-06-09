@@ -40,25 +40,42 @@ block content
     .left
       - if (currentUrl == '/challenges/' + challenge.link)
         h2 Repositories
-        - if (challenge.repos.length != 0)
-          - for (var r=0; r<challenge.repos.length; r++)
-            a(href='http://github.com/' + challenge.repos[r])= challenge.repos[r]
-            p= challenge.created_no[r] + "/" + challenge.merged_no[r]
-            br
+        - if (challenge.repos.length != 1)
+          - for (var r=1; r<challenge.repos.length; r++)
+            .ch-repo
+              .profile-repo-icon-forked
+              .ch-pull-info= "created " + challenge.created_no[r] + " -- merged " + challenge.merged_no[r]
+              a(href='http://github.com/' + challenge.repos[r])= challenge.repos[r]
+          .ch-pull-info= "* Fork the project and contribute now."
         - else
           p There are no repos set for this challenge.
+        .spacer
 
         h2 Time
-        p= "Start date: " + challenge.start_f
-        p= "End date: " + challenge.end_f
+        - if (challenge.start_f && challenge.end_f)
+          p= "Challenge starts on "
+            b= challenge.start_f
+            = " and ends on "
+            b= challenge.end_f
+            = ". Make sure you submit your pull requests on time."
+        - else
+          | Time interval not set.
         .spacer
 
         h2 About
-        p= "Info here."
+        - if (challenge.about)
+          p= challenge.about
+        - else
+          | No other information about this repo or organisation.
         .spacer
 
         h2 Contact
-        p= challenge.email
+        - if (!challenge.email)
+          | No contact infomation provided.
+        - else
+          = "Use "
+          b= challenge.email
+          = " to get in contact with the organizers."
 
       - if (currentUrl == '/challenges/' + challenge.link + '/pulls')
         h2 Pull requests
@@ -107,6 +124,9 @@ block content
           input.span5(name='repos', type='text')
           p To add more, space separe items.
 
+          label About project/repo
+          textarea.span7(name='about', rows='4')= challenge.about
+
           label Contact email
           input.span5(name='email', type='text', value='#{challenge.email}')
 
@@ -114,7 +134,7 @@ block content
           input.span5(name='logo', type='text', value='#{challenge.logo}')
 
           label Description
-          textarea.span7(name='description', id='no_resize_textarea', rows='4')= challenge.description
+          textarea.span9(name='description', rows='6')= challenge.description
 
           label= "Start / End date (DD/MM/YYYY): "
           input.span2.datepicker(name='start', type='text', value='#{challenge.start_f}')

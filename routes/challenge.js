@@ -171,6 +171,7 @@ exports.edit = function(req, res) {
         'link':        req.body.name.replace(/\s+/g, ''),
         'email':       req.body.email,
         'logo':        req.body.logo,
+        'about':       req.body.about,
         'description': req.body.description,
         'start':       new Date(req.body.start.replace(pattern, '$3-$2-$1')),
         'end':         new Date(req.body.end.replace(pattern, '$3-$2-$1'))

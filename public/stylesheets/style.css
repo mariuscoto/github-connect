@@ -1097,18 +1097,19 @@ a:hover {
     margin-bottom: 5px;
 }
 
+.ch-repo {
+    padding: 10px;
+    clear: both;
+    border-bottom: 1px solid #E5E5E5;
+}
+
 .ch-pull {
     padding: 10px;
     clear: both;
     border-bottom: 1px solid #E5E5E5;
 }
 
-.ch-pull-repo {
-    float: right;
-    color: rgb(216, 216, 216);
-}
-
-.ch-pull-date {
+.ch-pull-info {
     float: right;
     color: rgb(216, 216, 216);
 }
