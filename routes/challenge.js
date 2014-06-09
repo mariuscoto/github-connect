@@ -62,7 +62,7 @@ exports.one = function(req, res) {
 
     // Check if current user is admin
     if (uid && ch.admins.indexOf(req.session.auth.github.user.login) > -1)
-      _self.user.admin = 1;
+      _self.user.admin = true;
     else if (req.path.substring(req.path.lastIndexOf('/')) == '/admin')
       return res.redirect('/challenges/' + req.params.ch);
 
@@ -97,6 +97,11 @@ exports.one = function(req, res) {
 
     // Save values
     _self.ch = ch;
+
+    // Check if current user joined challenge
+    if (uid) _self.user.joined = false;
+    if (uid && ch.users.indexOf(req.session.auth.github.user.login) > -1)
+      _self.user.joined = true;
 
     if (req.path.substring(req.path.lastIndexOf('/')) == '/users') {
       Users.find({'user_name': {$in: _self.ch.users}}).exec(gotPeople);

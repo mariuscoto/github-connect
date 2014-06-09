@@ -30,9 +30,15 @@ block content
           p= a
 
       #idea-desc-buttom
-        #idea-desc-buttom-left
-          a(href='/challenges/' + challenge.link + '/refresh') Refresh
-          a(href='/challenges/' + challenge.link + '/join') Join
+        - if (user && !user.joined && !user.admin)
+          a(href='/challenges/' + challenge.link + '/join')
+            input.btn.btn-success(type='submit', value='Join challenge')
+        - else
+          input.btn.btn-success(type='submit', value='Joined', disabled)
+        - if (user && user.admin)
+          a(href='/challenges/' + challenge.link + '/admin')
+            input.btn.btn-success(type='submit', value='Edit challenge')
+        a(href='/challenges/' + challenge.link + '/refresh') Refresh
 
       .spacer
 
