@@ -95,11 +95,29 @@ exports.one = function(req, res) {
       }
     }
 
+    // Save values
+    _self.ch = ch;
+
+    if (req.path.substring(req.path.lastIndexOf('/')) == '/users') {
+      Users.find({'user_name': {$in: _self.ch.users}}).exec(gotPeople);
+    } else {
+      renderPage();
+    }
+  }
+
+  function gotPeople(err, people) {
+    _self.people = people;
+
+    renderPage();
+  }
+
+  function renderPage() {
     res.render('challenge', {
       user:       _self.user,
       currentUrl: req.path,
-      challenge:  ch,
-      pulls:      ch.pulls
+      challenge:  _self.ch,
+      pulls:      _self.ch.pulls,
+      people:     _self.people
     });
   }
 };

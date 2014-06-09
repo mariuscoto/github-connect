@@ -156,8 +156,18 @@ block content
 
       - if (currentUrl == '/challenges/' + challenge.link + '/users')
         h2 Participants
-        - each u in challenge.users
-          p= u
+        - if (people.length != 0)
+          - each p in people
+            .ch-user
+              .ch-avatar
+                img(src=p.avatar_url, width='100px', max-height='100px')
+              a(href='/#{p.user_name}')= p.user_name
+          .spacer
+          .ch-user-sum= people.length + " users"
+        - else
+          | No users joined challenge until now.
+        .spacer
+        .spacer
 
 
     .right

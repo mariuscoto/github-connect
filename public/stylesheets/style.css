@@ -1113,3 +1113,18 @@ a:hover {
     float: right;
     color: rgb(216, 216, 216);
 }
+
+.ch-user {
+    width: 100px;
+    float: left;
+    margin: 20px 20px 0px 0px;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.ch-user-sum {
+    text-align: center;
+    color: rgb(216, 216, 216);
+    padding-top: 5px;
+    border-top: 1px solid rgb(216, 216, 216);
+}
