@@ -236,6 +236,10 @@ a:hover {
     font-weight: normal;
 }
 
+#idea-desc-buttom {
+    clear: both;
+}
+
 #idea-desc-buttom-right {
     width: 300px;
     height: 50px;
@@ -266,6 +270,7 @@ a:hover {
     float: right;
     padding-top: 10px;
     padding-bottom: 10px;
+    margin-left: 50px;
 }
 
 .description-item {
@@ -1038,4 +1043,56 @@ a:hover {
 .card-ch-bottom {
     clear: both;
     color: #999;
+}
+
+#description-stats {
+    float: right;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    text-align: center;
+}
+
+#description-logo {
+    float: right;
+    text-align: center;
+    margin: 0px auto 0px auto;
+}
+
+#description-stats-left {
+    width: 70px;
+    float: left;
+    text-align: center;
+}
+
+#description-stats-separator {
+    float: left;
+    font-size: 42px;
+    text-align: center;
+}
+
+#description-stats-right {
+    width: 70px;
+    float: left;
+    text-align: center;
+}
+
+#description-stats-bottom {
+    clear: both;
+    margin-top: 60px;
+    padding-top: 5px;
+    border: 1px solid #97C1DA;
+    border-radius: 3px;
+    background-color: #D0E3EF;
+    background-image: linear-gradient(#D8EBF8, #D0E3EF);
+    background-repeat: repeat-x;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.description-stats-score {
+    width: 100%;
+    font-size: 42px;
+    font-weight: bold;
+    float: left;
+    clear: both;
+    margin-bottom: 5px;
 }

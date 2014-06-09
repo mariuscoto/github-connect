@@ -8,12 +8,22 @@ block content
         #idea-desc-top-title= challenge.name
 
       .spacer
+      #idea-description-right
+        #description-stats
+          #description-stats-left
+            .description-stats-score= challenge.created
+            = " created "
+          #description-stats-separator= "|"
+          #description-stats-right
+            .description-stats-score= challenge.merged
+            = " merged "
+          #description-stats-bottom
+            p= challenge.users.length + " users"
+        #description-logo
+          img(src='#{challenge.logo}', width='150px', max-height='300px')
+
       #idea-description
         h5!= challenge.description
-
-      p= "Users count: " + challenge.users.length
-      p= "Created pulls: " + challenge.created
-      p= "Merged pulls: " + challenge.merged
 
       #idea-tags
         - each a in challenge.admins
@@ -23,9 +33,6 @@ block content
         #idea-desc-buttom-left
           a(href='/challenges/' + challenge.link + '/refresh') Refresh
           a(href='/challenges/' + challenge.link + '/join') Join
-        #idea-desc-buttom-right
-          img(src='#{challenge.logo}', width='100px', max-height='300px')
-
 
       .spacer
 
