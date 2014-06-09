@@ -7,35 +7,46 @@ block content
       #idea-desc-top
         #idea-desc-top-title= challenge.name
 
-
       .spacer
       #idea-description
         h5!= challenge.description
 
+      p= "Users count: " + challenge.users.length
+      p= "Created pulls: " + challenge.created
+      p= "Merged pulls: " + challenge.merged
 
       #idea-tags
         - each a in challenge.admins
           p= a
 
-      .spacer
       #idea-desc-buttom
-        a(href='/challenges/' + challenge.link + '/refresh') Refresh
-      a(href='/challenges/' + challenge.link + '/join') Join
+        #idea-desc-buttom-left
+          a(href='/challenges/' + challenge.link + '/refresh') Refresh
+          a(href='/challenges/' + challenge.link + '/join') Join
+        #idea-desc-buttom-right
+          img(src='#{challenge.logo}', width='100px', max-height='300px')
+
+
       .spacer
 
   #content
     .left
       - if (currentUrl == '/challenges/' + challenge.link)
-        - each r in challenge.repos
-          p= r
+        h2 Repositories
+        - if (challenge.repos.length != 0)
+          - for (var r=0; r<challenge.repos.length; r++)
+            a(href='http://github.com/' + challenge.repos[r])= challenge.repos[r]
+            p= challenge.created_no[r] + "/" + challenge.merged_no[r]
+            br
+        - else
+          p There are no repos set for this challenge.
+
+        h2 Time
         p= "Start date: " + challenge.start_f
         p= "End date: " + challenge.end_f
-        p= "Logo: " + challenge.logo
+
+        h2 About
         p= challenge.email
-        p= challenge.interval
-        p= "Users count: " + challenge.users.length
-        p= "Created pulls: " + challenge.created
-        p= "Merged pulls: " + challenge.merged
 
       - if (currentUrl == '/challenges/' + challenge.link + '/pulls')
         h2 List of pull requests

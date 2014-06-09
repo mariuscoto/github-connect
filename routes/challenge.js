@@ -66,9 +66,28 @@ exports.one = function(req, res) {
     else if (req.path.substring(req.path.lastIndexOf('/')) == '/admin')
       return res.redirect('/challenges/' + req.params.ch);
 
-    // Get number on merged pull req
+    // Init individual repos pull req counters
+    ch.created_no = [];
+    ch.merged_no = [];
+    for (var r in ch.repos) {
+      ch.created_no[r] = 0;
+      ch.merged_no[r] = 0;
+    }
+
+    // Get number of merged pull req and
+    // count pulls for each
     ch.merged = 0, ch.created = 0;
     for (var i in ch.pulls) {
+
+      // Count pull req
+      for (var r in ch.repos)
+        if (ch.repos[r] == ch.pulls[i].repo) {
+          ch.created_no[r]++;
+          if (ch.pulls[i].merged && ch.pulls[i].auth)
+            ch.merged_no[r]++;
+        }
+
+      // Total count
       if (ch.pulls[i].merged && ch.pulls[i].auth) {
         ch.merged++;
       } else if (ch.pulls[i].created && ch.pulls[i].auth) {
@@ -260,6 +279,7 @@ exports.refresh = function(req, res) {
             else merge_date = new Date(pulls[p].merged_at);
 
             var update = {$addToSet: { 'pulls': {
+              repo:      ch.repos[1],
               auth:      pulls[p].user.login,
               url:       pulls[p].html_url,
               title:     pulls[p].title,
