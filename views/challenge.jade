@@ -11,7 +11,7 @@ block content
       #idea-description-right
         #description-stats
           #description-stats-left
-            .description-stats-score= challenge.created
+            .description-stats-score= challenge.pulls.length
             = " created "
           #description-stats-separator= "|"
           #description-stats-right
@@ -30,7 +30,10 @@ block content
           p= a
 
       #idea-desc-buttom
-        - if (user && !user.joined && !user.admin)
+        - if (!user)
+          a(href='/login')
+            input.btn.btn-success(type='submit', value='Join challenge')
+        - else if (user && !user.joined && !user.admin)
           a(href='/challenges/' + challenge.link + '/join')
             input.btn.btn-success(type='submit', value='Join challenge')
         - else
@@ -89,13 +92,13 @@ block content
           - each p in pulls
             .ch-pull
               a(href='/#{p.auth}')= p.auth
-              .ch-pull-repo= "#" + p.repo
+              .ch-pull-info= "#" + p.repo
               br
               a(href='#{p.url}')= p.title
               - if (p.merged)
-                .ch-pull-date= "Merged on " + p.merged.toString().substr(3,12)
+                .ch-pull-info= "Merged on " + p.merged.toString().substr(3,12)
               - else
-                .ch-pull-date= "Created on " + p.created.toString().substr(3,12)
+                .ch-pull-info= "Created on " + p.created.toString().substr(3,12)
         - else
           p There are no pull requests created yet.
         .spacer
@@ -111,8 +114,12 @@ block content
 
         .spacer
         h2 Repository
-        - each r in challenge.repos
-          p= r
+        - for (var r=1; r<challenge.repos.length; r++)
+          .ch-repo
+            .ch-pull-info
+              a(href='/challenges/' + challenge.link + '/repo_remove?repo=' + challenge.repos[r]) Remove
+            = challenge.repos[r]
+
 
         .spacer
         h2 Settings

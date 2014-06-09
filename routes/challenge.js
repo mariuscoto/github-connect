@@ -94,12 +94,8 @@ exports.one = function(req, res) {
             ch.merged_no[r]++;
         }
 
-      // Total count
-      if (ch.pulls[i].merged && ch.pulls[i].auth) {
-        ch.merged++;
-      } else if (ch.pulls[i].created && ch.pulls[i].auth) {
-        ch.created++;
-      }
+      // Total merged pulls count
+      if (ch.pulls[i].merged && ch.pulls[i].auth) ch.merged++;
     }
 
     // Save values
@@ -273,6 +269,27 @@ exports.admin_remove = function(req, res) {
     var update = {$pull: {'admins': req.query.name}};
     Challenges.update(conditions, update, function (err, num) {
       console.log("* Admin removed from " + req.body.name);
+      res.redirect('/challenges/' + req.params.ch + '/admin');
+    });
+  }
+};
+
+/*
+Remove repo. Only admins can remove repos.
+*/
+exports.repo_remove = function(req, res) {
+
+  Challenges.findOne({'link': req.params.ch}).exec(gotChallenge);
+
+  function gotChallenge(err, ch) {
+    // Check if user is admin
+    if (ch.admins.indexOf(req.session.auth.github.user.login) < 0)
+      return res.redirect('/challenges/' + req.params.ch);
+
+    var conditions = {'link': req.params.ch};
+    var update = {$pull: {'repos': req.query.repo}};
+    Challenges.update(conditions, update, function (err, num) {
+      console.log("* Admin removed repo from " + req.query.repo);
       res.redirect('/challenges/' + req.params.ch + '/admin');
     });
   }
