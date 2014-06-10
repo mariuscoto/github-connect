@@ -5,6 +5,7 @@ var fs = require('fs');
 var Repo = mongoose.model('Repo');
 var Users = mongoose.model('Users');
 var Notifications = mongoose.model('Notifications');
+var Challenges = mongoose.model('Challenges');
 
 var nextUserId = 0;
 global.usersById = {};
@@ -563,6 +564,79 @@ exports.get_time_from = function (then) {
 
     } else {
       return "one minute ago";
+    }
+  }
+}
+
+/*
+Refresh all repos from all challeneges that are active ('live').
+*/
+exports.refresh_challenges = function() {
+
+  Challenges.find({'status': 'live'}).exec(gotChallenges);
+
+  function gotChallenges(err, all) {
+
+    // For each challenge in pool
+    for (var c in all) {
+
+      var ch = all[c];
+
+      // Update last refresh date
+      var update = {$set: { 'refresh': Date.now()}};
+      Challenges.update({'link': ch.link}, update).exec();
+
+      //New request for each repo of challenge
+      for (var r=1; r<ch.repos.length; r++) {
+
+        var options = {
+          host: "api.github.com",
+          path: "/repos/" + ch.repos[r] + "/pulls?state=all",
+          method: "GET",
+          headers: { "User-Agent": "github-connect" }
+        };
+
+        var request = https.request(options, function(response){
+          var body = '';
+          response.on("data", function(chunk){ body+=chunk.toString("utf8"); });
+          response.on("end", function(){
+            var pulls = JSON.parse(body);
+
+            // Log errors
+            if (pulls.message)
+              console.log("[ERR] " + pulls.message + " - " + options.path
+                + " (" + pulls.documentation_url + ")");
+
+            for (var p in pulls) {
+              // Accept only pulls created after challenge start date, before end
+              // date and only from registered users
+              if (new Date(pulls[p].created_at).getTime() > ch.start.getTime() &&
+                  new Date(pulls[p].created_at).getTime() < ch.end.getTime() &&
+                  ch.users.indexOf(pulls[p].user.login) > -1) {
+
+                // Check if merge date exists
+                var merge_date;
+
+                if (!pulls[p].merged_at) merge_date = null;
+                else merge_date = new Date(pulls[p].merged_at);
+
+                var update = {$addToSet: { 'pulls': {
+                  repo:      ch.repos[1],
+                  auth:      pulls[p].user.login,
+                  url:       pulls[p].html_url,
+                  title:     pulls[p].title,
+                  created:   new Date(pulls[p].created_at),
+                  merged:    merge_date
+                }}};
+
+                Challenges.update({'link': ch.link}, update).exec();
+              }
+            }
+
+          });
+        });
+        request.end();
+      }
     }
   }
 }

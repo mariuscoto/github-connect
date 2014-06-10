@@ -104,6 +104,7 @@ var Challenges = new Schema({
   description:  {type: String, default: ""},
   start:        {type: Date, default: null},
   end:          {type: Date, default: null},
+  refresh:      {type: Date, default: null},
   users:        {type:[String], default: []},
   admins:       [String],
   pulls:        [Pulls],

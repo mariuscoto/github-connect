@@ -8,7 +8,8 @@
     "jade": "0.31.x",
     "mongoose": "3.2.0",
     "markdown": "0.5.x",
-    "nodemailer": "~0.6.3"
+    "nodemailer": "~0.6.3",
+    "cron": "~1.0.4"
   },
   "engines": {
     "node": "0.8.x",

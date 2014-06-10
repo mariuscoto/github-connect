@@ -24,6 +24,7 @@ block content
 
       #idea-description
         p!= challenge.description_mk
+        p= challenge.refresh
 
       #idea-tags
         - each a in challenge.admins
@@ -41,7 +42,6 @@ block content
         - if (user && user.admin)
           a(href='/challenges/' + challenge.link + '/admin')
             input.btn.btn-success(type='submit', value='Edit challenge')
-        a(href='/challenges/' + challenge.link + '/refresh') Refresh
 
       .spacer
 

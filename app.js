@@ -23,14 +23,21 @@ app.configure('production', function(){
   global.config.status = 'prod';
 });
 
-var db = require('./model/db')
+var MACRO = require('./model/points.js')
+  , db = require('./model/db')
   , fs = require('fs')
   , http = require('http')
   , https = require('https')
   , everyauth = require('everyauth')
   , mongoose = require('mongoose')
-  , core = require('./core.js');
+  , core = require('./core.js')
+  , cron = require('cron').CronJob;
 
+// Refresh challenge cron job
+var job = new cron(MACRO.CRON.CHALLENGE, function(){
+    core.refresh_challenges();
+  }, function () {}, true, false
+);
 
 everyauth
 .everymodule
@@ -124,7 +131,6 @@ app.post('/challenges/:ch/edit', challenge.edit);
 app.post('/challenges/:ch/admin_add', ensureAuth, challenge.admin_add);
 app.get('/challenges/:ch/admin_remove', ensureAuth, challenge.admin_remove);
 app.get('/challenges/:ch/repo_remove', ensureAuth, challenge.repo_remove);
-app.get('/challenges/:ch/refresh', challenge.refresh);
 app.get('/challenges/:ch/users', challenge.one);
 app.get('/challenges/:ch/pulls', challenge.one);
 app.get('/challenges/:ch/join', ensureAuth, challenge.join);
