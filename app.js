@@ -123,8 +123,6 @@ app.post('/projects/remove', ensureAuth, projects.remove);
 
 var challenge = require('./routes/challenge.js');
 app.get('/challenges', challenge.index);
-app.get('/challenges/add', ensureAuth, challenge.admin);
-app.post('/challenges/add', ensureAuth, challenge.add);
 app.get('/challenges/:ch', challenge.one);
 app.get('/challenges/:ch/admin', challenge.one);
 app.post('/challenges/:ch/edit', challenge.edit);
@@ -134,6 +132,11 @@ app.get('/challenges/:ch/repo_remove', ensureAuth, challenge.repo_remove);
 app.get('/challenges/:ch/users', challenge.one);
 app.get('/challenges/:ch/pulls', challenge.one);
 app.get('/challenges/:ch/join', ensureAuth, challenge.join);
+
+
+var admin = require('./routes/admin.js');
+app.get('/admin', ensureSuper, admin.index);
+app.post('/admin/challenge_add', ensureSuper, admin.challenge_add);
 
 /*
 This handles all other URLs.
@@ -147,6 +150,14 @@ app.use(profile.index);
 function ensureAuth(req, res, next) {
   if (req.session.auth) return next();
   res.redirect('/login');
+}
+
+// Make sure user is authenticated and root middleware
+function ensureSuper(req, res, next) {
+  if (req.session.auth && MACRO.SUPERUSER.indexOf(req.session.auth.github.user.login) > -1)
+    return next();
+  
+  return res.render('404', {title: "404: File not found"});
 }
 
 // Launch server

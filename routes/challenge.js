@@ -131,49 +131,6 @@ exports.one = function(req, res) {
 };
 
 /*
-Add new challenge. Only superuser should be able to
-do this.
-*/
-exports.admin = function(req, res) {
-  if (req.session.auth.github.user.login != 'dev_user')
-    return res.redirect('/');
-
-  var uid = ((req.session.auth) ? req.session.auth.github.user.id : null);
-
-  Users.findOne({'user_id': uid}).exec(gotUser);
-
-  function gotUser(err, user) {
-    res.render('challenge_add', {
-      title: 'New challenge',
-      user: user
-    });
-  }
-
-};
-
-/*
-Add info from form to db.
-Only superuser can add challenges.
-*/
-exports.add = function(req, res) {
-  if (req.session.auth.github.user.login != 'dev_user')
-    return res.redirect('/');
-
-  // Add all admins in list even if they do not exist
-  new Challenges({
-    name:         req.body.name,
-    link:         req.body.name.replace(/\s+/g, ''),
-    description:  req.body.description,
-    admins:       req.body.admins.split(' ')
-  }).save(savedChallenge);
-
-  function savedChallenge(err, todo, count) {
-    console.log("* Challenge " + req.body.name + " saved.");
-    res.redirect('/challenges');
-  }
-};
-
-/*
 Edit challenge info and redirect to new link.
 Redirect if user not in admin list
 */
