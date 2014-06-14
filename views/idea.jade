@@ -132,26 +132,13 @@ block content
             label Preffered language
               br
               select.selectpicker.span5(name='lang', type='text')
-		option C/C++
-            	option C#
-            	option F#
-		option Java
-		option Javascript
-		option Objective-C
-		option PHP
-		option Python
-		option Ruby
-		option Haskell
-		option Racket
-		option Lisp
-		option ActionScript
-		option Bash
-		option Clojure
-		option PowerShell
-		option Prolog
-		option Other
+                - each l in lang_opt
+                  - if (l == idea.lang)
+                    option(selected)= l
+                  - else
+                    option= l
             
-	    label Description
+            label Description
               br
               textarea.span8(name='description', id='no_resize_textarea', rows="4")= idea.description
             input.btn.btn-success(id='sub', type='submit', value='Update')

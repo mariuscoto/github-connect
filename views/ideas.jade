@@ -29,32 +29,17 @@ block content
                   option Large
               label Preffered language
                 br
-		select.selectpicker.span5(name='lang', type='text')
-			option C/C++
-			option C#
-			option F#
-			option Java
-			option Javascript
-			option Objective-C
-			option PHP
-			option Python
-			option Ruby
-			option Haskell
-			option Racket
-			option Lisp
-			option ActionScript
-			option Bash
-			option Clojure
-			option PowerShell
-			option Prolog
-			option Other
-		.right-mini
-		label Delivery time
-		br
-		input.span5.datepicker(name='eta', type='text')
-		label Description *
-		br
-		textarea.span5(name='description', id='no_resize_textarea', rows='4')
+                select.selectpicker.span5(name='lang', type='text')
+                  - each l in lang_opt
+                    option= l
+
+          .right-mini
+            label Delivery time
+              br
+              input.span5.datepicker(name='eta', type='text')
+            label Description *
+              br
+              textarea.span5(name='description', id='no_resize_textarea', rows='4')
 
 
           .center-mini
@@ -73,25 +58,10 @@ block content
           form(method='POST', action='')
             input.span4(type='text', id='search_box', placeholder='Ideas filter . . .')
             select.selectpicker.span2.pull-right.ideas-search-fields(id='select-lang', name='lang')
-              		option -Language-
-			option C/C++
-			option C#
-			option F#
-			option Java
-			option Javascript
-			option Objective-C
-			option PHP
-			option Python
-			option Ruby
-			option Haskell
-			option Racket
-			option Lisp
-			option ActionScript
-			option Bash
-			option Clojure
-			option PowerShell
-			option Prolog
-			option Other
+              option -Language-
+              - each l in lang_opt
+                option= l
+
             select.selectpicker.span2.pull-right.ideas-search-fields(id='select-size', name='size')
               option -Size-
               option Small

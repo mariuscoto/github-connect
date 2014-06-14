@@ -1,4 +1,4 @@
-var POINTS = require('../model/points.js')
+var MACRO = require('../model/macro.js')
 var core = require('../core.js')
 var express = require('express');
 var mongoose = require('mongoose');
@@ -50,8 +50,8 @@ exports.index = function(req, res) {
       // Format date
       ideas[i].date_post_f = core.get_time_from(ideas[i].date_post);
       // Shorten description
-      if (ideas[i].description.length > POINTS.IDEA.DESC)
-        ideas[i].description = (ideas[i].description).substring(0, POINTS.IDEA.DESC) + ' [...]';
+      if (ideas[i].description.length > MACRO.IDEA.DESC)
+        ideas[i].description = (ideas[i].description).substring(0, MACRO.IDEA.DESC) + ' [...]';
     }
 
     res.render('ideas', {
@@ -59,7 +59,8 @@ exports.index = function(req, res) {
       user:       _self.user,
       ideas:      _self.ideas,
       currentUrl: req.path,
-      sort:       req.query.sort
+      sort:       req.query.sort,
+      lang_opt:   MACRO.LANG
     });
   }
 };
@@ -159,7 +160,8 @@ exports.one = function(req, res) {
       comments:   _self.comments,
       team:       _self.team,
       currentUrl: req.path,
-      sort:       req.query.sort
+      sort:       req.query.sort,
+      lang_opt:   MACRO.LANG
     });
   }
 };
@@ -181,7 +183,7 @@ exports.add = function(req, res) {
     plan:         req.body.plan,
     size:         req.body.size,
     eta:          req.body.eta,
-    points:       POINTS.IDEA.NEW
+    points:       MACRO.IDEA.NEW
   }).save(savedIdea);
 
   function savedIdea(err, todo, count) {
@@ -189,7 +191,7 @@ exports.add = function(req, res) {
 
     // Update user ideas points
     var conditions = {user_id: req.session.auth.github.user.id};
-    var update = {$inc: {points_ideas: POINTS.IDEA.NEW }};
+    var update = {$inc: {points_ideas: MACRO.IDEA.NEW }};
     Users.update(conditions, update).exec();
 
     console.log("* " + req.session.auth.github.user.login + " added idea.");
@@ -320,7 +322,7 @@ exports.join = function(req, res) {
   // Update user ideas points
   function gotIdea(err, idea) {
     var conditions = {'user_name': idea.user_name};
-    var update = {$inc: {'points_ideas': POINTS.IDEA.JOIN}};
+    var update = {$inc: {'points_ideas': MACRO.IDEA.JOIN}};
     Users.update(conditions, update).exec();
   }
 
@@ -328,7 +330,7 @@ exports.join = function(req, res) {
   var conditions = {'_id': req.query.id};
   var update = {
     $addToSet: {'team': req.session.auth.github.user.login},
-    $inc: {'points': POINTS.IDEA.JOIN}
+    $inc: {'points': MACRO.IDEA.JOIN}
   };
   Ideas.update(conditions, update, function (err, num) {
     res.redirect('/idea?id=' + req.query.id);

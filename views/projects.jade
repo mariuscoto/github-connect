@@ -42,25 +42,8 @@ block content
 
             label Used language
             select.selectpicker.span5(name='lang')
-		option C/C++
-            	option C#
-            	option F#
-		option Java
-		option Javascript
-		option Objective-C
-		option PHP
-		option Python
-		option Ruby
-		option Haskell
-		option Racket
-		option Lisp
-		option ActionScript
-		option Bash
-		option Clojure
-		option PowerShell
-		option Prolog
-		option Other
-            
+              - each l in lang_opt
+                option= l
 
           .center-mini
             label Description
