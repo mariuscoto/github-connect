@@ -32,7 +32,7 @@ exports.index = function(req, res) {
 
 
   Users.findOne ({ 'user_name': cname }, function(err, cuser) {
-    if (!cuser) res.render('404', {title: "404: File not found"});
+    if (!cuser) return res.render('404', {title: "404: File not found"});
     else {
 
       Users.findOne ({ 'user_id': uid }, function(err, user) {

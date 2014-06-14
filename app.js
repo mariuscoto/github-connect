@@ -23,14 +23,21 @@ app.configure('production', function(){
   global.config.status = 'prod';
 });
 
-var db = require('./model/db')
+var MACRO = require('./model/macro.js')
+  , db = require('./model/db')
   , fs = require('fs')
   , http = require('http')
   , https = require('https')
   , everyauth = require('everyauth')
   , mongoose = require('mongoose')
-  , core = require('./core.js');
+  , core = require('./core.js')
+  , cron = require('cron').CronJob;
 
+// Refresh challenge cron job
+var job = new cron(MACRO.CRON.CHALLENGE, function(){
+    core.refresh_challenges();
+  }, function () {}, true, false
+);
 
 everyauth
 .everymodule
@@ -114,6 +121,23 @@ app.post('/project/upvote', ensureAuth, projects.upvote);
 app.post('/project/flag', ensureAuth, projects.flag);
 app.post('/projects/remove', ensureAuth, projects.remove);
 
+var challenge = require('./routes/challenge.js');
+app.get('/challenges', challenge.index);
+app.get('/challenges/:ch', challenge.one);
+app.get('/challenges/:ch/admin', challenge.one);
+app.post('/challenges/:ch/edit', challenge.edit);
+app.post('/challenges/:ch/admin_add', ensureAuth, challenge.admin_add);
+app.get('/challenges/:ch/admin_remove', ensureAuth, challenge.admin_remove);
+app.get('/challenges/:ch/repo_remove', ensureAuth, challenge.repo_remove);
+app.get('/challenges/:ch/users', challenge.one);
+app.get('/challenges/:ch/pulls', challenge.one);
+app.get('/challenges/:ch/join', ensureAuth, challenge.join);
+
+
+var admin = require('./routes/admin.js');
+app.get('/admin', ensureSuper, admin.index);
+app.post('/admin/challenge_add', ensureSuper, admin.challenge_add);
+
 /*
 This handles all other URLs.
 It's main porpose is to serve /user pages and all subpages
@@ -126,6 +150,14 @@ app.use(profile.index);
 function ensureAuth(req, res, next) {
   if (req.session.auth) return next();
   res.redirect('/login');
+}
+
+// Make sure user is authenticated and root middleware
+function ensureSuper(req, res, next) {
+  if (req.session.auth && MACRO.SUPERUSER.indexOf(req.session.auth.github.user.login) > -1)
+    return next();
+
+  return res.render('404', {title: "404: File not found"});
 }
 
 // Launch server

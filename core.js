@@ -1,3 +1,4 @@
+var MACRO = require('./model/macro.js');
 var mongoose = require('mongoose');
 var https = require('https');
 var fs = require('fs');
@@ -5,18 +6,11 @@ var fs = require('fs');
 var Repo = mongoose.model('Repo');
 var Users = mongoose.model('Users');
 var Notifications = mongoose.model('Notifications');
+var Challenges = mongoose.model('Challenges');
 
 var nextUserId = 0;
 global.usersById = {};
 var usersByGhId = {};
-
-// Points macros
-var POINTS_REPO = 20;
-var POINTS_FORK = 10;
-var POINTS_WATCH = 1;
-var POINTS_PULL = 30;
-var POINTS_ADD_IDEAS = 5;
-var POINTS_COMMENT = 10;
 
 
 exports.send_mail = function (destination, type, body) {
@@ -159,8 +153,8 @@ function update_pull_req (repo, owner, user_name, accessToken) {
         // update pulls count, inc tentacles, add points, update total
         var conditions = {'user_name': user_name, 'repos.name': repo};
         var update = {
-          $inc: {'points_repos': diff * POINTS_PULL},
-          $set: {'repos.$.points': count * POINTS_PULL,
+          $inc: {'points_repos': diff * MACRO.USER.PULL},
+          $set: {'repos.$.points': count * MACRO.USER.PULL,
                  'repos.$.closed_pulls': count,}
         };
         Users.update(conditions, update).exec();
@@ -303,7 +297,7 @@ function update_repos (user_name, accessToken, notify) {
                 var msg, diff = json[k].forks_count - user.repos[y].forks_count;
                 if (diff > 0) msg = "got " + diff + " new";
                 else if (diff < 0) msg = "lost " + -(diff);
-                sum += diff * POINTS_FORK;
+                sum += diff * MACRO.USER.FORK;
                 if (diff != 0) {
                   new Notifications({
                     src:    json[k].name,
@@ -321,7 +315,7 @@ function update_repos (user_name, accessToken, notify) {
                 diff = json[k].watchers_count - user.repos[y].watchers_count;
                 if (diff > 0) msg = "got " + diff + " new";
                 else if (diff < 0) msg = "lost " + (-diff);
-                sum += diff * POINTS_WATCH;
+                sum += diff * MACRO.USER.WATCH;
                 if (diff != 0) {
                   new Notifications({
                     src:    json[k].name,
@@ -342,8 +336,8 @@ function update_repos (user_name, accessToken, notify) {
 
                 // compute points for own repos
                 } else {
-                  points += POINTS_REPO + POINTS_FORK * json[k].forks_count;
-                  points += POINTS_WATCH * json[k].watchers_count ;
+                  points += MACRO.USER.REPO + MACRO.USER.FORK * json[k].forks_count;
+                  points += MACRO.USER.WATCH * json[k].watchers_count ;
                 }
 
                 // update info in db
@@ -385,8 +379,8 @@ function update_repos (user_name, accessToken, notify) {
                   update_repo_owner(json_back[k].name, user_name, accessToken);
 
                 } else { // compute points for own repos
-                  points += POINTS_REPO + POINTS_FORK * json_back[k].forks_count;
-                  points += POINTS_WATCH * json_back[k].watchers_count ;
+                  points += MACRO.USER.REPO + MACRO.USER.FORK * json_back[k].forks_count;
+                  points += MACRO.USER.WATCH * json_back[k].watchers_count ;
                   total  += points;
                 }
               }
@@ -441,8 +435,8 @@ function get_repos (user_name, accessToken, notify) {
             update_repo_owner(json[k].name, user_name, accessToken);
 
           } else { // compute points for own repos
-            points += POINTS_REPO + POINTS_FORK * json[k].forks_count;
-            points += POINTS_WATCH * json[k].watchers_count ;
+            points += MACRO.USER.REPO + MACRO.USER.FORK * json[k].forks_count;
+            points += MACRO.USER.WATCH * json[k].watchers_count ;
             total  += points;
           }
         }
@@ -563,6 +557,79 @@ exports.get_time_from = function (then) {
 
     } else {
       return "one minute ago";
+    }
+  }
+}
+
+/*
+Refresh all repos from all challeneges that are active ('live').
+*/
+exports.refresh_challenges = function() {
+
+  Challenges.find({'status': 'live'}).exec(gotChallenges);
+
+  function gotChallenges(err, all) {
+
+    // For each challenge in pool
+    for (var c in all) {
+
+      var ch = all[c];
+
+      // Update last refresh date
+      var update = {$set: { 'refresh': Date.now()}};
+      Challenges.update({'link': ch.link}, update).exec();
+
+      //New request for each repo of challenge
+      for (var r=1; r<ch.repos.length; r++) {
+
+        var options = {
+          host: "api.github.com",
+          path: "/repos/" + ch.repos[r] + "/pulls?state=all",
+          method: "GET",
+          headers: { "User-Agent": "github-connect" }
+        };
+
+        var request = https.request(options, function(response){
+          var body = '';
+          response.on("data", function(chunk){ body+=chunk.toString("utf8"); });
+          response.on("end", function(){
+            var pulls = JSON.parse(body);
+
+            // Log errors
+            if (pulls.message)
+              console.log("[ERR] " + pulls.message + " - " + options.path
+                + " (" + pulls.documentation_url + ")");
+
+            for (var p in pulls) {
+              // Accept only pulls created after challenge start date, before end
+              // date and only from registered users
+              if (new Date(pulls[p].created_at).getTime() > ch.start.getTime() &&
+                  new Date(pulls[p].created_at).getTime() < ch.end.getTime() &&
+                  ch.users.indexOf(pulls[p].user.login) > -1) {
+
+                // Check if merge date exists
+                var merge_date;
+
+                if (!pulls[p].merged_at) merge_date = null;
+                else merge_date = new Date(pulls[p].merged_at);
+
+                var update = {$addToSet: { 'pulls': {
+                  repo:      ch.repos[1],
+                  auth:      pulls[p].user.login,
+                  url:       pulls[p].html_url,
+                  title:     pulls[p].title,
+                  created:   new Date(pulls[p].created_at),
+                  merged:    merge_date
+                }}};
+
+                Challenges.update({'link': ch.link}, update).exec();
+              }
+            }
+
+          });
+        });
+        request.end();
+      }
     }
   }
 }

@@ -93,6 +93,32 @@ var Notifications = new Schema({
   msg:  {type: String, default: null}
 });
 
+var Challenges = new Schema({
+  name:         String,
+  status:       {type: String, default: "tease"},
+  link:         {type: String, default: null},
+  email:        {type: String, default: ""},
+  logo:         {type: String, default: ""},
+  repos:        {type: [String], default: null},
+  about:        {type: String, default: ""},
+  description:  {type: String, default: ""},
+  start:        {type: Date, default: null},
+  end:          {type: Date, default: null},
+  refresh:      {type: Date, default: null},
+  users:        {type:[String], default: []},
+  admins:       [String],
+  pulls:        [Pulls],
+});
+
+var Pulls = new Schema({
+  repo:         String,
+  auth:         String,
+  url:          {type: String, default: null},
+  title:        {type: String, default: null},
+  created:      {type: Date, default: null},
+  merged:       {type: Date, default: null}
+});
+
 mongoose.model( 'Users', Users );
 mongoose.model( 'Projects', Projects );
 mongoose.model( 'Ideas', Ideas );
@@ -100,6 +126,8 @@ mongoose.model( 'IdeaComments', IdeaComments );
 mongoose.model( 'ProjectComments', ProjectComments );
 mongoose.model( 'Repo', Repo );
 mongoose.model( 'Notifications', Notifications );
+mongoose.model( 'Challenges', Challenges );
+mongoose.model( 'Pulls', Pulls );
 
 
 if (global.config.status == 'dev')
