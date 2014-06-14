@@ -31,7 +31,9 @@ block content
           p= a
 
       #idea-desc-buttom
-        - if (!user)
+        - if (challenge.status == 'closed')
+          h4 This challenge has ended.
+        - else if (!user)
           a(href='/login')
             input.btn.btn-success(type='submit', value='Join challenge')
         - else if (user && !user.joined && !user.admin)
@@ -42,8 +44,6 @@ block content
         - if (user && user.admin)
           a(href='/challenges/' + challenge.link + '/admin')
             input.btn.btn-success(type='submit', value='Edit challenge')
-
-      .spacer
 
   #content
     .left

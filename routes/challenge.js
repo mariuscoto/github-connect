@@ -215,18 +215,23 @@ exports.edit = function(req, res) {
 };
 
 /*
-Join challenge.
+Join challenge. Closed challenges cannot be joined.
 */
 exports.join = function(req, res) {
 
   Challenges.findOne({'link': req.params.ch}).exec(gotChallenge);
 
   function gotChallenge(err, ch) {
-    var conditions = {'link': req.params.ch};
-    var update = {$addToSet: {'users': req.session.auth.github.user.login}};
-    Challenges.update(conditions, update, function (err, num) {
+    if (ch.status != 'closed') {
+      var conditions = {'link': req.params.ch};
+      var update = {$addToSet: {'users': req.session.auth.github.user.login}};
+      Challenges.update(conditions, update, function (err, num) {
+        res.redirect('/challenges/' + req.params.ch);
+      });
+
+    } else {
       res.redirect('/challenges/' + req.params.ch);
-    });
+    }
   }
 };
 
