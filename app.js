@@ -23,7 +23,7 @@ app.configure('production', function(){
   global.config.status = 'prod';
 });
 
-var MACRO = require('./model/points.js')
+var MACRO = require('./model/macro.js')
   , db = require('./model/db')
   , fs = require('fs')
   , http = require('http')
@@ -156,7 +156,7 @@ function ensureAuth(req, res, next) {
 function ensureSuper(req, res, next) {
   if (req.session.auth && MACRO.SUPERUSER.indexOf(req.session.auth.github.user.login) > -1)
     return next();
-  
+
   return res.render('404', {title: "404: File not found"});
 }
 

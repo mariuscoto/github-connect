@@ -1,3 +1,4 @@
+var MACRO = require('./model/macro.js');
 var mongoose = require('mongoose');
 var https = require('https');
 var fs = require('fs');
@@ -10,14 +11,6 @@ var Challenges = mongoose.model('Challenges');
 var nextUserId = 0;
 global.usersById = {};
 var usersByGhId = {};
-
-// Points macros
-var POINTS_REPO = 20;
-var POINTS_FORK = 10;
-var POINTS_WATCH = 1;
-var POINTS_PULL = 30;
-var POINTS_ADD_IDEAS = 5;
-var POINTS_COMMENT = 10;
 
 
 exports.send_mail = function (destination, type, body) {
@@ -160,8 +153,8 @@ function update_pull_req (repo, owner, user_name, accessToken) {
         // update pulls count, inc tentacles, add points, update total
         var conditions = {'user_name': user_name, 'repos.name': repo};
         var update = {
-          $inc: {'points_repos': diff * POINTS_PULL},
-          $set: {'repos.$.points': count * POINTS_PULL,
+          $inc: {'points_repos': diff * MACRO.USER.PULL},
+          $set: {'repos.$.points': count * MACRO.USER.PULL,
                  'repos.$.closed_pulls': count,}
         };
         Users.update(conditions, update).exec();
@@ -304,7 +297,7 @@ function update_repos (user_name, accessToken, notify) {
                 var msg, diff = json[k].forks_count - user.repos[y].forks_count;
                 if (diff > 0) msg = "got " + diff + " new";
                 else if (diff < 0) msg = "lost " + -(diff);
-                sum += diff * POINTS_FORK;
+                sum += diff * MACRO.USER.FORK;
                 if (diff != 0) {
                   new Notifications({
                     src:    json[k].name,
@@ -322,7 +315,7 @@ function update_repos (user_name, accessToken, notify) {
                 diff = json[k].watchers_count - user.repos[y].watchers_count;
                 if (diff > 0) msg = "got " + diff + " new";
                 else if (diff < 0) msg = "lost " + (-diff);
-                sum += diff * POINTS_WATCH;
+                sum += diff * MACRO.USER.WATCH;
                 if (diff != 0) {
                   new Notifications({
                     src:    json[k].name,
@@ -343,8 +336,8 @@ function update_repos (user_name, accessToken, notify) {
 
                 // compute points for own repos
                 } else {
-                  points += POINTS_REPO + POINTS_FORK * json[k].forks_count;
-                  points += POINTS_WATCH * json[k].watchers_count ;
+                  points += MACRO.USER.REPO + MACRO.USER.FORK * json[k].forks_count;
+                  points += MACRO.USER.WATCH * json[k].watchers_count ;
                 }
 
                 // update info in db
@@ -386,8 +379,8 @@ function update_repos (user_name, accessToken, notify) {
                   update_repo_owner(json_back[k].name, user_name, accessToken);
 
                 } else { // compute points for own repos
-                  points += POINTS_REPO + POINTS_FORK * json_back[k].forks_count;
-                  points += POINTS_WATCH * json_back[k].watchers_count ;
+                  points += MACRO.USER.REPO + MACRO.USER.FORK * json_back[k].forks_count;
+                  points += MACRO.USER.WATCH * json_back[k].watchers_count ;
                   total  += points;
                 }
               }
@@ -442,8 +435,8 @@ function get_repos (user_name, accessToken, notify) {
             update_repo_owner(json[k].name, user_name, accessToken);
 
           } else { // compute points for own repos
-            points += POINTS_REPO + POINTS_FORK * json[k].forks_count;
-            points += POINTS_WATCH * json[k].watchers_count ;
+            points += MACRO.USER.REPO + MACRO.USER.FORK * json[k].forks_count;
+            points += MACRO.USER.WATCH * json[k].watchers_count ;
             total  += points;
           }
         }

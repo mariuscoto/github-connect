@@ -1,4 +1,4 @@
-var POINTS = require('../model/points.js')
+var MACRO = require('../model/macro.js')
 var core = require('../core.js')
 var mongoose = require('mongoose');
 var Projects = mongoose.model('Projects');
@@ -51,8 +51,8 @@ exports.index = function(req, res) {
         // remove new lines
         projects[i].description = projects[i].description.replace(/(\r\n|\n|\r)/gm,"");
         // shorten description
-        if (projects[i].description.length > POINTS.PROJECT.DESC)
-          projects[i].description = (projects[i].description).substring(0, POINTS.PROJECT.DESC) + " [...]";
+        if (projects[i].description.length > MACRO.PROJECT.DESC)
+          projects[i].description = (projects[i].description).substring(0, MACRO.PROJECT.DESC) + " [...]";
       }
 
       res.render('projects', {
@@ -224,12 +224,12 @@ exports.add = function(req, res) {
       type:         req.body.type,
       description:  req.body.description,
       date_post:    Date.now(),
-      points:       POINTS.PROJECT.NEW
+      points:       MACRO.PROJECT.NEW
 
     }).save(function (err, todo, count) {
       // update total score
       var conditions = {user_id: req.session.auth.github.user.id};
-      var update = {$inc: {points_projects: POINTS.PROJECT.NEW }};
+      var update = {$inc: {points_projects: MACRO.PROJECT.NEW }};
       Users.update(conditions, update).exec();
 
       console.log("* " + req.session.auth.github.user.login + " added project.");

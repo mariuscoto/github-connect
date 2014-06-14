@@ -1,12 +1,20 @@
 exports.IDEA = {
   NEW:  10,
   JOIN: 5,
-  DESC: 330
+  DESC: 330,
+  COMM: 10
 }
 
 exports.PROJECT = {
   NEW:  10,
   DESC: 330
+}
+
+exports.USER = {
+  PULL:  30,
+  REPO:  20,
+  FORK:  10,
+  WATCH:  1
 }
 
 exports.CRON = {

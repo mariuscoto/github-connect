@@ -1,4 +1,3 @@
-var POINTS = require('../model/points.js');
 var core = require('../core.js');
 var mongoose = require('mongoose');
 var Users = mongoose.model('Users');
