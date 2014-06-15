@@ -580,7 +580,7 @@ exports.refresh_challenges = function() {
       Challenges.update({'link': ch.link}, update).exec();
 
       //New request for each repo of challenge
-      for (var r=1; r<ch.repos.length; r++) {
+      for (var r=0; r<ch.repos.length; r++) {
 
         var options = {
           host: "api.github.com",

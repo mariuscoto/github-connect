@@ -24,11 +24,6 @@ block content
 
       #idea-description
         p!= challenge.description_mk
-        p= challenge.refresh
-
-      #idea-tags
-        - each a in challenge.admins
-          p= a
 
       #idea-desc-buttom
         - if (challenge.status == 'closed')
@@ -50,7 +45,7 @@ block content
       - if (currentUrl == '/challenges/' + challenge.link)
         h2 Repositories
         - if (challenge.repos.length != 1)
-          - for (var r=1; r<challenge.repos.length; r++)
+          - for (var r=0; r<challenge.repos.length; r++)
             .ch-repo
               .profile-repo-icon-forked
               .ch-pull-info= "created " + challenge.created_no[r] + " -- merged " + challenge.merged_no[r]
@@ -67,6 +62,7 @@ block content
             = " and ends on "
             b= challenge.end_f
             = ". Make sure you submit your pull requests on time."
+          p= "Last refresh date: " + (challenge.refresh? challenge.refresh : 'N/A')
         - else
           | Time interval not set.
         .spacer
@@ -114,11 +110,11 @@ block content
 
         .spacer
         h2 Repository
-        - for (var r=1; r<challenge.repos.length; r++)
+        - each r in challenge.repos
           .ch-repo
             .ch-pull-info
-              a(href='/challenges/' + challenge.link + '/repo_remove?repo=' + challenge.repos[r]) Remove
-            = challenge.repos[r]
+              a(href='/challenges/' + challenge.link + '/repo_remove?repo=' + r) Remove
+            = r
 
 
         .spacer

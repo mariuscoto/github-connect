@@ -22,10 +22,8 @@ block content
         br
         p= c.description
 
-      ul
-        - each a in c.admins
-          li= a
-
+      .spacer
+      .spacer
       .card-ch-bottom
         - if (c.status == 'tease')
           | Challenge will start soon. Be sure to join.

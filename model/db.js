@@ -99,7 +99,7 @@ var Challenges = new Schema({
   link:         {type: String, default: null},
   email:        {type: String, default: ""},
   logo:         {type: String, default: ""},
-  repos:        {type: [String], default: null},
+  repos:        {type: [String], default: []},
   about:        {type: String, default: ""},
   description:  {type: String, default: ""},
   start:        {type: Date, default: null},
