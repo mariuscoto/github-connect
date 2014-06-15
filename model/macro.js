@@ -42,4 +42,4 @@ exports.LANG = [
   'Other'
 ]
 
-exports.SUPERUSER = ['dev_user']
+exports.SUPERUSER = ['cmarius02']

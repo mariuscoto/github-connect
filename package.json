@@ -2,14 +2,14 @@
   "name": "github-connect",
   "version": "0.0.1",
   "dependencies": {
-    "express": "3.4.x",
-    "everyauth": "0.4.x",
-    "connect": "2.10.x",
-    "jade": "0.31.x",
-    "mongoose": "3.2.0",
+    "connect": "^2.19.6",
+    "cron": "~1.0.4",
+    "everyauth": "^0.4.6",
+    "express": "^3.10.5",
+    "jade": "^0.31.2",
     "markdown": "0.5.x",
-    "nodemailer": "~0.6.3",
-    "cron": "~1.0.4"
+    "mongoose": "^3.2.0",
+    "nodemailer": "~0.6.3"
   },
   "engines": {
     "node": "0.8.x",

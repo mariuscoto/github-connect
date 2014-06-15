@@ -58,14 +58,14 @@ app.configure(function() {
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
   app.use(express.favicon("public/images/github-icon.ico"));
-  app.use(express.bodyParser());
+  app.use(express.json());
+  app.use(express.urlencoded());
   app.use(express.cookieParser());
   app.use(express.session({
     secret: global.config.redis_secret,
     cookie: { maxAge: 1800000 } //30 min
   }));
   app.use(everyauth.middleware());
-  app.use(express.methodOverride());
 
   app.use(app.router);
   app.use(express.static(__dirname + '/public'));
