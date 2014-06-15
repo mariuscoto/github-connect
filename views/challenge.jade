@@ -44,7 +44,7 @@ block content
     .left
       - if (currentUrl == '/challenges/' + challenge.link)
         h2 Repositories
-        - if (challenge.repos.length != 1)
+        - if (challenge.repos.length)
           - for (var r=0; r<challenge.repos.length; r++)
             .ch-repo
               .profile-repo-icon-forked
@@ -110,11 +110,14 @@ block content
 
         .spacer
         h2 Repository
-        - each r in challenge.repos
-          .ch-repo
-            .ch-pull-info
-              a(href='/challenges/' + challenge.link + '/repo_remove?repo=' + r) Remove
-            = r
+        - if (challenge.repos.length)
+          - each r in challenge.repos
+            .ch-repo
+              .ch-pull-info
+                a(href='/challenges/' + challenge.link + '/repo_remove?repo=' + r) Remove
+              = r
+        - else
+          p There are no repos added. Use the form below to get started.
 
 
         .spacer
