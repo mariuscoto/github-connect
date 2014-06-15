@@ -613,6 +613,12 @@ a:hover {
     float: left;
 }
 
+.left label {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 20px 0px 5px 0px;
+}
+
 .left-half {
     width: 300px;
     float: left;

@@ -111,11 +111,12 @@ block content
         .spacer
         h2 Repository
         - if (challenge.repos.length)
-          - each r in challenge.repos
+          - for (var r=0; r<challenge.repos.length; r++)
             .ch-repo
               .ch-pull-info
                 a(href='/challenges/' + challenge.link + '/repo_remove?repo=' + r) Remove
-              = r
+              a(href='http://github.com/' + challenge.repos[r])= challenge.repos[r]
+              = " -- " + challenge.created_no[r] + " created, " + challenge.merged_no[r] + " merged"
         - else
           p There are no repos added. Use the form below to get started.
 
@@ -141,7 +142,7 @@ block content
             - else
               option closed
 
-          label Add repo (user/repo)
+          label Add repository (format: user/repo)
           input.span5(name='repos', type='text')
           p To add more, space separe items.
 
@@ -152,14 +153,15 @@ block content
           label Contact email
           input.span5(name='email', type='text', value='#{challenge.email}')
 
-          label Logo
+          label Challenge logo
           input.span5(name='logo', type='text', value='#{challenge.logo}')
+          p *Use link to image.
 
           label Description
           textarea.span9(name='description', rows='6')= challenge.description
           p *Use markdown to style content.
 
-          label= "Start / End date (DD/MM/YYYY): "
+          label= "Start / End date (format: DD/MM/YYYY): "
           input.span2.datepicker(name='start', type='text', value='#{challenge.start_f}')
           = " / "
           input.span2.datepicker(name='end', type='text', value='#{challenge.end_f}')
