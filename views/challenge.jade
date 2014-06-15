@@ -128,9 +128,18 @@ block content
 
           label Challenge status
           select.selectpicker.span5(name='status', type='text')
-            option tease
-            option live
-            option closed
+            - if (challenge.status == 'tease')
+              option(selected) tease
+            - else
+              option tease
+            - if (challenge.status == 'live')
+              option(selected) live
+            - else
+              option live
+            - if (challenge.status === 'closed')
+              option(selected) closed
+            - else
+              option closed
 
           label Add repo (user/repo)
           input.span5(name='repos', type='text')
