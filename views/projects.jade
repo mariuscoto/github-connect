@@ -77,7 +77,7 @@ block content
               - else
                 option= l
 
-          select.selectpicker.span2.pull-right.projects-search-fields(id='select-size', name='size')
+          select.selectpicker.span2.pull-right(name='size')
             option Size
             if (size == 'small')
               option(selected) Small
@@ -92,7 +92,7 @@ block content
             else
               option Large
 
-          select.selectpicker.span2.pull-right.projects-search-fields(id='select-type', name='type')
+          select.selectpicker.span2.pull-right(name='type')
             option Type
             if (type == 'bug')
               option(selected) Bug
@@ -103,7 +103,7 @@ block content
             else
               option Feature
 
-          input.btn.btn-success.pull-right(id='sub', type='submit', value='Search')
+          input.btn.btn-success.pull-right(type='submit', value='Search')
 
       - if (projects && projects.length != 0)
         #idea-table-header

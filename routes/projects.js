@@ -59,110 +59,116 @@ exports.index = function(req, res) {
 
     if (projects) {
       for (var i=0; i<projects.length; i++) {
-        // mark favorites
+        // Mark favorites
         if (_self.user != null && _self.user.followed.indexOf(projects[i]._id) > -1)
           projects[i].fav = true;
-        // markdown project description
+        // Markdown project description
         //projects[i].description = markdown.toHTML(projects[i].description);
-        // format date
+        // Format date
         projects[i].date_post_f = core.get_time_from(projects[i].date_post);
-        // remove new lines
+        // Remove new lines
         projects[i].description = projects[i].description.replace(/(\r\n|\n|\r)/gm,"");
-        // shorten description
+        // Shorten description
         if (projects[i].description.length > MACRO.PROJECT.DESC)
           projects[i].description = (projects[i].description).substring(0, MACRO.PROJECT.DESC) + " [...]";
       }
     }
 
     res.render('projects', {
-      title:      page_title,
-      user:       _self.user,
-      projects:   projects,
-      currentUrl: req.path,
-      sort:       req.query.sort,
-      repo:       req.query.repo,
-      lang_opt:   MACRO.LANG,
-      type:       req.query.type,
-      size:       req.query.size,
-      lang:       req.query.lang,
-      search:     req.query.search
+      'title':      page_title,
+      'user':       _self.user,
+      'projects':   projects,
+      'currentUrl': req.path,
+      'sort':       req.query.sort,
+      'repo':       req.query.repo,
+      'lang_opt':   MACRO.LANG,
+      'type':       req.query.type,
+      'size':       req.query.size,
+      'lang':       req.query.lang,
+      'search':     req.query.search
     });
 
   }
 };
 
 
+/*
+List all info of selected project.
+*/
 exports.one = function(req, res) {
   if (!req.query.id) return res.redirect('/projects');
   var uid = ((req.session.auth) ? req.session.auth.github.user.id : null);
 
-  Projects
-  .findOne({ '_id': req.query.id })
-  .exec(function(err, project) {
-    if (!project) return res.redirect('/projects');
+  var _self = {};
+
+  Projects.findOne({'_id': req.query.id}).exec(gotProject);
+
+  function gotProject(err, project) {
+    _self.project = project;
 
     // Markdown project description
     project.description_md = markdown.toHTML(project.description);
-    // compute post date
+    // Compute post date
     project.date_post_f = core.get_time_from(project.date_post);
 
-    Users
-    .findOne({ 'user_name': project.user_name})
-    .exec(function(err, cuser) {
-      if (err) return handleError(err);
+    Users.findOne({'user_name': project.user_name}).exec(gotOwner);
+  }
 
-      // compute last seen date
-      cuser.last_seen_f = core.get_time_from(cuser.last_seen);
+  function gotOwner(err, cuser) {
+    _self.cuser = cuser;
 
-      ProjectComments
-      .find({ 'project': req.query.id })
-      .sort('date')
-      .exec(function(err, comments) {
+    // Compute last seen date
+    cuser.last_seen_f = core.get_time_from(cuser.last_seen);
 
-        // get project repo
-        var repo;
-        for (var i=0; i<cuser.repos.length; i++)
-          if (cuser.repos[i].name == project.repo)
-            repo = cuser.repos[i]
+    ProjectComments.find({'project': req.query.id}).sort('date').exec(gotComments);
+  }
 
-        for (i in comments) {
-          // compute post date
-          comments[i].date_f = core.get_time_from(comments[i].date);
-        }
+  function gotComments(err, comments) {
+    _self.comments = comments;
 
-        Users
-        .findOne({ 'user_id': uid })
-        .exec(function (err, user) {
+    // Get project repo
+    for (var i=0; i<_self.cuser.repos.length; i++)
+      if (_self.cuser.repos[i].name == _self.project.repo)
+        _self.repo = _self.cuser.repos[i]
 
-          if (user) {
-            for (i in comments) {
-              // check for already voted comments
-              if (comments[i].upvotes.indexOf(user.user_id) > -1)
-                comments[i].upvote = true;
-              // check for flagged comments
-              if (comments[i].flags.indexOf(user.user_id) > -1)
-                comments[i].flag = true;
-            }
-          }
+    for (i in comments) {
+      // Compute post date
+      _self.comments[i].date_f = core.get_time_from(comments[i].date);
+    }
 
-          res.render('project', {
-            title:      project.title,
-            user:       user,
-            cuser:      cuser,
-            repo:       repo,
-            project:    project,
-            currentUrl: req.path,
-            sort:       req.query.sort,
-            comments:   comments,
-            lang_opt:   MACRO.LANG
-          });
+    Users.findOne({'user_id': uid}).exec(gotUser);
+  }
 
-        });
-      });
+  function gotUser(err, user) {
+    if (user) {
+      for (i in _self.comments) {
+        // check for already voted comments
+        if (_self.comments[i].upvotes.indexOf(_self.user.user_id) > -1)
+          _self.comments[i].upvote = true;
+        // check for flagged comments
+        if (_self.comments[i].flags.indexOf(_self.user.user_id) > -1)
+          _self.comments[i].flag = true;
+      }
+    }
+
+    res.render('project', {
+      'title':      _self.project.title,
+      'user':       user,
+      'cuser':      _self.cuser,
+      'repo':       _self.repo,
+      'project':    _self.project,
+      'currentUrl': req.path,
+      'sort':       req.query.sort,
+      'comments':   _self.comments,
+      'lang_opt':   MACRO.LANG
     });
-  });
+  }
 };
 
+
+/*
+Search and filter projects list.
+*/
 exports.search = function(req, res) {
   var url = "";
 
@@ -178,54 +184,61 @@ exports.search = function(req, res) {
   return res.redirect('/projects?' + url.toLowerCase());
 };
 
+
+/*
+Project admin page. Owner can edit project size, language used or description.
+Project can also be removed from this tab.
+*/
 exports.settings = function(req, res) {
   if (!req.query.id) return res.redirect('/projects');
   var uid = ((req.session.auth) ? req.session.auth.github.user.id : null);
 
-  Projects
-  .findOne({ '_id': req.query.id })
-  .exec(function(err, project) {
+  var _self = {};
+
+  Projects.findOne({'_id': req.query.id}).exec(gotProject);
+
+  function gotProject(err, project) {
+    _self.project = project;
     if (!project) return res.redirect('/projects');
 
     // Markdown project description
-    project.description_md = markdown.toHTML(project.description);
-    // compute post date
-    project.date_post_f = core.get_time_from(project.date_post);
+    _self.project.description_md = markdown.toHTML(project.description);
+    // Compute post date
+    _self.project.date_post_f = core.get_time_from(project.date_post);
 
-    Users
-    .findOne({ 'user_name': project.user_name})
-    .exec(function(err, cuser) {
-      if (err) return handleError(err);
+    Users.findOne({'user_name': project.user_name}).exec(gotOwner);
+  }
 
-      // compute last seen date
-      cuser.last_seen_f = core.get_time_from(cuser.last_seen);
+  function gotOwner(err, cuser) {
+    _self.cuser = cuser;
 
-      // get project repo
-      var repo;
-      for (var i=0; i<cuser.repos.length; i++)
-        if (cuser.repos[i].name == project.repo)
-          repo = cuser.repos[i]
+    // Compute last seen date for owner
+    _self.cuser.last_seen_f = core.get_time_from(cuser.last_seen);
+    // Get project repo
+    for (var i=0; i<cuser.repos.length; i++)
+      if (cuser.repos[i].name == _self.project.repo)
+        _self.repo = cuser.repos[i];
 
-      Users
-      .findOne({ 'user_id': uid })
-      .exec(function (err, user) {
+    Users.findOne({'user_id': uid}).exec(gotUser);
+  }
 
-        res.render('project', {
-          title:      project.title,
-          user:       user,
-          cuser:      cuser,
-          repo:       repo,
-          project:    project,
-          currentUrl: req.path,
-          lang_opt:   MACRO.LANG
-        });
-
-      });
+  function gotUser(err, user) {
+    res.render('project', {
+      'title':      _self.project.title,
+      'user':       user,
+      'cuser':      _self.cuser,
+      'repo':       _self.repo,
+      'project':    _self.project,
+      'currentUrl': req.path,
+      'lang_opt':   MACRO.LANG
     });
-  });
+  }
 };
 
 
+/*
+Edit project handler.
+*/
 exports.edit = function(req, res) {
   if (!req.query.id) return res.redirect('/projects');
 
@@ -251,138 +264,149 @@ exports.edit = function(req, res) {
 };
 
 
+/*
+Add new project. Must have title and description to be added.
+*/
 exports.add = function(req, res) {
-  // add project only if it has a title and description
-  // TODO: check if type is known
   if (req.body.repo && req.body.title)
     new Projects({
-      repo:         req.body.repo,
-      user_name :   req.session.auth.github.user.login,
-      size:         req.body.size.toLowerCase(),
-      lang:         req.body.lang.toLowerCase(),
-      title:        req.body.title,
-      type:         req.body.type,
-      description:  req.body.description,
-      date_post:    Date.now(),
-      points:       MACRO.PROJECT.NEW
+      'repo':         req.body.repo,
+      'user_name':    req.session.auth.github.user.login,
+      'size':         req.body.size.toLowerCase(),
+      'lang':         req.body.lang.toLowerCase(),
+      'title':        req.body.title,
+      'type':         req.body.type,
+      'description':  req.body.description,
+      'date_post':    Date.now(),
+      'points':       MACRO.PROJECT.NEW
 
-    }).save(function (err, todo, count) {
-      // update total score
-      var conditions = {user_id: req.session.auth.github.user.id};
-      var update = {$inc: {points_projects: MACRO.PROJECT.NEW }};
-      Users.update(conditions, update).exec();
-
-      console.log("* " + req.session.auth.github.user.login + " added project.");
-      res.redirect('/projects');
-    });
+    }).save(savedProject);
   else
     res.redirect('/projects');
+
+  function savedProject(err, todo, count) {
+    // Update total score
+    var conditions = {'user_id': req.session.auth.github.user.id};
+    var update = {$inc: {'points_projects': MACRO.PROJECT.NEW }};
+    Users.update(conditions, update).exec();
+
+    console.log("* " + req.session.auth.github.user.login + " added project.");
+    res.redirect('/projects');
+  }
 };
 
 
+/*
+Add comment to a project. Notify owner.
+*/
 exports.comment = function(req, res) {
-  // increment comments number
-  var conditions = { _id: req.query.id };
-  var update = {$inc: {comments_num: 1}};
-  Projects.update(conditions, update, function (err, num) {
+  // Increment comments number
+  var conditions = {'_id': req.query.id };
+  var update = {$inc: {'comments_num': 1}};
+  Projects.update(conditions, update, updatedProject);
+
+  function updatedProject (err, num) {
     new ProjectComments({
-      user_name:  req.session.auth.github.user.login,
-      project:    req.query.id,
-      content:    req.body.content,
-      date:       Date.now()
+      'user_name':  req.session.auth.github.user.login,
+      'project':    req.query.id,
+      'content':    req.body.content
     }).save(function(err, comm, count) {
       console.log("* " + req.session.auth.github.user.login +
                   " commented on " + req.query.id);
       res.redirect('/project?id=' + req.query.id);
     });
 
-    Projects
-    .findOne({ '_id': req.query.id })
-    .exec(function(err, project) {
-      new Notifications({
-        src:    req.session.auth.github.user.login,
-        dest:   project.user_name,
-        type:   "proj_comm",
-        seen:   false,
-        date:   Date.now(),
-        link:   "/project?id=" + req.query.id
-      }).save(function(err, comm, count) {
-        console.log("* " + project.user_name + " notified.");
-      });
+    Projects.findOne({'_id': req.query.id}).exec(gotProject);
+  }
 
-      var conditions = {user_name: project.user_name};
-      var update = {$set: {unread: true}};
-      Users.update(conditions, update).exec();
+  function gotProject(err, project) {
+    new Notifications({
+      'src':    req.session.auth.github.user.login,
+      'dest':   project.user_name,
+      'type':   "proj_comm",
+      'link':   "/project?id=" + req.query.id
+    }).save(function(err, comm, count) {
+      console.log("* " + project.user_name + " notified.");
     });
-  });
+
+    var conditions = {'user_name': project.user_name};
+    var update = {$set: {'unread': true}};
+    Users.update(conditions, update).exec();
+  }
 };
 
 
+/*
+Add project to followed list. Used in AJAX calls.
+*/
 exports.follow = function(req, res) {
-  var conditions = {user_id: req.session.auth.github.user.id};
-  var update = {$push: {followed: req.query.id}};
+  var conditions = {'user_id': req.session.auth.github.user.id};
+  var update = {$push: {'followed': req.query.id}};
   Users.update(conditions, update, function (err, num) {
     if (num) res.json({success: true});
   });
 };
 
 
+/*
+Remove project from followed list. Used in AJAX calls.
+*/
 exports.unfollow = function(req, res) {
-  var conditions = {user_id: req.session.auth.github.user.id};
-  var update = {$pull: {followed: req.query.id}};
+  var conditions = {'user_id': req.session.auth.github.user.id};
+  var update = {$pull: {'followed': req.query.id}};
   Users.update(conditions, update, function (err, num) {
     if (num) res.json({success: true});
   });
 };
 
 
+/*
+Upvote project comment. Used in AJAX calls.
+*/
 exports.upvote = function(req, res) {
-  var conditions = {_id: req.query.id};
-  var update = {$addToSet: {upvotes: req.session.auth.github.user.id}};
+  var conditions = {'_id': req.query.id};
+  var update = {$addToSet: {'upvotes': req.session.auth.github.user.id}};
   ProjectComments.update(conditions, update, function (err, num) {
-    if (num) {
-      console.log("* " + req.session.auth.github.user.login +
-                  " upvoted " + req.query.id);
-      res.json({success: true});
-    }
+    if (num) res.json({success: true});
   });
 };
 
 
+/*
+Flag project comment. Used in AJAX calls.
+*/
 exports.flag = function(req, res) {
-  var conditions = {_id: req.query.id};
-  var update = {$addToSet: {flags: req.session.auth.github.user.id}};
+  var conditions = {'_id': req.query.id};
+  var update = {$addToSet: {'flags': req.session.auth.github.user.id}};
   ProjectComments.update(conditions, update, function (err, num) {
-    if (num) {
-      console.log("* " + req.session.auth.github.user.login +
-                  " flagged " + req.query.id);
-      res.json({success: true});
-    }
+    if (num) res.json({success: true});
   });
 };
 
 
+/*
+Totally remove project, associated comments and update user score.
+*/
 exports.remove = function(req, res) {
-  Projects
-  .findOne({ '_id': req.query.id })
-  .exec(function(err, project) {
-    // allow only edits by owner
+
+  Projects.findOne({'_id': req.query.id}).exec(gotProject);
+
+  function gotProject(err, project) {
+    // Allow only edits by owner
     if (project.user_name != req.session.auth.github.user.login)
       return res.redirect('/projects');
 
-    // update score
-    var conditions = {user_id: req.session.auth.github.user.id};
-    var update = {$inc: {points_projects: -(project.points)}};
+    // Update score
+    var conditions = {'user_id': req.session.auth.github.user.id};
+    var update = {$inc: {'points_projects': -(project.points)}};
     Users.update(conditions, update).exec();
 
-    Projects.remove({_id: req.query.id}, function (err, num) {
-      console.log("* " + req.session.auth.github.user.login +
-                  " removed project " + req.query.id);
+    Projects.remove({'_id': req.query.id}, function (err, num) {
+      if (err) console.log("[ERR] Could not remove project.");
     });
 
-    ProjectComments.remove({idea: req.query.id}, function (err, num) {
-      console.log("* " + req.session.auth.github.user.login +
-                  " removed all comments from " + req.query.id);
+    ProjectComments.remove({'idea': req.query.id}, function (err, num) {
+      if (err) console.log("[ERR] Could not remove project comments.");
     });
 
     res.redirect('/projects');

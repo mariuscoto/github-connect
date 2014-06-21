@@ -62,15 +62,15 @@ exports.index = function(req, res) {
     }
 
     res.render('ideas', {
-      title:      'Ideas',
-      user:       _self.user,
-      ideas:      _self.ideas,
-      currentUrl: req.path,
-      sort:       req.query.sort,
-      lang_opt:   MACRO.LANG,
-      size:       req.query.size,
-      lang:       req.query.lang,
-      search:     req.query.search
+      'title':      'Ideas',
+      'user':       _self.user,
+      'ideas':      _self.ideas,
+      'currentUrl': req.path,
+      'sort':       req.query.sort,
+      'lang_opt':   MACRO.LANG,
+      'size':       req.query.size,
+      'lang':       req.query.lang,
+      'search':     req.query.search
     });
   }
 };
@@ -163,15 +163,15 @@ exports.one = function(req, res) {
     }
 
     res.render('idea', {
-      title:      _self.idea.title,
-      user:       _self.user,
-      cuser:      _self.cuser,
-      idea:       _self.idea,
-      comments:   _self.comments,
-      team:       _self.team,
-      currentUrl: req.path,
-      sort:       req.query.sort,
-      lang_opt:   MACRO.LANG
+      'title':      _self.idea.title,
+      'user':       _self.user,
+      'cuser':      _self.cuser,
+      'idea':       _self.idea,
+      'comments':   _self.comments,
+      'team':       _self.team,
+      'currentUrl': req.path,
+      'sort':       req.query.sort,
+      'lang_opt':   MACRO.LANG
     });
   }
 };
@@ -204,22 +204,22 @@ exports.add = function(req, res) {
     return res.redirect('/ideas');
 
   new Ideas({
-    user_name:    req.session.auth.github.user.login,
-    title:        req.body.title,
-    description:  req.body.description,
-    lang:         req.body.lang.toLowerCase(),
-    size:         req.body.size.toLowerCase(),
-    plan:         req.body.plan,
-    eta:          req.body.eta,
-    points:       MACRO.IDEA.NEW
+    'user_name':    req.session.auth.github.user.login,
+    'title':        req.body.title,
+    'description':  req.body.description,
+    'lang':         req.body.lang.toLowerCase(),
+    'size':         req.body.size.toLowerCase(),
+    'plan':         req.body.plan,
+    'eta':          req.body.eta,
+    'points':       MACRO.IDEA.NEW
   }).save(savedIdea);
 
   function savedIdea(err, todo, count) {
     if (err) console.log("[ERR] Idea not saved.");
 
     // Update user ideas points
-    var conditions = {user_id: req.session.auth.github.user.id};
-    var update = {$inc: {points_ideas: MACRO.IDEA.NEW }};
+    var conditions = {'user_id': req.session.auth.github.user.id};
+    var update = {$inc: {'points_ideas': MACRO.IDEA.NEW }};
     Users.update(conditions, update).exec();
 
     console.log("* " + req.session.auth.github.user.login + " added idea.");
@@ -257,15 +257,15 @@ Add idea comment. Send notification.
 */
 exports.comment = function(req, res) {
   // Increment idea comments number
-  var conditions = { _id: req.query.id };
-  var update = {$inc: {comments_num: 1}};
+  var conditions = {'_id': req.query.id };
+  var update = {$inc: {'comments_num': 1}};
   Ideas.update(conditions, update).exec(updatedIdea);
 
   function updatedIdea(err, num) {
     new IdeaComments({
-      user_name:  req.session.auth.github.user.login,
-      idea:       req.query.id,
-      content:    req.body.content,
+      'user_name':  req.session.auth.github.user.login,
+      'idea':       req.query.id,
+      'content':    req.body.content,
     }).save(function(err, comm, count) {
       console.log("* " + req.session.auth.github.user.login + " commented on " + req.query.id);
       res.redirect('/idea?id=' + req.query.id);
@@ -277,10 +277,10 @@ exports.comment = function(req, res) {
 
   function notify(err, idea) {
     new Notifications({
-      src:    req.session.auth.github.user.login,
-      dest:   idea.user_name,
-      type:   "idea_comm",
-      link:   "/idea?id=" + req.query.id
+      'src':    req.session.auth.github.user.login,
+      'dest':   idea.user_name,
+      'type':   "idea_comm",
+      'link':   "/idea?id=" + req.query.id
     }).save(function(err, comm, count) {
       if (err) console.log("[ERR] idea comm notif not sent");
     });
@@ -296,8 +296,8 @@ exports.comment = function(req, res) {
 Add idea to favorites list. Used in AJAX calls.
 */
 exports.fav = function(req, res) {
-  var conditions = {user_id: req.session.auth.github.user.id};
-  var update = {$push: {favorites: req.query.id}};
+  var conditions = {'user_id': req.session.auth.github.user.id};
+  var update = {$push: {'favorites': req.query.id}};
   Users.update(conditions, update, function (err, num) {
     if (num) res.json({success: true});
   });
@@ -308,8 +308,8 @@ exports.fav = function(req, res) {
 Remove idea from favorites list. Used in AJAX calls.
 */
 exports.unfav = function(req, res) {
-  var conditions = {user_id: req.session.auth.github.user.id};
-  var update = {$pull: {favorites: req.query.id}};
+  var conditions = {'user_id': req.session.auth.github.user.id};
+  var update = {$pull: {'favorites': req.query.id}};
   Users.update(conditions, update, function (err, num) {
     if (num) res.json({success: true});
   });
@@ -320,8 +320,8 @@ exports.unfav = function(req, res) {
 Upvote idea comment. Used in AJAX calls.
 */
 exports.upvote = function(req, res) {
-  var conditions = {_id: req.query.id};
-  var update = {$addToSet: {upvotes: req.session.auth.github.user.id}};
+  var conditions = {'_id': req.query.id};
+  var update = {$addToSet: {'upvotes': req.session.auth.github.user.id}};
   IdeaComments.update(conditions, update, function (err, num) {
     if (num) res.json({success: true});
   });
@@ -332,8 +332,8 @@ exports.upvote = function(req, res) {
 Flag idea comment. Used in AJAX calls.
 */
 exports.flag = function(req, res) {
-  var conditions = {_id: req.query.id};
-  var update = {$addToSet: {flags: req.session.auth.github.user.id}};
+  var conditions = {'_id': req.query.id};
+  var update = {$addToSet: {'flags': req.session.auth.github.user.id}};
   IdeaComments.update(conditions, update, function (err, num) {
     if (num) res.json({success: true});
   });
@@ -446,8 +446,7 @@ exports.own = function(req, res) {
 
 
 /*
-Totally remove idea, associated comments and update
-user score.
+Totally remove idea, associated comments and update user score.
 */
 exports.remove = function(req, res) {
 
