@@ -8,67 +8,87 @@ var Notifications = mongoose.model('Notifications');
 var markdown = require( "markdown" ).markdown;
 
 
+/*
+Get list of all projects.
+There can also be filtered results, by string, project size, used programming
+language, project type (bug/feature) or the repo from which they belong.
+*/
 exports.index = function(req, res) {
   var uid = ((req.session.auth) ? req.session.auth.github.user.id : null);
 
+  var _self = {}, conditions = {};
   var sort_type = null;
+  var page_title = "Projects"
+
   if (req.query.sort == "most_recent") {
     sort_type = '-date_post';
   } else if (req.query.sort == "most_commented") {
     sort_type = '-comments_num';
   }
 
-  Users
-  .findOne({ 'user_id': uid })
-  .exec(function (err, user) {
-    if (err) return handleError(err);
+  Users.findOne({'user_id': uid}).exec(gotUser);
 
-    // set find conditions
-    var conditions = null;
-    var page_title = "Projects"
-    if (req.path == "/projects_user")
-      conditions = { 'uid': user.user_id }
-    else if (req.path == "/projects_fav")
-      conditions = { _id: { $in: user.followed }}
-    if (req.query.repo) {
-      conditions = { repo: req.query.repo }
-      page_title = "Projects of " + req.query.repo
+  function gotUser (err, user) {
+    _self.user = user;
+
+    // Check for query string and match using regex
+    if (req.query.search) { conditions['$or'] = [
+        {'description' : new RegExp(req.query.search, "i")},
+        {'title'       : new RegExp(req.query.search, "i")}]
     }
 
-    Projects
-    .find(conditions)
-    .sort(sort_type)
-    .exec(function(err, projects) {
+    // Check filters
+    if (req.query.type) conditions['type'] = req.query.type;
+    if (req.query.size) conditions['size'] = req.query.size;
+    if (req.query.lang) conditions['lang'] = req.query.lang;
 
-      if (projects) {
-        for (var i=0; i<projects.length; i++) {
-          // mark favorites
-          if (user != null && user.followed.indexOf(projects[i]._id) > -1)
-            projects[i].fav = true;
-          // markdown project description
-          //projects[i].description = markdown.toHTML(projects[i].description);
-          // format date
-          projects[i].date_post_f = core.get_time_from(projects[i].date_post);
-          // remove new lines
-          projects[i].description = projects[i].description.replace(/(\r\n|\n|\r)/gm,"");
-          // shorten description
-          if (projects[i].description.length > MACRO.PROJECT.DESC)
-            projects[i].description = (projects[i].description).substring(0, MACRO.PROJECT.DESC) + " [...]";
-        }
+    // Check find conditions
+    if (req.path == "/projects_user") conditions['uid'] = user.user_id;
+    if (req.path == "/projects_fav")  conditions['_id'] = {$in: user.followed};
+
+    // Filter by specific repo
+    if (req.query.repo) {
+      conditions['repo'] = req.query.repo;
+      page_title = "Projects of " + req.query.repo;
+    }
+
+    Projects.find(conditions).sort(sort_type).exec(gotProjects);
+  }
+
+  function gotProjects(err, projects) {
+
+    if (projects) {
+      for (var i=0; i<projects.length; i++) {
+        // mark favorites
+        if (_self.user != null && _self.user.followed.indexOf(projects[i]._id) > -1)
+          projects[i].fav = true;
+        // markdown project description
+        //projects[i].description = markdown.toHTML(projects[i].description);
+        // format date
+        projects[i].date_post_f = core.get_time_from(projects[i].date_post);
+        // remove new lines
+        projects[i].description = projects[i].description.replace(/(\r\n|\n|\r)/gm,"");
+        // shorten description
+        if (projects[i].description.length > MACRO.PROJECT.DESC)
+          projects[i].description = (projects[i].description).substring(0, MACRO.PROJECT.DESC) + " [...]";
       }
+    }
 
-      res.render('projects', {
-        title:      page_title,
-        user:       user,
-        projects:   projects,
-        currentUrl: req.path,
-        sort:       req.query.sort,
-        repo:       req.query.repo,
-        lang_opt:   MACRO.LANG
-      });
-
+    res.render('projects', {
+      title:      page_title,
+      user:       _self.user,
+      projects:   projects,
+      currentUrl: req.path,
+      sort:       req.query.sort,
+      repo:       req.query.repo,
+      lang_opt:   MACRO.LANG,
+      type:       req.query.type,
+      size:       req.query.size,
+      lang:       req.query.lang,
+      search:     req.query.search
     });
-  });
+
+  }
 };
 
 
@@ -141,6 +161,21 @@ exports.one = function(req, res) {
       });
     });
   });
+};
+
+exports.search = function(req, res) {
+  var url = "";
+
+  // Add string query, truncated to some limit
+  if (req.body.string)
+    url += "search=" + req.body.string.substring(0, MACRO.QUERY_LIMIT) + "&";
+
+  // Add project filters
+  if (req.body.type && req.body.type != 'Type') url += "type=" + req.body.type + "&";
+  if (req.body.size && req.body.size != 'Size') url += "size=" + req.body.size + "&";
+  if (req.body.lang && req.body.lang != 'Lang') url += "lang=" + req.body.lang + "&";
+
+  return res.redirect('/projects?' + url.toLowerCase());
 };
 
 exports.settings = function(req, res) {
@@ -223,8 +258,8 @@ exports.add = function(req, res) {
     new Projects({
       repo:         req.body.repo,
       user_name :   req.session.auth.github.user.login,
-      size:         req.body.size,
-      lang:         req.body.lang,
+      size:         req.body.size.toLowerCase(),
+      lang:         req.body.lang.toLowerCase(),
       title:        req.body.title,
       type:         req.body.type,
       description:  req.body.description,

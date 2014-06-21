@@ -113,6 +113,7 @@ app.get('/projects_user', ensureAuth, projects.index);
 app.get('/project', projects.one);
 app.get('/project/settings', ensureAuth, projects.settings);
 app.post('/projects', projects.add);
+app.post('/projects/search', projects.search);
 app.post('/projects/edit', ensureAuth, projects.edit);
 app.post('/projects/follow', ensureAuth, projects.follow);
 app.post('/projects/unfollow', ensureAuth, projects.unfollow);

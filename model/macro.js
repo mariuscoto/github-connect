@@ -21,6 +21,8 @@ exports.CRON = {
     CHALLENGE: '00 00 02,17 * * *'
 }
 
+exports.QUERY_LIMIT = 128
+
 exports.LANG = [
   'Bash',
   'C/C++',

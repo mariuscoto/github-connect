@@ -55,26 +55,57 @@ block content
 
   #content
     .left
+
       - if (projects && projects.length != 0)
         - if (repo)
           h1= repo + " projects"
         - else
           h1 Projects list
 
-        .search
-          form(method='POST', action='')
-            input.span4(type='text', id='search_box', placeholder='Projects filter . . .')
-            select.selectpicker.span2.pull-right.projects-search-fields(id='select-size', name='size')
-              option -Size-
+      - else
+        h1 No search results found.
+
+      .search
+        form(method='POST', action='/projects/search')
+          input.span4(type='text', name='string', placeholder='Projects filter . . .', value=search)
+
+          select.selectpicker.span2.pull-right(name='lang')
+            option Lang
+            - each l in lang_opt
+              - if (lang == l.toLowerCase())
+                option(selected)= l
+              - else
+                option= l
+
+          select.selectpicker.span2.pull-right.projects-search-fields(id='select-size', name='size')
+            option Size
+            if (size == 'small')
+              option(selected) Small
+            else
               option Small
+            if (size == 'medium')
+              option(selected) Medium
+            else
               option Medium
+            if (size == 'large')
+              option(selected) Large
+            else
               option Large
 
-            select.selectpicker.span2.pull-right.projects-search-fields(id='select-type', name='type')
-              option -Type-
+          select.selectpicker.span2.pull-right.projects-search-fields(id='select-type', name='type')
+            option Type
+            if (type == 'bug')
+              option(selected) Bug
+            else
               option Bug
+            if (type == 'feature')
+              option(selected) Feature
+            else
               option Feature
 
+          input.btn.btn-success.pull-right(id='sub', type='submit', value='Search')
+
+      - if (projects && projects.length != 0)
         #idea-table-header
           ul
             li

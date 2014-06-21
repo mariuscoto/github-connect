@@ -37,7 +37,10 @@ block content
         h5!= project.description
 
       #idea-tags
-        p= "#" + project.type + " #" + project.lang + " #" + project.size
+        p
+          a.tag(href='/projects?type=' + project.type.toLowerCase())= "#" + project.type.toLowerCase()
+          a.tag(href='/projects?lang=' + project.lang.toLowerCase())= "#" + project.lang.toLowerCase()
+          a.tag(href='/projects?size=' + project.size.toLowerCase())= "#" + project.size.toLowerCase()
 
       .spacer
       .spacer
