@@ -105,11 +105,12 @@ exports.one = function(req, res) {
 
   function gotProject(err, project) {
     _self.project = project;
+    if (!project) return res.redirect('/projects');
 
     // Markdown project description
-    project.description_md = markdown.toHTML(project.description);
+    _self.project.description_md = markdown.toHTML(project.description);
     // Compute post date
-    project.date_post_f = core.get_time_from(project.date_post);
+    _self.project.date_post_f = core.get_time_from(project.date_post);
 
     Users.findOne({'user_name': project.user_name}).exec(gotOwner);
   }
@@ -320,18 +321,21 @@ exports.comment = function(req, res) {
   }
 
   function gotProject(err, project) {
-    new Notifications({
-      'src':    req.session.auth.github.user.login,
-      'dest':   project.user_name,
-      'type':   "proj_comm",
-      'link':   "/project?id=" + req.query.id
-    }).save(function(err, comm, count) {
-      console.log("* " + project.user_name + " notified.");
-    });
+    // Do not send notifications for own comments.
+    if (req.session.auth.github.user.login != project.user_name) {
+      new Notifications({
+        'src':    req.session.auth.github.user.login,
+        'dest':   project.user_name,
+        'type':   "proj_comm",
+        'link':   "/project?id=" + req.query.id
+      }).save(function(err, comm, count) {
+        console.log("* " + project.user_name + " notified.");
+      });
 
-    var conditions = {'user_name': project.user_name};
-    var update = {$set: {'unread': true}};
-    Users.update(conditions, update).exec();
+      var conditions = {'user_name': project.user_name};
+      var update = {$set: {'unread': true}};
+      Users.update(conditions, update).exec();
+    }
   }
 };
 

@@ -276,18 +276,21 @@ exports.comment = function(req, res) {
   }
 
   function notify(err, idea) {
-    new Notifications({
-      'src':    req.session.auth.github.user.login,
-      'dest':   idea.user_name,
-      'type':   "idea_comm",
-      'link':   "/idea?id=" + req.query.id
-    }).save(function(err, comm, count) {
-      if (err) console.log("[ERR] idea comm notif not sent");
-    });
+    // Do not send notifications for own comments.
+    if (req.session.auth.github.user.login != idea.user_name) {
+      new Notifications({
+        'src':    req.session.auth.github.user.login,
+        'dest':   idea.user_name,
+        'type':   "idea_comm",
+        'link':   "/idea?id=" + req.query.id
+      }).save(function(err, comm, count) {
+        if (err) console.log("[ERR] idea comm notif not sent");
+      });
 
-    var conditions = {'user_name': idea.user_name};
-    var update = {$set: {'unread': true}};
-    Users.update(conditions, update).exec();
+      var conditions = {'user_name': idea.user_name};
+      var update = {$set: {'unread': true}};
+      Users.update(conditions, update).exec();
+    }
   }
 };
 
