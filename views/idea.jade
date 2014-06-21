@@ -28,7 +28,12 @@ block content
         h5!= idea.description
 
       #idea-tags
-        p= "#" + idea.size + " #" + idea.lang + " #" + idea.eta
+        p= "Finish date: "
+          b= idea.eta
+        p
+          a.tag(href='/ideas?size=' + idea.size.toLowerCase())= "#" + idea.size.toLowerCase()
+          a.tag(href='/ideas?lang=' + idea.lang.toLowerCase())= "#" + idea.lang.toLowerCase()
+
 
       .spacer
       #idea-desc-buttom

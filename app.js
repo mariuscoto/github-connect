@@ -86,6 +86,7 @@ app.get('/idea/settings', ideas.one);
 app.post('/idea/owner', ensureAuth, ideas.own);
 app.post('/idea/remove', ensureAuth, ideas.remove);
 app.post('/ideas', ideas.add);
+app.post('/ideas/search', ideas.search);
 app.post('/idea/fav', ensureAuth, ideas.fav);
 app.post('/idea/unfav', ensureAuth, ideas.unfav);
 app.post('/idea/edit', ensureAuth, ideas.edit);

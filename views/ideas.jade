@@ -51,23 +51,42 @@ block content
 
   #content
     .left
-      - if (ideas.length != 0)
+      - if (ideas.length)
         h1 Ideas list
+      - else
+        h1 No search results found
 
-        .search
-          form(method='POST', action='')
-            input.span4(type='text', id='search_box', placeholder='Ideas filter . . .')
-            select.selectpicker.span2.pull-right.ideas-search-fields(id='select-lang', name='lang')
-              option -Language-
-              - each l in lang_opt
+      .search
+        form(method='POST', action='/ideas/search')
+          input.span4(type='text', name='string', placeholder='Ideas filter . . .', value=search)
+
+          select.selectpicker.span2.pull-right(name='lang')
+            option Lang
+            - each l in lang_opt
+              - if (lang == l.toLowerCase())
+                option(selected)= l
+              - else
                 option= l
 
-            select.selectpicker.span2.pull-right.ideas-search-fields(id='select-size', name='size')
-              option -Size-
+          select.selectpicker.span2.pull-right(name='size')
+            option Size
+            if (size == 'small')
+              option(selected) Small
+            else
               option Small
+            if (size == 'medium')
+              option(selected) Medium
+            else
               option Medium
+            if (size == 'large')
+              option(selected) Large
+            else
               option Large
 
+          br
+          input.btn.btn-success.pull-right(type='submit', value='Search')
+
+      - if (ideas.length != 0)
         #idea-table-header
           ul
             li

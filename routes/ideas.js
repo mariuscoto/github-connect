@@ -17,7 +17,7 @@ based on URL and sort them by GET argument.
 exports.index = function(req, res) {
   var uid = ((req.session.auth) ? req.session.auth.github.user.id : null);
 
-  var _self = {};
+  var _self = {}, conditions = {};
   var sort_type = null;
   if (req.query.sort == 'most_recent') {
     sort_type = '-date_post';
@@ -30,12 +30,19 @@ exports.index = function(req, res) {
   function gotUser(err, user) {
     _self.user = user;
 
+    // Check for query string and match using regex
+    if (req.query.search) { conditions['$or'] = [
+        {'description' : new RegExp(req.query.search, "i")},
+        {'title'       : new RegExp(req.query.search, "i")}]
+    }
+
+    // Check filters
+    if (req.query.size) conditions['size'] = req.query.size;
+    if (req.query.lang) conditions['lang'] = req.query.lang;
+
     // Set find conditions given by URL
-    var conditions = null;
-    if (req.path == '/ideas_user')
-      conditions = {'uid': user.user_id}
-    else if (req.path == "/ideas_fav")
-      conditions = {'_id': {$in: user.favorites}}
+    if (req.path == '/ideas_user') conditions['uid'] = user.user_id;
+    if (req.path == "/ideas_fav")  conditions['_id'] = {$in: user.favorites};
 
     Ideas.find(conditions).sort(sort_type).exec(gotIdea);
   }
@@ -60,7 +67,10 @@ exports.index = function(req, res) {
       ideas:      _self.ideas,
       currentUrl: req.path,
       sort:       req.query.sort,
-      lang_opt:   MACRO.LANG
+      lang_opt:   MACRO.LANG,
+      size:       req.query.size,
+      lang:       req.query.lang,
+      search:     req.query.search
     });
   }
 };
@@ -168,6 +178,24 @@ exports.one = function(req, res) {
 
 
 /*
+Search and filter ideas list.
+*/
+exports.search = function(req, res) {
+  var url = "";
+
+  // Add string query, truncated to some limit
+  if (req.body.string)
+    url += "search=" + req.body.string.substring(0, MACRO.QUERY_LIMIT) + "&";
+
+  // Add ideas filters
+  if (req.body.size && req.body.size != 'Size') url += "size=" + req.body.size + "&";
+  if (req.body.lang && req.body.lang != 'Lang') url += "lang=" + req.body.lang + "&";
+
+  return res.redirect('/ideas?' + url.toLowerCase());
+};
+
+
+/*
 Add idea to db, update scores and post to fb page.
 */
 exports.add = function(req, res) {
@@ -179,9 +207,9 @@ exports.add = function(req, res) {
     user_name:    req.session.auth.github.user.login,
     title:        req.body.title,
     description:  req.body.description,
-    lang:         req.body.lang,
+    lang:         req.body.lang.toLowerCase(),
+    size:         req.body.size.toLowerCase(),
     plan:         req.body.plan,
-    size:         req.body.size,
     eta:          req.body.eta,
     points:       MACRO.IDEA.NEW
   }).save(savedIdea);
