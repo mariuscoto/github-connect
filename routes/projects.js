@@ -143,10 +143,10 @@ exports.one = function(req, res) {
     if (user) {
       for (i in _self.comments) {
         // check for already voted comments
-        if (_self.comments[i].upvotes.indexOf(_self.user.user_id) > -1)
+        if (_self.comments[i].upvotes.indexOf(user.user_id) > -1)
           _self.comments[i].upvote = true;
         // check for flagged comments
-        if (_self.comments[i].flags.indexOf(_self.user.user_id) > -1)
+        if (_self.comments[i].flags.indexOf(user.user_id) > -1)
           _self.comments[i].flag = true;
       }
     }
@@ -410,5 +410,5 @@ exports.remove = function(req, res) {
     });
 
     res.redirect('/projects');
-  });
+  }
 };
