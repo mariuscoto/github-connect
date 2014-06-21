@@ -55,7 +55,7 @@ block content
 
   #content
     .left
-      - if (projects.length != 0)
+      - if (projects && projects.length != 0)
         - if (repo)
           h1= repo + " projects"
         - else
@@ -93,7 +93,7 @@ block content
               - else
                 a(href=currentUrl + '?sort=most_commented') Most commented
 
-      - if (projects.length != 0)
+      - if (projects && projects.length != 0)
         .ideas-bubble
           - each p in projects
             .idea

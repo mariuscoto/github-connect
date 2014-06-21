@@ -11,27 +11,28 @@ function ideaDelete(input) {
 <script>
 
 function checkdate(input){
-var validformat=/^\d{2}\/\d{2}\/\d{4}$/ //Basic check for format validity
-var returnval=false
-if (!validformat.test(input.value))
-alert("Invalid Date Format. Make sure the format is dd/mm/yyyy.")
-else{
-//Detailed check for valid date ranges
-var dayfield=input.value.split("/")[0]
-var monthfield=input.value.split("/")[1]
-var yearfield=input.value.split("/")[2]
-var dayobj = new Date(yearfield, monthfield-1, dayfield)
-if ((dayobj.getDate()!=dayfield)||(dayobj.getMonth()+1!=monthfield)||(dayobj.getFullYear()!=yearfield))
-alert("Invalid Day, Month, or Year range detected. Please correct and submit again.")
-else
-returnval=true
-}
-if (returnval==false) input.select()
-return returnval
+  var validformat=/^\d{2}\/\d{2}\/\d{4}$/
+  var returnval=false
+
+  if (!validformat.test(input.value))
+    alert("Invalid Date Format. Make sure the format is dd/mm/yyyy.")
+  else{
+    //Detailed check for valid date ranges
+    var dayfield=input.value.split("/")[0]
+    var monthfield=input.value.split("/")[1]
+    var yearfield=input.value.split("/")[2]
+    var dayobj = new Date(yearfield, monthfield-1, dayfield)
+    if ((dayobj.getDate()!=dayfield)||(dayobj.getMonth()+1!=monthfield)||(dayobj.getFullYear()!=yearfield))
+      alert("Invalid Day, Month, or Year range detected. Please correct and submit again.")
+    else
+      returnval=true
+    }
+
+    if (returnval==false) input.select()
+      return returnval
 }
 
-</script>
-<script>
+
 var hidden = 1;
 $('#idt').click(function () {
   if(hidden === 1) {
@@ -42,9 +43,8 @@ $('#idt').click(function () {
     hidden = 0;
   }
 });
-</script>
 
-<script>
+
 $('.upvote').click(function () {
   // click just once
   if (this.className == "upvote") {
@@ -61,9 +61,8 @@ $('.upvote').click(function () {
     });
   }
 });
-</script>
 
-<script>
+
 $('.flag').click(function () {
   // click just once
   if (this.className == "flag") {
@@ -78,85 +77,107 @@ $('.flag').click(function () {
     });
   }
 });
-</script>
 
-<script>
+// Show flagged comment on request
 $('.show_comment').click(function () {
     var id = $(this).attr("id");
     $('#' + id + '_com').attr("class", "hidden_comment");
     $('#' + id + '_comm').attr("class", "comment");
     return false;
 });
-</script>
 
-<script>
-$('.idea-title-fav').click(function () {
-  // click just once
-  if (this.className == "idea-title-fav") {
-    var id = this.id;
-    $.ajax({
-     url: 'idea/fav?id=' + this.id,
-     type: "POST",
-     success: function(response) {
-       if (response.success)
-         document.getElementById(id).setAttribute("class", "idea-title-fav-selected");
-     }
-    });
-  }
-});
 
-$('.idea-title-fav-selected').click(function () {
-  // click just once
-  if (this.className == "idea-title-fav-selected") {
-    var id = this.id;
-    $.ajax({
-     url: 'idea/unfav?id=' + this.id,
-     type: "POST",
-     success: function(response) {
-       if (response.success)
-	{
-        document.getElementById(id).setAttribute("class", "idea-title-fav");
+// Fav idea
+$('.idea-title-fav').on("click", fav_idea);
+function fav_idea() {
+  var id = this.id;
 
-	}
-     }
-    });
-  }
-});
-</script>
+  $.ajax({
+   url: 'idea/fav?id=' + this.id,
+   type: "POST",
+   success: function(response) {
+     if (response.success) {
+        // Clear and bind new class and event
+        $('#' + id).off();
+        $('#' + id).addClass('idea-title-fav-selected');
+        $('#' + id).removeClass('idea-title-fav');
+        $('#' + id).on("click", unfav_idea);
+      }
+   }
+  });
+}
 
-<script>
-$('.project-title-fav').click(function () {
-  // click just once
-  if (this.className == "project-title-fav") {
-    var id = this.id;
-    $.ajax({
-     url: 'projects/follow?id=' + this.id,
-     type: "POST",
-     success: function(response) {
-       if (response.success)
-         document.getElementById(id).setAttribute("class", "project-title-fav-selected");
-     }
-    });
-  }
-});
+// Unfav idea
+$('.idea-title-fav-selected').on("click", unfav_idea);
+function unfav_idea() {
+  var id = this.id;
 
-$('.project-title-fav-selected').click(function () {
-  // click just once
-  if (this.className == "project-title-fav-selected") {
-    var id = this.id;
-    $.ajax({
-     url: 'projects/unfollow?id=' + this.id,
-     type: "POST",
-     success: function(response) {
-       if (response.success)
-         document.getElementById(id).setAttribute("class", "project-title-fav");
-     }
-    });
-  }
-});
-</script>
+  $.ajax({
+    url: 'idea/unfav?id=' + this.id,
+    type: "POST",
+    success: function(response) {
+      if (response.success) {
+        // Clear and ind new class and event
+        $('#' + id).off();
+        $('#' + id).addClass('idea-title-fav');
+        $('#' + id).removeClass('idea-title-fav-selected');
+        $('#' + id).on("click", fav_idea);
 
-<script>
+        // If user views favorites, remove div once idea is unfav
+        if (window.location.pathname == "/ideas_fav") {
+          document.getElementById(id).parentNode.parentNode.style.display = "none";
+        }
+      }
+   }
+  });
+}
+
+// Follow project
+$('.project-title-fav').on("click", follow_project);
+function follow_project() {
+  var id = this.id;
+
+  $.ajax({
+    url: 'projects/follow?id=' + this.id,
+    type: "POST",
+    success: function(response) {
+      if (response.success) {
+        // Clear and ind new class and event
+        $('#' + id).off();
+        $('#' + id).addClass('project-title-fav-selected');
+        $('#' + id).removeClass('project-title-fav');
+        $('#' + id).on("click", unfollow_project);
+      }
+   }
+  });
+}
+
+// Unfollow project
+$('.project-title-fav-selected').on("click", unfollow_project);
+function unfollow_project() {
+  var id = this.id;
+
+  $.ajax({
+    url: 'projects/unfollow?id=' + this.id,
+    type: "POST",
+    success: function(response) {
+      if (response.success) {
+        // Clear and ind new class and event
+        $('#' + id).off();
+        $('#' + id).addClass('project-title-fav');
+        $('#' + id).removeClass('project-title-fav-selected');
+        $('#' + id).on("click", follow_project);
+
+        // If user views followed projects, remove div once project is unfollowed
+        if (window.location.pathname == "/projects_fav") {
+          document.getElementById(id).parentNode.parentNode.style.display = "none";
+        }
+      }
+   }
+  });
+}
+
+// Bug -- feature project switch
 $('#bug').live('click', function () {
   $(this).addClass("active");
   $('#feature').removeClass("active");

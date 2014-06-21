@@ -281,7 +281,7 @@ Remove idea from favorites list. Used in AJAX calls.
 */
 exports.unfav = function(req, res) {
   var conditions = {user_id: req.session.auth.github.user.id};
-  var update = {$pop: {favorites: req.query.id}};
+  var update = {$pull: {favorites: req.query.id}};
   Users.update(conditions, update, function (err, num) {
     if (num) res.json({success: true});
   });

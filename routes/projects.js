@@ -40,19 +40,21 @@ exports.index = function(req, res) {
     .sort(sort_type)
     .exec(function(err, projects) {
 
-      for (var i=0; i<projects.length; i++) {
-        // mark favorites
-        if (user != null && user.followed.indexOf(projects[i]._id) > -1)
-          projects[i].fav = true;
-        // markdown project description
-        //projects[i].description = markdown.toHTML(projects[i].description);
-        // format date
-        projects[i].date_post_f = core.get_time_from(projects[i].date_post);
-        // remove new lines
-        projects[i].description = projects[i].description.replace(/(\r\n|\n|\r)/gm,"");
-        // shorten description
-        if (projects[i].description.length > MACRO.PROJECT.DESC)
-          projects[i].description = (projects[i].description).substring(0, MACRO.PROJECT.DESC) + " [...]";
+      if (projects) {
+        for (var i=0; i<projects.length; i++) {
+          // mark favorites
+          if (user != null && user.followed.indexOf(projects[i]._id) > -1)
+            projects[i].fav = true;
+          // markdown project description
+          //projects[i].description = markdown.toHTML(projects[i].description);
+          // format date
+          projects[i].date_post_f = core.get_time_from(projects[i].date_post);
+          // remove new lines
+          projects[i].description = projects[i].description.replace(/(\r\n|\n|\r)/gm,"");
+          // shorten description
+          if (projects[i].description.length > MACRO.PROJECT.DESC)
+            projects[i].description = (projects[i].description).substring(0, MACRO.PROJECT.DESC) + " [...]";
+        }
       }
 
       res.render('projects', {
@@ -292,7 +294,7 @@ exports.follow = function(req, res) {
 
 exports.unfollow = function(req, res) {
   var conditions = {user_id: req.session.auth.github.user.id};
-  var update = {$pop: {followed: req.query.id}};
+  var update = {$pull: {followed: req.query.id}};
   Users.update(conditions, update, function (err, num) {
     if (num) res.json({success: true});
   });
