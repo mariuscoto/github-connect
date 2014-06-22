@@ -12,6 +12,11 @@ setup: package.json
 	mongorestore -d github-connect ghconnect_db/github-connect
 	killall mongod
 
+test:
+	@for t in $$(ls tests); do \
+		./node_modules/.bin/mocha -R spec tests/$$t; \
+	done
+
 run:
 	@mongod &
 	@echo "Server running at localhost:3000"

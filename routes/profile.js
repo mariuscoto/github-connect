@@ -6,18 +6,22 @@ var Notifications = mongoose.model('Notifications');
 var core 		= require('../core.js');
 
 
+/*
+Edit user information.
+Can change location (+visibility), email (+visibility), full name.
+*/
 exports.edit = function(req, res) {
   var email = false, loc = false;
   if (req.body.email_pub) email = true;
   if (req.body.location_pub) loc = true;
 
-  var conditions = { user_id: req.session.auth.github.user.id };
+  var conditions = { 'user_id': req.session.auth.github.user.id };
   var update = {$set: {
-    location: 			req.body.location,
-    location_pub: 	loc,
-    user_fullname:  req.body.fullname,
-    user_email: 		req.body.email,
-    email_pub: 		 email
+    'location': 			req.body.location,
+    'user_fullname':  req.body.fullname,
+    'user_email': 		req.body.email,
+    'location_pub':   loc,
+    'email_pub':  		email
   }};
   Users.update(conditions, update, function (err, num) {
     console.log("* " + req.session.auth.github.user.login + " made profile changes.");
@@ -25,6 +29,10 @@ exports.edit = function(req, res) {
   });
 }
 
+
+/*
+User profile page. Shows all info about selected user.
+*/
 exports.index = function(req, res) {
   var cname = req.url.substring(1, (req.url + '/').substring(1).indexOf('/')+1);
   var tab = req.url.substring(cname.length+2);
