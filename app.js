@@ -20,7 +20,13 @@ app.configure('production', function(){
   global.config.facebook_token = process.env.fb_token;
   global.config.mail_user = process.env.mail_user;
   global.config.mail_pass = process.env.mail_pass;
+  global.config.nodetime = process.env.nodetime;
   global.config.status = 'prod';
+});
+
+require('nodetime').profile({
+    accountKey: global.config.nodetime, 
+    appName: 'Node.js Application'
 });
 
 var MACRO = require('./model/macro.js')
