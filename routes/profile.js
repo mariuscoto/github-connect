@@ -2,7 +2,9 @@ var mongoose = require('mongoose');
 var Users    = mongoose.model('Users');
 var Ideas    = mongoose.model('Ideas');
 var Projects = mongoose.model('Projects');
-var Notifications = mongoose.model('Notifications');
+var Notifications   = mongoose.model('Notifications');
+var IdeaComments    = mongoose.model('IdeaComments');
+var ProjectComments = mongoose.model('ProjectComments');
 var core 		= require('../core.js');
 
 
@@ -169,4 +171,46 @@ exports.index = function(req, res) {
 
     }
   });
+}
+
+/*
+Remove user account and all associated content.
+Keep username in notifications (as src) and Challenges. When someone clicks
+on his name, they will get 404.
+*/
+exports.remove = function(req, res) {
+  res.redirect('/logout')
+
+  var user = req.session.auth.github.user.login
+
+  // Remove all ideas
+  Ideas.remove({'user_name': user}, function (err, num) {
+    if (err) console.log("[ERR] Could not remove ideas.");
+  });
+
+  // Remove all idea comments
+  IdeaComments.remove({'user_name': user}, function (err, num) {
+    if (err) console.log("[ERR] Could not remove idea comments.");
+  });
+
+  // Remove all projects
+  Projects.remove({'user_name': user}, function (err, num) {
+    if (err) console.log("[ERR] Could not remove projects.");
+  });
+
+  // Remove all project comments
+  ProjectComments.remove({'user_name': user}, function (err, num) {
+    if (err) console.log("[ERR] Could not remove project comments.");
+  });
+
+  // Remove notifications that he received
+  Notifications.remove({'dest': user}, function (err, num) {
+    if (err) console.log("[ERR] Could not remove user notifications.");
+  });
+
+  // Remove user data
+  Users.remove({'user_name': user}, function (err, num) {
+    if (err) console.log("[ERR] Could not remove user info.");
+  });
+
 }

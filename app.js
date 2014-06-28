@@ -114,6 +114,7 @@ app.post('/contact', other.feedback);
 
 var profile = require('./routes/profile.js');
 app.post('/profile/edit', ensureAuth, profile.edit);
+app.get('/:user/remove', ensureAuth, profile.remove)
 
 var projects = require('./routes/projects.js');
 app.get('/projects', projects.index);
