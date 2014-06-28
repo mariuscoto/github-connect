@@ -161,7 +161,7 @@ block content
 
         h3 Remove your idea
         form(method='post', action='/idea/remove?id=' + idea._id)
-          input.btn.btn-danger(id='rmv', type='submit', value='Remove this idea', onclick="return ideaDelete(this.rmv)")
+          input.btn.btn-danger(id='remove_idea', type='submit', value='Remove idea')
           b  It cannot be undone.
 
     - else

@@ -9,7 +9,7 @@ block content
         img(src=cuser.avatar_url)
 
       - if (currentUrl == 'edit')
-          a(href='#') Remove account
+          a(href='#', id='remove_account') Remove account
       - else
         .profile-name
           b= cuser.user_fullname

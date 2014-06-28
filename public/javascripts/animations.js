@@ -1,11 +1,43 @@
 
-function ideaDelete(input) {
-    if(confirm("Are you sure you want to remove this idea?")) {
-	return true;
-    } else {
-	return false;
-    }
-}
+$('#remove_idea').on("click", function () {
+  if (confirm("Are you sure you want to remove your your idea?")) {
+
+    // Compose URL
+    var index = window.location.pathname.indexOf('?')
+    var id_arg = window.location.pathname.substring(index)
+    window.location.replace('../idea/remove' + id_arg)
+
+  } else {
+    return false
+  }
+});
+
+$('#remove_project').on("click", function () {
+  if (confirm("Are you sure you want to remove your your project?")) {
+
+    // Compose URL
+    var index = window.location.pathname.indexOf('?')
+    var id_arg = window.location.pathname.substring(index)
+    window.location.replace('../project/remove' + id_arg)
+
+  } else {
+    return false
+  }
+});
+
+$('#remove_account').on("click", function () {
+  if (confirm("Are you sure you want to remove your account and all associated"
+              + " content? This action cannot be undone.")) {
+
+    // Compose 
+    var index = window.location.pathname.indexOf('/', 1)
+    var win_url = window.location.pathname.substring(1, index)
+    window.location.replace('../' + win_url + '/remove')
+
+  } else {
+    return false
+  }
+});
 </script>
 
 <script>

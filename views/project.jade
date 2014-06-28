@@ -96,7 +96,8 @@ block content
         br
         h3 Remove your project
         form(method='post', action='/projects/remove?id=' + project._id)
-          input.btn.btn-danger(id='rmv', type='submit', value='Remove project', onclick="return ideaDelete(this.rmv)")
+          input.btn.btn-danger(id='remove_project', type='submit', value='Remove project')
+          b  It cannot be undone.
 
       - else if (currentUrl == '/project')
         - if (comments && comments.length != 0)
