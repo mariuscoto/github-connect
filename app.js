@@ -22,12 +22,14 @@ app.configure('production', function(){
   global.config.mail_pass = process.env.mail_pass;
   global.config.nodetime = process.env.nodetime;
   global.config.status = 'prod';
-});
 
-require('nodetime').profile({
+  require('nodetime').profile({
     accountKey: global.config.nodetime, 
     appName: 'Node.js Application'
+  });
+
 });
+
 
 var MACRO = require('./model/macro.js')
   , db = require('./model/db')
