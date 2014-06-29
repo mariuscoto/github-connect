@@ -113,8 +113,14 @@ app.get('/contact', other.contact);
 app.post('/contact', other.feedback);
 
 var profile = require('./routes/profile.js');
-app.post('/profile/edit', ensureAuth, profile.edit);
+app.get('/:user/cups', profile.cups)
+app.get('/:user/repos', profile.repos)
+app.get('/:user/ideas', profile.ideas)
 app.get('/:user/remove', ensureAuth, profile.remove)
+app.get('/:user/projects', profile.projects)
+app.get('/:user/edit_profile', profile.edit_profile)
+app.get('/:user/notifications', profile.notifications)
+app.post('/profile/edit', ensureAuth, profile.edit);
 
 var projects = require('./routes/projects.js');
 app.get('/projects', projects.index);
