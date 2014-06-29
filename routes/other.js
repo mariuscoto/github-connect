@@ -96,8 +96,9 @@ exports.login = function(req, res) {
       return res.redirect('/' + req.session.auth.github.user.login);
 
     res.render('login', {
-      title: "Log in",
-      tab:   req.query.rf
+      'title':  "Log in",
+      'status': global.config.status,
+      'tab':    req.query.rf
     });
   }
 };
